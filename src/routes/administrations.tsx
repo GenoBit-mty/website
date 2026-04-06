@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '../components/ui/card'
 
 export const Route = createFileRoute('/administrations')({
   component: AdministrationsPage,
@@ -9,63 +8,91 @@ export const Route = createFileRoute('/administrations')({
 
 function AdministrationsPage() {
   const admins = useQuery(api.pastAdmin.get)
+  const archiveSkeletonKeys = ['archive-a', 'archive-b']
 
   return (
-    <div className="container mx-auto py-10 px-4">
-      <h1 className="text-4xl font-bold mb-8 text-primary">Gestiones Pasadas</h1>
-      <p className="text-lg text-muted-foreground mb-10">
-        Legado de liderazgo en GenoBit.
-      </p>
-
-      {admins === undefined ? (
-        <p>Cargando gestiones...</p>
-      ) : (
-        <div className="space-y-12">
-          {admins.map((admin) => (
-            <Card key={admin._id} className="overflow-hidden border-l-4 border-l-primary">
-              <CardHeader>
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-                    <div>
-                        <CardDescription className="text-lg font-semibold text-primary mb-1">
-                            {admin.period}
-                        </CardDescription>
-                        <CardTitle className="text-3xl">Presidencia: {admin.presidentName}</CardTitle>
-                    </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col md:flex-row gap-8 mt-4">
-                     {admin.imageUrl && (
-                        <div className="w-full md:w-1/3 rounded-xl overflow-hidden shadow-md">
-                            <img src={admin.imageUrl} alt={`Gestión ${admin.period}`} className="w-full h-auto" />
-                        </div>
-                    )}
-                    <div className="flex-1">
-                        {admin.description && (
-                            <div className="mb-6">
-                                <h3 className="text-xl font-semibold mb-2">Logros destacados</h3>
-                                <p className="text-muted-foreground">{admin.description}</p>
-                            </div>
-                        )}
-                        
-                        <div>
-                            <h3 className="text-xl font-semibold mb-3">Equipo</h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {admin.members.map((member, idx) => (
-                                    <div key={idx} className="flex flex-col p-3 bg-muted/50 rounded-lg">
-                                        <span className="font-medium">{member.name}</span>
-                                        <span className="text-sm text-muted-foreground">{member.role}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+    <main>
+      <div className="page-header">
+        <div className="site-container">
+          <div className="sticky-type page-watermark">
+            ARCHIVO
+          </div>
+          <div className="page-header-content">
+            <span className="mono-label">Legado</span>
+            <h1 className="page-title">Gestiones Pasadas</h1>
+            <p className="page-lead">
+              Legado de liderazgo en GenoBit. Conoce la historia y los líderes
+              que han construido nuestra comunidad.
+            </p>
+          </div>
         </div>
-      )}
-    </div>
+      </div>
+
+      <section className="section-spacing">
+        <div className="site-container">
+          {admins === undefined ? (
+            <div>
+              {archiveSkeletonKeys.map((key) => (
+                <div key={key} className="archive-card" style={{ marginBottom: '48px' }}>
+                  <div className="archive-header">
+                    <div className="skeleton" style={{ width: '20%', height: '14px', marginBottom: '12px' }} />
+                    <div className="skeleton" style={{ width: '50%', height: '28px' }} />
+                  </div>
+                  <div className="archive-body">
+                    <div className="skeleton" style={{ width: '280px', height: '200px', flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                      <div className="skeleton" style={{ width: '100%', height: '80px', marginBottom: '24px' }} />
+                      <div className="skeleton" style={{ width: '100%', height: '100px' }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="reveal-on-scroll">
+              {admins.map((admin) => (
+                <div key={admin._id} className="archive-card stagger-child">
+                  <div className="archive-header">
+                    <div className="archive-period">{admin.period}</div>
+                    <div className="archive-president">
+                      Presidencia: {admin.presidentName}
+                    </div>
+                  </div>
+                  <div className="archive-body">
+                    {admin.imageUrl && (
+                      <img
+                        src={admin.imageUrl}
+                        alt={`Gestión ${admin.period}`}
+                        className="archive-image"
+                      />
+                    )}
+                    <div className="archive-content">
+                      {admin.description && (
+                        <div style={{ marginBottom: '28px' }}>
+                          <h3 className="archive-section-title">Logros Destacados</h3>
+                          <p className="archive-desc">{admin.description}</p>
+                        </div>
+                      )}
+
+                      <div>
+                        <h3 className="archive-section-title">Equipo</h3>
+                        <div className="members-grid">
+                          {admin.members.map((member) => (
+                            <div key={`${member.name}-${member.role}`} className="member-chip">
+                              <div className="member-name">{member.name}</div>
+                              <div className="member-role">{member.role}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </main>
   )
 }

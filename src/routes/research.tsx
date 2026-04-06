@@ -1,9 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '../components/ui/card'
-import { Badge } from '../components/ui/badge'
-import { Button } from '../components/ui/button'
 
 export const Route = createFileRoute('/research')({
   component: ResearchPage,
@@ -11,52 +8,104 @@ export const Route = createFileRoute('/research')({
 
 function ResearchPage() {
   const papers = useQuery(api.research.get)
+  const paperSkeletonKeys = ['paper-a', 'paper-b', 'paper-c']
 
   return (
-    <div className="container mx-auto py-10 px-4">
-      <h1 className="text-4xl font-bold mb-8 text-primary">Investigaciones</h1>
-      <p className="text-lg text-muted-foreground mb-10">
-        Nuestra contribución a la ciencia y bioinformática.
-      </p>
-
-      {papers === undefined ? (
-        <p>Cargando investigaciones...</p>
-      ) : (
-        <div className="space-y-6">
-          {papers.map((paper) => (
-            <Card key={paper._id} className="hover:shadow-md transition-shadow">
-              <div className="flex flex-col md:flex-row gap-6 p-6">
-                {paper.imageUrl && (
-                    <div className="w-full md:w-48 h-32 flex-shrink-0 rounded-lg overflow-hidden">
-                        <img src={paper.imageUrl} alt={paper.title} className="w-full h-full object-cover" />
-                    </div>
-                )}
-                <div className="flex-grow">
-                     <div className="flex flex-wrap gap-2 mb-2">
-                        {paper.tags?.map(tag => (
-                            <Badge key={tag} variant="outline">{tag}</Badge>
-                        ))}
-                    </div>
-                    <h2 className="text-2xl font-bold mb-2">{paper.title}</h2>
-                    <p className="text-sm text-muted-foreground mb-4">
-                        Por: {paper.authors.join(", ")} • {paper.publicationDate}
-                    </p>
-                    <p className="mb-4 text-muted-foreground">
-                        {paper.description}
-                    </p>
-                    {paper.url && (
-                        <Button variant="outline" asChild>
-                            <a href={paper.url} target="_blank" rel="noopener noreferrer">
-                                Leer publicación complete ↗
-                            </a>
-                        </Button>
-                    )}
-                </div>
-              </div>
-            </Card>
-          ))}
+    <main>
+      <div className="page-header">
+        <div className="site-container">
+          <div className="sticky-type page-watermark">
+            PAPERS
+          </div>
+          <div className="page-header-content">
+            <span className="mono-label">Producción científica</span>
+            <h1 className="page-title">Investigaciones</h1>
+            <p className="page-lead">
+              Nuestra contribución a la ciencia y bioinformática. Proyectos,
+              publicaciones y colaboraciones.
+            </p>
+          </div>
         </div>
-      )}
-    </div>
+      </div>
+
+      <section className="section-spacing">
+        <div className="site-container">
+          {papers === undefined ? (
+            <div>
+              {paperSkeletonKeys.map((key) => (
+                <div key={key} className="research-item">
+                  <div className="skeleton" style={{ width: '200px', height: '140px', flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div className="skeleton" style={{ width: '80%', height: '24px', marginBottom: '12px' }} />
+                    <div className="skeleton" style={{ width: '50%', height: '14px', marginBottom: '12px' }} />
+                    <div className="skeleton" style={{ width: '100%', height: '60px' }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="reveal-on-scroll">
+              {papers.map((paper, idx) => (
+                <div key={paper._id} className="research-item stagger-child">
+                  {paper.imageUrl && (
+                    <img
+                      src={paper.imageUrl}
+                      alt={paper.title}
+                      className="research-image"
+                    />
+                  )}
+                  {!paper.imageUrl && (
+                    <div
+                      className="research-image"
+                      style={{
+                        background: `linear-gradient(135deg, rgba(0, 112, 111, ${0.15 + (idx % 3) * 0.05}), rgba(61, 53, 139, ${0.1 + (idx % 2) * 0.05}))`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: 'var(--mono)',
+                          fontSize: '0.7rem',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.15em',
+                          color: 'rgba(240, 249, 255, 0.2)',
+                        }}
+                      >
+                        {String(idx + 1).padStart(3, '0')}
+                      </span>
+                    </div>
+                  )}
+                  <div className="research-body">
+                    <div className="research-tags">
+                      {paper.tags?.map((tag) => (
+                        <span key={tag} className="editorial-badge">{tag}</span>
+                      ))}
+                    </div>
+                    <h2 className="research-title">{paper.title}</h2>
+                    <p className="research-meta">
+                      Por: {paper.authors.join(', ')} · {paper.publicationDate}
+                    </p>
+                    <p className="research-desc">{paper.description}</p>
+                    {paper.url && (
+                      <a
+                        href={paper.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="editorial-btn"
+                        style={{ fontSize: '0.7rem', padding: '10px 24px' }}
+                      >
+                        Leer publicación ↗
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </main>
   )
 }

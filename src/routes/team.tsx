@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 
 export const Route = createFileRoute('/team')({
   component: TeamPage,
@@ -9,57 +8,100 @@ export const Route = createFileRoute('/team')({
 
 function TeamPage() {
   const teamMembers = useQuery(api.team.get)
+  const teamSkeletonKeys = ['team-a', 'team-b', 'team-c', 'team-d', 'team-e', 'team-f']
 
   return (
-    <div className="container mx-auto py-10 px-4">
-      <h1 className="text-4xl font-bold mb-8 text-primary">Conoce al equipo</h1>
-      <p className="text-lg text-muted-foreground mb-10">
-        El equipo apasionado detrás de GenoBit.
-      </p>
-
-      {teamMembers === undefined ? (
-        <p>Cargando equipo...</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teamMembers.map((member) => (
-            <Card key={member._id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              {member.imageUrl && (
-                <div className="h-48 overflow-hidden">
-                  <img 
-                    src={member.imageUrl} 
-                    alt={member.name} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-              <CardHeader>
-                <CardTitle>{member.name}</CardTitle>
-                <CardDescription className="text-primary font-medium">{member.role}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {member.bio && <p className="text-sm text-muted-foreground mb-4">{member.bio}</p>}
-                <div className="flex gap-2 text-sm">
-                    {member.email && (
-                        <a href={`mailto:${member.email}`} className="text-primary hover:underline">
-                            Email
-                        </a>
-                    )}
-                    {member.linkedinUrl && (
-                        <a href={member.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                            LinkedIn
-                        </a>
-                    )}
-                     {member.githubUrl && (
-                        <a href={member.githubUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                            GitHub
-                        </a>
-                    )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+    <main>
+      <div className="page-header">
+        <div className="site-container">
+          <div className="sticky-type page-watermark">
+            EQUIPO
+          </div>
+          <div className="page-header-content">
+            <span className="mono-label">Nuestro equipo</span>
+            <h1 className="page-title">Conoce al Equipo</h1>
+            <p className="page-lead">
+              El equipo apasionado detrás de GenoBit. Estudiantes de diversas
+              disciplinas unidos por la bioinformática.
+            </p>
+          </div>
         </div>
-      )}
-    </div>
+      </div>
+
+      <section className="section-spacing">
+        <div className="site-container">
+          {teamMembers === undefined ? (
+            <div className="team-grid">
+              {teamSkeletonKeys.map((key) => (
+                <div key={key} className="team-card">
+                  <div className="skeleton" style={{ width: '100%', height: '280px' }} />
+                  <div className="skeleton-block">
+                    <div className="skeleton" style={{ width: '60%', height: '20px', marginBottom: '8px' }} />
+                    <div className="skeleton" style={{ width: '40%', height: '14px' }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="team-grid reveal-on-scroll">
+              {teamMembers.map((member, idx) => (
+                <div key={member._id} className="team-card stagger-child">
+                  {member.imageUrl && (
+                    <img
+                      src={member.imageUrl}
+                      alt={`${member.name} — ${member.role}`}
+                      className="team-photo"
+                    />
+                  )}
+                  {!member.imageUrl && (
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '280px',
+                        background: `linear-gradient(135deg, rgba(0, 112, 111, ${0.1 + (idx % 4) * 0.05}), rgba(61, 53, 139, ${0.1 + (idx % 3) * 0.05}))`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: 'var(--exo)',
+                          fontSize: '3rem',
+                          fontWeight: 800,
+                          opacity: 0.15,
+                        }}
+                      >
+                        {member.name.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="team-info">
+                    <div className="team-name">{member.name}</div>
+                    <div className="team-role">{member.role}</div>
+                    {member.bio && <div className="team-bio">{member.bio}</div>}
+                    <div className="team-links">
+                      {member.email && (
+                        <a href={`mailto:${member.email}`}>Email</a>
+                      )}
+                      {member.linkedinUrl && (
+                        <a href={member.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                          LinkedIn
+                        </a>
+                      )}
+                      {member.githubUrl && (
+                        <a href={member.githubUrl} target="_blank" rel="noopener noreferrer">
+                          GitHub
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </main>
   )
 }
