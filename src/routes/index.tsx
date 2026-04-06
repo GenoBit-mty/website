@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
 import { DnaHelix } from "@/components/DnaHelix";
 import { TechMarquee } from '@/components/TechMarquee'
-import { SectionBlend } from '@/components/SectionBlend'
 
 export const Route = createFileRoute("/")({ component: HomePage });
 
