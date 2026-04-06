@@ -1,11 +1,13 @@
-import { query, mutation } from "./_generated/server";
-import { components } from "./_generated/api";
 import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { teamMemberValidator } from "./validators";
 
-export const get = query({
+export const list = query({
   args: {},
+  returns: v.array(teamMemberValidator),
   handler: async (ctx) => {
-    return await ctx.runQuery(components.content.team.list, {});
+    const members = await ctx.db.query("teamMembers").collect();
+    return members.sort((a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER));
   },
 });
 
@@ -21,7 +23,8 @@ export const create = mutation({
     githubUrl: v.optional(v.string()),
     order: v.optional(v.number()),
   },
+  returns: v.id("teamMembers"),
   handler: async (ctx, args) => {
-    return await ctx.runMutation(components.content.team.create, args);
+    return await ctx.db.insert("teamMembers", args);
   },
 });

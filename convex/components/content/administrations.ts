@@ -1,11 +1,12 @@
-import { query, mutation } from "./_generated/server";
-import { components } from "./_generated/api";
 import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { administrationValidator } from "./validators";
 
-export const get = query({
+export const list = query({
   args: {},
+  returns: v.array(administrationValidator),
   handler: async (ctx) => {
-    return await ctx.runQuery(components.content.administrations.list, {});
+    return await ctx.db.query("pastAdministrations").order("desc").collect();
   },
 });
 
@@ -24,7 +25,8 @@ export const create = mutation({
       }),
     ),
   },
+  returns: v.id("pastAdministrations"),
   handler: async (ctx, args) => {
-    return await ctx.runMutation(components.content.administrations.create, args);
+    return await ctx.db.insert("pastAdministrations", args);
   },
 });

@@ -1,6 +1,6 @@
 /* eslint-disable */
 /**
- * Generated `api` utility.
+ * Generated `ComponentApi` utility.
  *
  * THIS CODE IS AUTOMATICALLY GENERATED.
  *
@@ -8,56 +8,21 @@
  * @module
  */
 
-import type * as content from "../content.js";
-import type * as events from "../events.js";
-import type * as labs from "../labs.js";
-import type * as pastAdmin from "../pastAdmin.js";
-import type * as research from "../research.js";
-import type * as team from "../team.js";
-
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
-
-declare const fullApi: ApiFromModules<{
-  content: typeof content;
-  events: typeof events;
-  labs: typeof labs;
-  pastAdmin: typeof pastAdmin;
-  research: typeof research;
-  team: typeof team;
-}>;
+import type { FunctionReference } from "convex/server";
 
 /**
- * A utility for referencing Convex functions in your app's public API.
+ * A utility for referencing a Convex component's exposed API.
  *
+ * Useful when expecting a parameter like `components.myComponent`.
  * Usage:
- * ```js
- * const myFunctionReference = api.myModule.myFunction;
+ * ```ts
+ * async function myFunction(ctx: QueryCtx, component: ComponentApi) {
+ *   return ctx.runQuery(component.someFile.someQuery, { ...args });
+ * }
  * ```
  */
-export declare const api: FilterApi<
-  typeof fullApi,
-  FunctionReference<any, "public">
->;
-
-/**
- * A utility for referencing Convex functions in your app's internal API.
- *
- * Usage:
- * ```js
- * const myFunctionReference = internal.myModule.myFunction;
- * ```
- */
-export declare const internal: FilterApi<
-  typeof fullApi,
-  FunctionReference<any, "internal">
->;
-
-export declare const components: {
-  content: {
+export type ComponentApi<Name extends string | undefined = string | undefined> =
+  {
     administrations: {
       create: FunctionReference<
         "mutation",
@@ -70,7 +35,8 @@ export declare const components: {
           period: string;
           presidentName: string;
         },
-        string
+        string,
+        Name
       >;
       list: FunctionReference<
         "query",
@@ -85,7 +51,8 @@ export declare const components: {
           members: Array<{ imageUrl?: string; name: string; role: string }>;
           period: string;
           presidentName: string;
-        }>
+        }>,
+        Name
       >;
     };
     events: {
@@ -103,7 +70,8 @@ export declare const components: {
           registrationUrl?: string;
           title: string;
         },
-        string
+        string,
+        Name
       >;
       list: FunctionReference<
         "query",
@@ -121,7 +89,8 @@ export declare const components: {
           location: string;
           registrationUrl?: string;
           title: string;
-        }>
+        }>,
+        Name
       >;
       listUpcoming: FunctionReference<
         "query",
@@ -139,7 +108,8 @@ export declare const components: {
           location: string;
           registrationUrl?: string;
           title: string;
-        }>
+        }>,
+        Name
       >;
     };
     labs: {
@@ -156,7 +126,8 @@ export declare const components: {
           summary: string;
           title: string;
         },
-        string
+        string,
+        Name
       >;
       list: FunctionReference<
         "query",
@@ -173,11 +144,18 @@ export declare const components: {
           location?: string;
           summary: string;
           title: string;
-        }>
+        }>,
+        Name
       >;
     };
     media: {
-      generateUploadUrl: FunctionReference<"mutation", "internal", {}, string>;
+      generateUploadUrl: FunctionReference<
+        "mutation",
+        "internal",
+        {},
+        string,
+        Name
+      >;
       listAssets: FunctionReference<
         "query",
         "internal",
@@ -191,7 +169,8 @@ export declare const components: {
           entityType: string;
           storageId: string;
           url: string;
-        }>
+        }>,
+        Name
       >;
       saveAsset: FunctionReference<
         "mutation",
@@ -202,7 +181,8 @@ export declare const components: {
           entityType: string;
           storageId: string;
         },
-        { assetId: string; url: string }
+        { assetId: string; url: string },
+        Name
       >;
     };
     research: {
@@ -219,7 +199,8 @@ export declare const components: {
           title: string;
           url?: string;
         },
-        string
+        string,
+        Name
       >;
       list: FunctionReference<
         "query",
@@ -236,7 +217,8 @@ export declare const components: {
           tags?: Array<string>;
           title: string;
           url?: string;
-        }>
+        }>,
+        Name
       >;
     };
     seed: {
@@ -250,7 +232,8 @@ export declare const components: {
           pastAdministrations: number;
           research: number;
           teamMembers: number;
-        }
+        },
+        Name
       >;
     };
     team: {
@@ -268,7 +251,8 @@ export declare const components: {
           order?: number;
           role: string;
         },
-        string
+        string,
+        Name
       >;
       list: FunctionReference<
         "query",
@@ -286,8 +270,8 @@ export declare const components: {
           name: string;
           order?: number;
           role: string;
-        }>
+        }>,
+        Name
       >;
     };
   };
-};

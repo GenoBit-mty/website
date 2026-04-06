@@ -1,18 +1,23 @@
-import { query, mutation } from "./_generated/server";
-import { components } from "./_generated/api";
 import { v } from "convex/values";
+import { mutation, query } from "./_generated/server.js";
+import { eventValidator } from "./validators";
 
-export const get = query({
+export const list = query({
   args: {},
+  returns: v.array(eventValidator),
   handler: async (ctx) => {
-    return await ctx.runQuery(components.content.events.list, {});
+    return await ctx.db.query("events").order("desc").collect();
   },
 });
 
-export const getUpcoming = query({
+export const listUpcoming = query({
   args: {},
+  returns: v.array(eventValidator),
   handler: async (ctx) => {
-    return await ctx.runQuery(components.content.events.listUpcoming, {});
+    return await ctx.db
+      .query("events")
+      .filter((q) => q.eq(q.field("isUpcoming"), true))
+      .collect();
   },
 });
 
@@ -28,7 +33,8 @@ export const create = mutation({
     registrationUrl: v.optional(v.string()),
     isUpcoming: v.optional(v.boolean()),
   },
+  returns: v.id("events"),
   handler: async (ctx, args) => {
-    return await ctx.runMutation(components.content.events.create, args);
+    return await ctx.db.insert("events", args);
   },
 });

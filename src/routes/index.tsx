@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { DnaHelix } from "@/components/DnaHelix";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
+import { DnaHelix } from "@/components/DnaHelix";
 import { TechMarquee } from '@/components/TechMarquee'
+import { SectionBlend } from '@/components/SectionBlend'
 
 export const Route = createFileRoute("/")({ component: HomePage });
 
@@ -11,6 +12,15 @@ function HomePage() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.35], [1, 0.25])
   const heroScale = useTransform(scrollYProgress, [0, 0.35], [1, 0.9])
   const [dnaMode, setDnaMode] = useState<'hero' | 'content'>('hero')
+  const [isBooting, setIsBooting] = useState(true)
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setIsBooting(false)
+    }, 1650)
+
+    return () => window.clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     // Parallax effect for hero text
@@ -40,15 +50,42 @@ function HomePage() {
   }, [])
 
   return (
-    <main>
-      <div className={`dna-stage dna-${dnaMode}`}>
-        <DnaHelix />
-      </div>
+    <>
+      <AnimatePresence>
+        {isBooting && (
+          <motion.div
+            className="boot-overlay"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.5, ease: 'easeInOut' } }}
+          >
+            <motion.img
+              src="/GenobitLogo.png"
+              alt="GenoBit logo"
+              className="boot-logo"
+              initial={{ opacity: 0, y: 22, scale: 0.94 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.65, ease: 'easeOut' }}
+            />
+            <motion.p
+              className="boot-label"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
+              Inicializando plataforma GenoBit...
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <main>
+        <div className={`dna-stage dna-${dnaMode}`}>
+          <DnaHelix />
+        </div>
 
       {/* ===================== HERO ===================== */}
-      <motion.section className="hero-section" style={{ opacity: heroOpacity, scale: heroScale }}>
-        <div className="hero-title-wrap reveal-on-scroll visible">
-          <p className="hero-kicker">01 — GRUPO ESTUDIANTIL</p>
+        <motion.section className="hero-section" style={{ opacity: heroOpacity, scale: heroScale }}>
+          <div className="hero-title-wrap reveal-on-scroll visible">
           <span className="huge-type parallax-text" data-speed="-1.5">
             GENO
           </span>
@@ -66,18 +103,19 @@ function HomePage() {
               Conoce al equipo
             </Link>
           </div>
-        </div>
+          </div>
 
-        <div className="hero-placeholder hero-placeholder-left" data-cursor-hover>
-          Placeholder: Logo aliado
-        </div>
-        <div className="hero-placeholder hero-placeholder-right" data-cursor-hover>
-          Placeholder: CTA secundario
-        </div>
-      </motion.section>
+          <div className="hero-placeholder hero-placeholder-left" data-cursor-hover>
+            Placeholder: Logo aliado
+          </div>
+          <div className="hero-placeholder hero-placeholder-right" data-cursor-hover>
+            Placeholder: CTA secundario
+          </div>
+        </motion.section>
 
       {/* ===================== INTRO ===================== */}
-      <section className="page-section">
+
+        <section className="page-section">
         <div className="site-container reveal-on-scroll">
           <div className="intro-block">
             <h2 className="intro-title">
@@ -90,13 +128,13 @@ function HomePage() {
             </p>
           </div>
         </div>
-      </section>
+        </section>
 
       {/* ===================== MARQUEE ===================== */}
-      <TechMarquee />
+        <TechMarquee />
 
       {/* ===================== PLACEHOLDERS ===================== */}
-      <section className="page-section placeholder-zone">
+        <section className="page-section placeholder-zone">
         <div className="site-container placeholder-grid reveal-on-scroll">
           <article className="layout-placeholder-card stagger-child" data-cursor-hover>
             <h3>Placeholder: Sponsors</h3>
@@ -111,10 +149,10 @@ function HomePage() {
             <p>Incluye guía, plantilla o dataset para la comunidad.</p>
           </article>
         </div>
-      </section>
+        </section>
 
       {/* ===================== SECTIONS ===================== */}
-      <section className="page-section">
+        <section className="page-section">
         <div className="site-container">
           <div className="sticky-type">EXPLORA</div>
 
@@ -202,7 +240,8 @@ function HomePage() {
             </div>
           </div>
         </div>
-      </section>
-    </main>
+        </section>
+      </main>
+    </>
   );
 }

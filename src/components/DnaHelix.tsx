@@ -28,13 +28,10 @@ export function DnaHelix() {
     renderer.setClearColor(0x000000, 0)
     container.appendChild(renderer.domElement)
 
-    // Colors from GenoBit palette
-    const primaryColor = new THREE.Color('#00706F')
-    const cyanColor = new THREE.Color('#1598A5')
-    const purpleColor = new THREE.Color('#5B6F8F')
-    const limeColor = new THREE.Color('#00706F')
-    const steelColor = new THREE.Color('#6F9ABF')
-    const lightBlueColor = new THREE.Color('#DCECF5')
+    // Colors aligned to the original GenoBit logo mark
+    const logoTeal = new THREE.Color('#0A7D7D')
+    const logoLightBlue = new THREE.Color('#9FC3DD')
+    const logoIndigo = new THREE.Color('#4540A4')
 
     // DNA parameters
     const helixRadius = 2.8
@@ -46,23 +43,23 @@ export function DnaHelix() {
 
     // Create backbone strand materials
     const strand1Material = new THREE.MeshPhongMaterial({
-      color: primaryColor,
-      emissive: primaryColor,
+      color: logoTeal,
+      emissive: logoTeal,
       emissiveIntensity: 0.22,
       transparent: true,
       opacity: 0.72,
     })
 
     const strand2Material = new THREE.MeshPhongMaterial({
-      color: cyanColor,
-      emissive: cyanColor,
+      color: logoLightBlue,
+      emissive: logoLightBlue,
       emissiveIntensity: 0.22,
       transparent: true,
       opacity: 0.72,
     })
 
-    // Base pair colors (cycle through palette)
-    const basePairColors = [primaryColor, cyanColor, purpleColor, limeColor, steelColor, lightBlueColor]
+    // Base pair colors (cycle through logo palette)
+    const basePairColors = [logoTeal, logoLightBlue, logoIndigo]
 
     // DNA group
     const dnaGroup = new THREE.Group()
@@ -161,15 +158,15 @@ export function DnaHelix() {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.45)
     scene.add(ambientLight)
 
-    const pointLight1 = new THREE.PointLight(cyanColor, 1.15, 50)
+    const pointLight1 = new THREE.PointLight(logoTeal, 1.15, 50)
     pointLight1.position.set(8, 5, 8)
     scene.add(pointLight1)
 
-    const pointLight2 = new THREE.PointLight(purpleColor, 0.85, 50)
+    const pointLight2 = new THREE.PointLight(logoIndigo, 0.85, 50)
     pointLight2.position.set(-8, -5, 8)
     scene.add(pointLight2)
 
-    const pointLight3 = new THREE.PointLight(primaryColor, 0.6, 50)
+    const pointLight3 = new THREE.PointLight(logoLightBlue, 0.6, 50)
     pointLight3.position.set(0, 0, 12)
     scene.add(pointLight3)
 
@@ -193,7 +190,7 @@ export function DnaHelix() {
     particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3))
 
     const particleMat = new THREE.PointsMaterial({
-      color: cyanColor,
+      color: logoIndigo,
       size: 0.06,
       transparent: true,
       opacity: 0.22,

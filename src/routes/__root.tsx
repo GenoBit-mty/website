@@ -1,8 +1,9 @@
-import { HeadContent, Scripts, createRootRoute, Outlet, Link, useRouter } from '@tanstack/react-router'
+import { HeadContent, Link, Outlet, Scripts, createRootRoute, useRouter } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { AnimatePresence, motion } from 'framer-motion'
 import { ConvexClientProvider } from '../components/ConvexClientProvider'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { SmoothScroll } from '../components/SmoothScroll'
 import { CustomCursor } from '../components/CustomCursor'
 
@@ -59,6 +60,21 @@ function RootComponent() {
 function SiteNav() {
   const router = useRouter()
   const currentPath = router.state.location.pathname
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 40)
+    onScroll()
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    const close = () => setIsMenuOpen(false)
+    window.addEventListener('resize', close)
+    return () => window.removeEventListener('resize', close)
+  }, [])
 
   const links = [
     { to: '/', label: 'Inicio' },
@@ -69,25 +85,82 @@ function SiteNav() {
   ] as const
 
   return (
-    <nav className="site-nav" aria-label="Navegación principal">
-      <Link to="/" className="logo" aria-label="GenoBit - Inicio">
-        GENO<span>BIT</span>
-      </Link>
-      <ul className="nav-links">
-        {links.map((link) => (
-          <li key={link.to}>
-            <Link
-              to={link.to}
-              style={{
-                opacity: currentPath === link.to ? 1 : undefined,
-              }}
-            >
-              {link.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <>
+      <motion.header
+        initial={{ y: -80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className={`site-nav ${isScrolled ? 'scrolled' : ''}`}
+      >
+        <nav className="site-nav-shell" aria-label="Navegación principal">
+          <Link to="/" className="site-logo" aria-label="GenoBit - Inicio" onClick={() => setIsMenuOpen(false)}>
+            <img src="/GenobitLogo.png" alt="Logo GenoBit" className="site-logo-mark" />
+          </Link>
+
+          <ul className="nav-links desktop-nav">
+            {links.map((link, index) => (
+              <li key={link.to}>
+                <Link
+                  to={link.to}
+                  className="nav-link-item"
+                  style={{
+                    opacity: currentPath === link.to ? 1 : undefined,
+                  }}
+                >
+                  <span className="nav-link-index">0{index + 1}</span>
+                  {link.label.toUpperCase()}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <button
+            type="button"
+            onClick={() => setIsMenuOpen((prev) => !prev)}
+            className="mobile-menu-btn"
+            aria-label="Abrir menu"
+            aria-expanded={isMenuOpen}
+          >
+            <motion.span animate={isMenuOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }} />
+            <motion.span animate={isMenuOpen ? { opacity: 0, x: -8 } : { opacity: 1, x: 0 }} />
+            <motion.span animate={isMenuOpen ? { rotate: -45, y: -5 } : { rotate: 0, y: 0 }} />
+          </button>
+        </nav>
+      </motion.header>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="mobile-menu-overlay"
+          >
+            <nav className="mobile-menu-panel" aria-label="Menu movil">
+              {links.map((link, index) => (
+                <motion.div
+                  key={link.to}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 14 }}
+                  transition={{ delay: index * 0.06 }}
+                >
+                  <Link
+                    to={link.to}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="mobile-menu-link"
+                  >
+                    <span className="nav-link-index">0{index + 1}</span>
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
 

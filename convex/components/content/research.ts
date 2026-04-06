@@ -1,11 +1,12 @@
-import { query, mutation } from "./_generated/server";
-import { components } from "./_generated/api";
 import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { researchValidator } from "./validators";
 
-export const get = query({
+export const list = query({
   args: {},
+  returns: v.array(researchValidator),
   handler: async (ctx) => {
-    return await ctx.runQuery(components.content.research.list, {});
+    return await ctx.db.query("research").collect();
   },
 });
 
@@ -20,7 +21,8 @@ export const create = mutation({
     galleryImageUrls: v.optional(v.array(v.string())),
     tags: v.optional(v.array(v.string())),
   },
+  returns: v.id("research"),
   handler: async (ctx, args) => {
-    return await ctx.runMutation(components.content.research.create, args);
+    return await ctx.db.insert("research", args);
   },
 });
