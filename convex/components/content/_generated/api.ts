@@ -14,6 +14,7 @@ import type * as labs from "../labs.js";
 import type * as media from "../media.js";
 import type * as research from "../research.js";
 import type * as seed from "../seed.js";
+import type * as seedGenobit from "../seedGenobit.js";
 import type * as team from "../team.js";
 import type * as validators from "../validators.js";
 
@@ -31,6 +32,7 @@ const fullApi: ApiFromModules<{
   media: typeof media;
   research: typeof research;
   seed: typeof seed;
+  seedGenobit: typeof seedGenobit;
   team: typeof team;
   validators: typeof validators;
 }> = anyApi as any;

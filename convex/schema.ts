@@ -6,6 +6,10 @@ export default defineSchema({
   teamMembers: defineTable({
     name: v.string(),
     role: v.string(), // e.g., "President", "Vice President", "Member"
+    career: v.optional(v.string()), // e.g., "ITC", "IBT", "IDM", "MC", "MSc BI"
+    group: v.optional(v.string()), // "directives" | "ndrg" | "proteomics" | "student-community"
+    tenure: v.optional(v.string()), // e.g., "2025-2026"
+    isFirstBoard: v.optional(v.boolean()),
     bio: v.optional(v.string()),
     imageUrl: v.optional(v.string()),
     email: v.optional(v.string()),

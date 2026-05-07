@@ -236,20 +236,33 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         Name
       >;
     };
+    seedGenobit: {
+      seedGenobitTeam: FunctionReference<
+        "mutation",
+        "internal",
+        {},
+        { deleted: number; inserted: number },
+        Name
+      >;
+    };
     team: {
       create: FunctionReference<
         "mutation",
         "internal",
         {
           bio?: string;
+          career?: string;
           email?: string;
           galleryImageUrls?: Array<string>;
           githubUrl?: string;
+          group?: string;
           imageUrl?: string;
+          isFirstBoard?: boolean;
           linkedinUrl?: string;
           name: string;
           order?: number;
           role: string;
+          tenure?: string;
         },
         string,
         Name
@@ -262,14 +275,18 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
           _creationTime: number;
           _id: string;
           bio?: string;
+          career?: string;
           email?: string;
           galleryImageUrls?: Array<string>;
           githubUrl?: string;
+          group?: string;
           imageUrl?: string;
+          isFirstBoard?: boolean;
           linkedinUrl?: string;
           name: string;
           order?: number;
           role: string;
+          tenure?: string;
         }>,
         Name
       >;

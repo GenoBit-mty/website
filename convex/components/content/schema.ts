@@ -5,6 +5,10 @@ export default defineSchema({
   teamMembers: defineTable({
     name: v.string(),
     role: v.string(),
+    career: v.optional(v.string()),
+    group: v.optional(v.string()),
+    tenure: v.optional(v.string()),
+    isFirstBoard: v.optional(v.boolean()),
     bio: v.optional(v.string()),
     imageUrl: v.optional(v.string()),
     galleryImageUrls: v.optional(v.array(v.string())),

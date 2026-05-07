@@ -253,20 +253,32 @@ export declare const components: {
         }
       >;
     };
+    seedGenobit: {
+      seedGenobitTeam: FunctionReference<
+        "mutation",
+        "internal",
+        {},
+        { deleted: number; inserted: number }
+      >;
+    };
     team: {
       create: FunctionReference<
         "mutation",
         "internal",
         {
           bio?: string;
+          career?: string;
           email?: string;
           galleryImageUrls?: Array<string>;
           githubUrl?: string;
+          group?: string;
           imageUrl?: string;
+          isFirstBoard?: boolean;
           linkedinUrl?: string;
           name: string;
           order?: number;
           role: string;
+          tenure?: string;
         },
         string
       >;
@@ -278,14 +290,18 @@ export declare const components: {
           _creationTime: number;
           _id: string;
           bio?: string;
+          career?: string;
           email?: string;
           galleryImageUrls?: Array<string>;
           githubUrl?: string;
+          group?: string;
           imageUrl?: string;
+          isFirstBoard?: boolean;
           linkedinUrl?: string;
           name: string;
           order?: number;
           role: string;
+          tenure?: string;
         }>
       >;
     };

@@ -117,13 +117,20 @@ function HomePage() {
         <section className="page-section">
         <div className="site-container reveal-on-scroll">
           <div className="intro-block">
+            <span className="mono-label">About</span>
             <h2 className="intro-title">
-              IMPULSANDO EL DESCUBRIMIENTO CIENTÍFICO A TRAVÉS DE LA COMPUTACIÓN.
+              BRIDGING BIOLOGY AND TECHNOLOGY THROUGH STUDENT-LED RESEARCH.
             </h2>
             <p className="intro-description">
-              Operamos en la intersección de la genómica, la ciencia de datos y la
-              programación. Somos estudiantes que construyen herramientas para
-              descifrar el lenguaje de la vida.
+              GenoBit: Genomics and Bioinformatics was founded on the shared
+              interest of its members and founders in applying programming and
+              data science responsibly to biology and health. Through diverse
+              research and educational initiatives, GenoBit aims to bridge the
+              gap between biological and technological disciplines as the first
+              Bioinformatics Student-led research organization at Tecnológico de
+              Monterrey. Since bioinformatics is inherently interdisciplinary,
+              collaboration across fields is at the core of our work and the
+              group's central value.
             </p>
           </div>
         </div>

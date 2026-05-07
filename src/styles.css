@@ -1235,6 +1235,168 @@ main {
     color: var(--gb-cyan);
 }
 
+.team-card .team-career {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: rgba(16, 42, 58, 0.55);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+}
+
+.team-photo-fallback {
+    width: 100%;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(0, 112, 111, 0.12), rgba(91, 111, 143, 0.12));
+}
+
+.team-photo-fallback span {
+    font-family: var(--exo);
+    font-weight: 800;
+    font-size: 3rem;
+    opacity: 0.18;
+    color: var(--gb-primary);
+}
+
+.team-section-header {
+    margin-bottom: 32px;
+}
+
+.team-section-header .section-display {
+    margin-top: 8px;
+}
+
+.team-section-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.team-section-pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border: 1px solid var(--gb-primary);
+    color: var(--gb-primary);
+    background: rgba(0, 112, 111, 0.06);
+}
+
+.team-section-description {
+    margin-top: 16px;
+    max-width: 720px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(16, 42, 58, 0.78);
+}
+
+.team-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid rgba(16, 42, 58, 0.12);
+}
+
+.team-list-row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 0.7fr auto;
+    gap: 24px;
+    align-items: baseline;
+    padding: 18px 4px;
+    border-bottom: 1px solid rgba(16, 42, 58, 0.08);
+    transition: background 0.2s ease;
+}
+
+.team-list-row:hover {
+    background: rgba(0, 112, 111, 0.04);
+}
+
+.team-list-name {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.team-list-role {
+    font-size: 0.85rem;
+    color: rgba(16, 42, 58, 0.72);
+}
+
+.team-list-career {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(16, 42, 58, 0.55);
+}
+
+.team-list-link {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gb-steel);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.team-list-link:hover {
+    color: var(--gb-cyan);
+}
+
+@media (max-width: 720px) {
+    .team-list-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+}
+
+/* ═══════════ RESEARCH GROUPS ═══════════ */
+
+.research-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 32px;
+    margin-bottom: 80px;
+}
+
+.research-group-card {
+    border: 1px solid rgba(16, 42, 58, 0.12);
+    background: #ffffff;
+    padding: 36px 32px;
+    transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.research-group-card:hover {
+    border-color: var(--gb-primary);
+    background: rgba(0, 112, 111, 0.04);
+}
+
+.research-group-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    margin: 12px 0 20px;
+    line-height: 1.2;
+}
+
+.research-group-body {
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: rgba(16, 42, 58, 0.78);
+    margin-bottom: 14px;
+}
+
+.research-group-body:last-child {
+    margin-bottom: 0;
+}
+
 /* ═══════════ RESEARCH CARDS ═══════════ */
 
 .research-item {

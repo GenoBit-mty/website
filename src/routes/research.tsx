@@ -30,6 +30,72 @@ function ResearchPage() {
 
       <section className="section-spacing">
         <div className="site-container">
+          <div className="research-groups reveal-on-scroll">
+            <article className="research-group-card stagger-child">
+              <span className="mono-label">Research Group</span>
+              <h2 className="research-group-title">Neurodegenerative Diseases Research Group</h2>
+              <p className="research-group-body">
+                The Neurodegenerative Diseases Research Group within GenoBit
+                focuses on the application of computational methods to better
+                understand, detect, and analyze neurological disorders, with a
+                particular emphasis on Alzheimer's disease.
+              </p>
+              <p className="research-group-body">
+                Our work integrates multimodal data sources, including 3D MRI
+                neuroimaging and biomarkers derived from blood and cerebrospinal
+                fluid (CSF). Through these datasets, we aim to capture both
+                structural changes in the brain and underlying biological
+                signals associated with disease progression.
+              </p>
+              <p className="research-group-body">
+                Currently, we are developing and exploring modern techniques
+                based on machine learning and deep learning to improve early
+                diagnosis and classification of Alzheimer's. This includes
+                working with volumetric brain imaging data to identify patterns
+                of neurodegeneration, as well as leveraging biochemical markers
+                to enhance predictive accuracy.
+              </p>
+              <p className="research-group-body">
+                By combining these approaches, our goal is to contribute to more
+                robust, data-driven diagnostic tools that can support early
+                detection and advance research in neurodegenerative diseases.
+              </p>
+            </article>
+
+            <article className="research-group-card stagger-child">
+              <span className="mono-label">Research Group</span>
+              <h2 className="research-group-title">Proteomics and Molecular Biology Group</h2>
+              <p className="research-group-body">
+                The Proteomics and Molecular Biology Group within GenoBit
+                focuses on bridging molecular biology and computational tools
+                through innovative, accessible learning experiences.
+              </p>
+              <p className="research-group-body">
+                Our work centers on the development of educational technologies
+                that introduce key concepts in protein structure and function,
+                with a particular emphasis on the protein folding problem. To
+                achieve this, we leverage advanced tools such as AlphaFold to
+                explore how protein structures can be predicted and understood
+                through computational methods.
+              </p>
+              <p className="research-group-body">
+                We are currently designing a mobile application built in Swift,
+                aimed at younger students and early-stage learners interested in
+                bioengineering and related fields. This platform integrates
+                interactive visualizations of protein structures with guided
+                lessons in molecular biology and bioinformatics, allowing users
+                to intuitively explore complex concepts through a hands-on
+                approach.
+              </p>
+              <p className="research-group-body">
+                By combining education, visualization, and cutting-edge
+                computational tools, our goal is to make proteomics and
+                bioinformatics more approachable, engaging, and inspiring for
+                the next generation of engineers and scientists.
+              </p>
+            </article>
+          </div>
+
           {papers === undefined ? (
             <div>
               {paperSkeletonKeys.map((key) => (
