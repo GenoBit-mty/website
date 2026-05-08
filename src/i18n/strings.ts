@@ -128,6 +128,15 @@ const dict = {
   "events.register": { es: "Registrarse", en: "Register" },
   "events.placeholder": { es: "Evento", en: "Event" },
   "events.location.alt": { es: "Ubicación", en: "Location" },
+  "events.section.upcoming": { es: "Próximos eventos", en: "Upcoming events" },
+  "events.section.past": { es: "Eventos pasados", en: "Past events" },
+  "events.empty.upcoming": { es: "Próximamente", en: "Coming soon" },
+  "events.detail.back": { es: "← Volver a eventos", en: "← Back to events" },
+  "events.detail.gallery": { es: "Galería", en: "Gallery" },
+  "events.detail.notFound": { es: "Evento no encontrado", en: "Event not found" },
+  "events.detail.lightbox.close": { es: "Cerrar", en: "Close" },
+  "events.detail.lightbox.prev": { es: "Anterior", en: "Previous" },
+  "events.detail.lightbox.next": { es: "Siguiente", en: "Next" },
 
   // Research page
   "research.header.eyebrow": { es: "Producción científica", en: "Scientific output" },
