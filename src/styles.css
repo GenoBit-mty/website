@@ -3215,3 +3215,63 @@ main {
     object-fit: cover;
     border: 1px solid var(--gb-rule);
 }
+
+/* ═══════════ RESEARCH DETAIL — CENTERED COLUMN ═══════════ */
+
+.research-detail-page .page-header-content {
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.research-detail-page .research-detail-back {
+    align-self: flex-start;
+    text-align: left;
+}
+
+.research-detail-page .research-detail-hero {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+}
+
+.research-detail-page .page-title {
+    text-align: center;
+}
+
+.research-detail-page .research-detail-meta {
+    text-align: center;
+}
+
+.research-detail-page .research-tags {
+    justify-content: center;
+}
+
+.research-detail-page .page-lead {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 64ch;
+}
+
+.research-detail-page .section-spacing > .site-container {
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.research-detail-page .research-body-prose {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+
+.research-detail-page .research-detail-actions {
+    text-align: center;
+}
+
+.research-detail-page .research-detail-gallery {
+    text-align: center;
+}

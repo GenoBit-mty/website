@@ -16,7 +16,7 @@ function ResearchDetailPage() {
 
   if (paper === undefined) {
     return (
-      <main>
+      <main className="research-detail-page">
         <div className="page-header">
           <div className="site-container">
             <div className="page-header-content">
@@ -31,7 +31,7 @@ function ResearchDetailPage() {
 
   if (paper === null) {
     return (
-      <main>
+      <main className="research-detail-page">
         <div className="page-header">
           <div className="site-container">
             <div className="page-header-content">
@@ -50,7 +50,7 @@ function ResearchDetailPage() {
   const body = paper.body ? tField(paper.body, lang) : ''
 
   return (
-    <main>
+    <main className="research-detail-page">
       <div className="page-header">
         <div className="site-container">
           <div className="page-header-content">
