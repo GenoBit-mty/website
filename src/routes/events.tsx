@@ -137,7 +137,7 @@ function PastCard({ event }: { event: EventDoc }) {
   const title = tField(event.title, lang)
   return (
     <Link
-      to="/events_/$eventId"
+      to="/events/$eventId"
       params={{ eventId: event._id }}
       className="event-card-compact stagger-child"
     >
