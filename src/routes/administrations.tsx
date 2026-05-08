@@ -1,12 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
+import { useLang } from '@/i18n/LanguageProvider'
+import { tField } from '@/i18n/types'
 
 export const Route = createFileRoute('/administrations')({
   component: AdministrationsPage,
 })
 
 function AdministrationsPage() {
+  const { lang, t } = useLang()
   const admins = useQuery(api.pastAdmin.get)
   const archiveSkeletonKeys = ['archive-a', 'archive-b']
 
@@ -14,16 +17,13 @@ function AdministrationsPage() {
     <main>
       <div className="page-header">
         <div className="site-container">
-          <div className="sticky-type page-watermark">
-            ARCHIVO
-          </div>
+          <div className="sticky-type page-watermark">archivo</div>
           <div className="page-header-content">
-            <span className="mono-label">Legado</span>
-            <h1 className="page-title">Gestiones Pasadas</h1>
-            <p className="page-lead">
-              Legado de liderazgo en GenoBit. Conoce la historia y los líderes
-              que han construido nuestra comunidad.
-            </p>
+            <span className="mono-label">{t('archive.header.eyebrow')}</span>
+            <h1 className="page-title">
+              <em>{t('archive.header.title.pre')}</em> {t('archive.header.title.post')}
+            </h1>
+            <p className="page-lead">{t('archive.header.lead')}</p>
           </div>
         </div>
       </div>
@@ -49,38 +49,38 @@ function AdministrationsPage() {
               ))}
             </div>
           ) : (
-            <div className="reveal-on-scroll">
+            <div className="reveal-on-scroll visible">
               {admins.map((admin) => (
                 <div key={admin._id} className="archive-card stagger-child">
                   <div className="archive-header">
                     <div className="archive-period">{admin.period}</div>
                     <div className="archive-president">
-                      Presidencia: {admin.presidentName}
+                      {t('archive.presidency')} · <em>{admin.presidentName}</em>
                     </div>
                   </div>
                   <div className="archive-body">
                     {admin.imageUrl && (
                       <img
                         src={admin.imageUrl}
-                        alt={`Gestión ${admin.period}`}
+                        alt={`${t('archive.alt')} ${admin.period}`}
                         className="archive-image"
                       />
                     )}
                     <div className="archive-content">
                       {admin.description && (
-                        <div style={{ marginBottom: '28px' }}>
-                          <h3 className="archive-section-title">Logros Destacados</h3>
-                          <p className="archive-desc">{admin.description}</p>
+                        <div>
+                          <h3 className="archive-section-title">{t('archive.highlights')}</h3>
+                          <p className="archive-desc">{tField(admin.description, lang)}</p>
                         </div>
                       )}
 
                       <div>
-                        <h3 className="archive-section-title">Equipo</h3>
+                        <h3 className="archive-section-title">{t('archive.team')}</h3>
                         <div className="members-grid">
                           {admin.members.map((member) => (
-                            <div key={`${member.name}-${member.role}`} className="member-chip">
+                            <div key={`${member.name}-${tField(member.role, lang)}`} className="member-chip">
                               <div className="member-name">{member.name}</div>
-                              <div className="member-role">{member.role}</div>
+                              <div className="member-role">{tField(member.role, lang)}</div>
                             </div>
                           ))}
                         </div>

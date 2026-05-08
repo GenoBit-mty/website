@@ -1,35 +1,43 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Link, createFileRoute } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
-import { DnaHelix } from "@/components/DnaHelix";
+import { DnaHelix } from '@/components/DnaHelix'
 import { TechMarquee } from '@/components/TechMarquee'
+import { useT } from '@/i18n/LanguageProvider'
 
-export const Route = createFileRoute("/")({ component: HomePage });
+export const Route = createFileRoute('/')({ component: HomePage })
 
 function HomePage() {
+  const t = useT()
   const { scrollYProgress } = useScroll()
   const heroOpacity = useTransform(scrollYProgress, [0, 0.35], [1, 0.25])
   const heroScale = useTransform(scrollYProgress, [0, 0.35], [1, 0.9])
   const [dnaMode, setDnaMode] = useState<'hero' | 'content'>('hero')
-  const [isBooting, setIsBooting] = useState(true)
+  const [isBooting, setIsBooting] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return sessionStorage.getItem('genobit-booted') !== '1'
+  })
 
   useEffect(() => {
+    if (!isBooting) return
+
     const timer = window.setTimeout(() => {
       setIsBooting(false)
+      sessionStorage.setItem('genobit-booted', '1')
     }, 1650)
 
     return () => window.clearTimeout(timer)
-  }, [])
+  }, [isBooting])
 
   useEffect(() => {
-    // Parallax effect for hero text
     const handleScroll = () => {
       const scroll = window.pageYOffset
       const parallaxTexts = document.querySelectorAll('.parallax-text')
       parallaxTexts.forEach((text) => {
         const speed = text.getAttribute('data-speed')
         if (speed) {
-          ;(text as HTMLElement).style.transform = `translateX(${scroll * parseFloat(speed) * 0.1}px)`
+          ;(text as HTMLElement).style.transform =
+            `translateX(${scroll * parseFloat(speed) * 0.1}px)`
         }
       })
     }
@@ -55,11 +63,14 @@ function HomePage() {
           <motion.div
             className="boot-overlay"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.5, ease: 'easeInOut' } }}
+            exit={{
+              opacity: 0,
+              transition: { duration: 0.5, ease: 'easeInOut' },
+            }}
           >
             <motion.img
               src="/GenobitLogo.png"
-              alt="GenoBit logo"
+              alt={t('boot.logo.alt')}
               className="boot-logo"
               initial={{ opacity: 0, y: 22, scale: 0.94 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -71,7 +82,7 @@ function HomePage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
             >
-              Inicializando plataforma GenoBit...
+              {t('boot.tagline')}
             </motion.p>
           </motion.div>
         )}
@@ -82,172 +93,145 @@ function HomePage() {
           <DnaHelix />
         </div>
 
-      {/* ===================== HERO ===================== */}
-        <motion.section className="hero-section" style={{ opacity: heroOpacity, scale: heroScale }}>
+        <motion.section
+          className="hero-section"
+          style={{ opacity: heroOpacity, scale: heroScale }}
+        >
           <div className="hero-title-wrap reveal-on-scroll visible">
-          <span className="huge-type parallax-text" data-speed="-1.5">
-            GENO
-          </span>
-          <span className="huge-type outline-text hero-bit parallax-text hero-offset" data-speed="1.5">
-            BIT
-          </span>
-          <p className="hero-subtitle">
-            Grupo Estudiantil de Bioinformática
-          </p>
-          <div className="hero-actions">
-            <Link to="/events" className="editorial-btn filled" data-cursor-hover>
-              Ver próximos eventos
-            </Link>
-            <Link to="/team" className="editorial-btn" data-cursor-hover>
-              Conoce al equipo
-            </Link>
-          </div>
+            <div className="hero-marker-row">
+              <span className="dot" />
+              <span>{t('hero.eyebrow')}</span>
+            </div>
+
+            <div className="hero-name">
+              <span
+                className="huge-type geno-mark parallax-text"
+                data-speed="-0.6"
+              >
+                Geno
+              </span>
+              <span
+                className="huge-type bit-mark parallax-text"
+                data-speed="0.6"
+              >
+                bit
+              </span>
+            </div>
+
+            <p className="hero-subtitle">{t('hero.subtitle')}</p>
+
+            <div className="hero-actions">
+              <Link
+                to="/events"
+                className="editorial-btn filled"
+                data-cursor-hover
+              >
+                {t('hero.cta.events')}
+              </Link>
+              <Link to="/team" className="editorial-btn" data-cursor-hover>
+                {t('hero.cta.team')}
+              </Link>
+            </div>
           </div>
 
-          <div className="hero-placeholder hero-placeholder-left" data-cursor-hover>
-            Placeholder: Logo aliado
-          </div>
-          <div className="hero-placeholder hero-placeholder-right" data-cursor-hover>
-            Placeholder: CTA secundario
+          <div className="hero-meta-strip">
+            <span>
+              <strong>{t('hero.meta.lat')}</strong>
+              {t('hero.meta.location')}
+            </span>
+            <span className="meta-right">
+              <strong>{t('hero.meta.vol')}</strong>
+              {t('hero.meta.sections')}
+            </span>
           </div>
         </motion.section>
 
-      {/* ===================== INTRO ===================== */}
-
         <section className="page-section">
-        <div className="site-container reveal-on-scroll">
-          <div className="intro-block">
-            <span className="mono-label">About</span>
-            <h2 className="intro-title">
-              BRIDGING BIOLOGY AND TECHNOLOGY THROUGH STUDENT-LED RESEARCH.
-            </h2>
-            <p className="intro-description">
-              GenoBit: Genomics and Bioinformatics was founded on the shared
-              interest of its members and founders in applying programming and
-              data science responsibly to biology and health. Through diverse
-              research and educational initiatives, GenoBit aims to bridge the
-              gap between biological and technological disciplines as the first
-              Bioinformatics Student-led research organization at Tecnológico de
-              Monterrey. Since bioinformatics is inherently interdisciplinary,
-              collaboration across fields is at the core of our work and the
-              group's central value.
-            </p>
+          <div className="site-container reveal-on-scroll">
+            <div className="intro-block">
+              <span className="mono-label warm">
+                {t('home.manifesto.label')}
+              </span>
+              <h2 className="intro-title">{t('home.manifesto.title')}</h2>
+              <p className="intro-description">{t('home.manifesto.body')}</p>
+            </div>
           </div>
-        </div>
         </section>
 
-      {/* ===================== MARQUEE ===================== */}
         <TechMarquee />
 
-      {/* ===================== PLACEHOLDERS ===================== */}
-        <section className="page-section placeholder-zone">
-        <div className="site-container placeholder-grid reveal-on-scroll">
-          <article className="layout-placeholder-card stagger-child" data-cursor-hover>
-            <h3>Placeholder: Sponsors</h3>
-            <p>Espacio reservado para logos, convenios o aliados estratégicos.</p>
-          </article>
-          <article className="layout-placeholder-card stagger-child" data-cursor-hover>
-            <h3>Placeholder: Próximo Taller</h3>
-            <p>Tarjeta editable para destacar un taller o convocatoria importante.</p>
-          </article>
-          <article className="layout-placeholder-card stagger-child" data-cursor-hover>
-            <h3>Placeholder: Recurso Descargable</h3>
-            <p>Incluye guía, plantilla o dataset para la comunidad.</p>
-          </article>
-        </div>
-        </section>
-
-      {/* ===================== SECTIONS ===================== */}
         <section className="page-section">
-        <div className="site-container">
-          <div className="sticky-type">EXPLORA</div>
+          <div className="site-container">
+            <div className="sticky-type">{t('home.explore')}</div>
 
-          {/* --- Investigación --- */}
-          <div className="content-row reveal-on-scroll">
-            <div className="content-info">
-              <span className="mono-label">01 / INVESTIGACIÓN</span>
-              <h3 className="section-display">
-                PAPERS
-              </h3>
-              <p className="section-copy">
-                Explora nuestros proyectos, publicaciones y colaboraciones
-                científicas en bioinformática y genómica computacional.
-              </p>
-              <div className="divider" />
-              <Link to="/research" className="editorial-btn">
-                Ver Investigaciones
-              </Link>
+            <div className="content-row reveal-on-scroll">
+              <div className="content-info">
+                <span className="mono-label">{t('home.research.label')}</span>
+                <h3 className="section-display">
+                  <em>{t('home.research.title')}</em>
+                </h3>
+                <p className="section-copy">{t('home.research.body')}</p>
+                <div className="divider" />
+                <Link to="/research" className="editorial-btn">
+                  {t('home.research.cta')}
+                </Link>
+              </div>
+              <div className="content-media">
+                <img
+                  src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&q=80&w=1000"
+                  alt="Investigación en bioinformática"
+                  className="content-image"
+                />
+                <div className="floating-label">adn</div>
+              </div>
             </div>
-            <div className="content-media">
-              <img
-                src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&q=80&w=1000"
-                alt="Investigación en bioinformática — microscopio y muestras de laboratorio"
-                className="content-image"
-              />
-              <div className="floating-label outline-text">
-                ADN
+
+            <div className="content-row reverse reveal-on-scroll">
+              <div className="content-info">
+                <span className="mono-label">{t('home.team.label')}</span>
+                <h3 className="section-display">
+                  <em>{t('home.team.title')}</em>
+                </h3>
+                <p className="section-copy">{t('home.team.body')}</p>
+                <div className="divider" />
+                <Link to="/team" className="editorial-btn">
+                  {t('home.team.cta')}
+                </Link>
+              </div>
+              <div className="content-media">
+                <img
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1000"
+                  alt="Equipo colaborativo"
+                  className="content-image"
+                />
+                <div className="floating-label floating-left">gen</div>
+              </div>
+            </div>
+
+            <div className="content-row reveal-on-scroll">
+              <div className="content-info">
+                <span className="mono-label">{t('home.events.label')}</span>
+                <h3 className="section-display">
+                  <em>{t('home.events.title')}</em>
+                </h3>
+                <p className="section-copy">{t('home.events.body')}</p>
+                <div className="divider" />
+                <Link to="/events" className="editorial-btn">
+                  {t('home.events.cta')}
+                </Link>
+              </div>
+              <div className="content-media">
+                <img
+                  src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1000"
+                  alt="Evento de bioinformática"
+                  className="content-image"
+                />
+                <div className="floating-label">dato</div>
               </div>
             </div>
           </div>
-
-          {/* --- Equipo --- */}
-          <div className="content-row reverse reveal-on-scroll">
-            <div className="content-info">
-              <span className="mono-label">02 / EQUIPO</span>
-              <h3 className="section-display">
-                EQUIPO
-              </h3>
-              <p className="section-copy">
-                Conoce al equipo apasionado que impulsa GenoBit. Estudiantes de
-                diversas disciplinas unidos por la bioinformática.
-              </p>
-              <div className="divider" />
-              <Link to="/team" className="editorial-btn">
-                Conoce al Equipo
-              </Link>
-            </div>
-            <div className="content-media">
-              <img
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1000"
-                alt="Equipo de trabajo colaborando en proyectos de bioinformática"
-                className="content-image"
-              />
-              <div className="floating-label outline-text floating-left">
-                GEN
-              </div>
-            </div>
-          </div>
-
-          {/* --- Eventos --- */}
-          <div className="content-row reveal-on-scroll">
-            <div className="content-info">
-              <span className="mono-label">03 / EVENTOS</span>
-              <h3 className="section-display">
-                LABS
-              </h3>
-              <p className="section-copy">
-                Talleres, conferencias y hackathons. Participa en nuestros
-                eventos y potencia tu formación en bioinformática.
-              </p>
-              <div className="divider" />
-              <Link to="/events" className="editorial-btn">
-                Calendario Completo
-              </Link>
-            </div>
-            <div className="content-media">
-              <img
-                src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1000"
-                alt="Evento de bioinformática — conferencia y networking"
-                className="content-image"
-              />
-              <div className="floating-label outline-text">
-                DATO
-              </div>
-            </div>
-          </div>
-        </div>
         </section>
       </main>
     </>
-  );
+  )
 }

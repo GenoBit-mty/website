@@ -69,8 +69,8 @@ export function DnaHelix() {
     const sphereGeo = new THREE.SphereGeometry(0.18, 12, 12)
     const tubeRadius = 0.06
 
-    const strand1Points: THREE.Vector3[] = []
-    const strand2Points: THREE.Vector3[] = []
+    const strand1Points: Array<THREE.Vector3> = []
+    const strand2Points: Array<THREE.Vector3> = []
 
     for (let i = 0; i <= totalPoints; i++) {
       const t = i / totalPoints
@@ -174,7 +174,7 @@ export function DnaHelix() {
     const particleCount = 36
     const particleGeo = new THREE.BufferGeometry()
     const particlePositions = new Float32Array(particleCount * 3)
-    const particleVelocities: number[] = []
+    const particleVelocities: Array<number> = []
 
     for (let i = 0; i < particleCount; i++) {
       particlePositions[i * 3] = (Math.random() - 0.5) * 24

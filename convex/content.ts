@@ -1,39 +1,22 @@
-import { mutation, query } from "./_generated/server";
-import { components } from "./_generated/api";
 import { v } from "convex/values";
+import { mutation } from "./_generated/server";
+import { requireAdmin } from "./admin";
+import type { Id } from "./_generated/dataModel";
 
 export const generateUploadUrl = mutation({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.runMutation(components.content.media.generateUploadUrl, {});
-  },
-});
-
-export const saveImageAsset = mutation({
-  args: {
-    entityType: v.string(),
-    entityId: v.optional(v.string()),
-    storageId: v.string(),
-    altText: v.optional(v.string()),
-  },
+  args: { sessionToken: v.string() },
   handler: async (ctx, args) => {
-    return await ctx.runMutation(components.content.media.saveAsset, args);
+    await requireAdmin(ctx, args.sessionToken);
+    return await ctx.storage.generateUploadUrl();
   },
 });
 
-export const listImageAssets = query({
-  args: {
-    entityType: v.optional(v.string()),
-    entityId: v.optional(v.string()),
-  },
+export const resolveUploadedUrl = mutation({
+  args: { sessionToken: v.string(), storageId: v.string() },
   handler: async (ctx, args) => {
-    return await ctx.runQuery(components.content.media.listAssets, args);
-  },
-});
-
-export const seedDemoData = mutation({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.runMutation(components.content.seed.seedDemoData, {});
+    await requireAdmin(ctx, args.sessionToken);
+    const url = await ctx.storage.getUrl(args.storageId as Id<"_storage">);
+    if (!url) throw new Error("Uploaded file not found");
+    return { url };
   },
 });

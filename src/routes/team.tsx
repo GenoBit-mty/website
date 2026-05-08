@@ -1,6 +1,9 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
+import type {Bilingual} from '@/i18n/types';
+import { useLang } from '@/i18n/LanguageProvider'
+import {  tField } from '@/i18n/types'
 
 export const Route = createFileRoute('/team')({
   component: TeamPage,
@@ -9,46 +12,24 @@ export const Route = createFileRoute('/team')({
 type TeamMember = {
   _id: string
   name: string
-  role: string
+  role: Bilingual
   career?: string
   group?: string
   tenure?: string
   isFirstBoard?: boolean
-  bio?: string
+  bio?: Bilingual
   imageUrl?: string
   email?: string
   linkedinUrl?: string
   githubUrl?: string
 }
 
-const GROUP_META: Record<string, { label: string; mono: string; description?: string }> = {
-  directives: {
-    label: 'Mesa Directiva',
-    mono: '01 / Mesa Directiva',
-  },
-  ndrg: {
-    label: 'Neurodegenerative Diseases Research Group',
-    mono: '02 / NDRG',
-    description:
-      'The Neurodegenerative Diseases Research Group within GenoBit focuses on the application of computational methods to better understand, detect, and analyze neurological disorders, with a particular emphasis on Alzheimer’s disease.',
-  },
-  proteomics: {
-    label: 'Proteomics and Molecular Biology Group',
-    mono: '03 / Proteomics & Molecular Biology',
-    description:
-      'The Proteomics and Molecular Biology Group within GenoBit focuses on bridging molecular biology and computational tools through innovative, accessible learning experiences.',
-  },
-  'student-community': {
-    label: 'Student Community Coordinators',
-    mono: '04 / Student Community',
-  },
-}
-
 function TeamPage() {
-  const teamMembers = useQuery(api.team.get) as TeamMember[] | undefined
+  const { lang, t } = useLang()
+  const teamMembers = useQuery(api.team.get) as Array<TeamMember> | undefined
   const teamSkeletonKeys = ['team-a', 'team-b', 'team-c', 'team-d', 'team-e', 'team-f']
 
-  const grouped: Record<string, TeamMember[]> = {
+  const grouped: Record<string, Array<TeamMember>> = {
     directives: [],
     ndrg: [],
     proteomics: [],
@@ -57,8 +38,8 @@ function TeamPage() {
   if (teamMembers) {
     for (const m of teamMembers) {
       const key = m.group ?? 'student-community'
-      if (!grouped[key]) grouped[key] = []
-      grouped[key].push(m)
+      const bucket = grouped[key] ?? (grouped[key] = [])
+      bucket.push(m)
     }
   }
 
@@ -69,14 +50,13 @@ function TeamPage() {
     <main>
       <div className="page-header">
         <div className="site-container">
-          <div className="sticky-type page-watermark">EQUIPO</div>
+          <div className="sticky-type page-watermark">equipo</div>
           <div className="page-header-content">
-            <span className="mono-label">Nuestro equipo</span>
-            <h1 className="page-title">Conoce al Equipo</h1>
-            <p className="page-lead">
-              El equipo apasionado detrás de GenoBit. Estudiantes de diversas
-              disciplinas unidos por la bioinformática.
-            </p>
+            <span className="mono-label">{t('team.header.eyebrow')}</span>
+            <h1 className="page-title">
+              {t('team.header.title.pre')} <em>{t('team.header.title.em')}</em>
+            </h1>
+            <p className="page-lead">{t('team.header.lead')}</p>
           </div>
         </div>
       </div>
@@ -99,29 +79,28 @@ function TeamPage() {
         </section>
       ) : (
         <>
-          {/* Mesa Directiva */}
           <section className="section-spacing">
             <div className="site-container">
-              <div className="team-section-header reveal-on-scroll">
-                <span className="mono-label">{GROUP_META.directives.mono}</span>
-                <h2 className="section-display">{GROUP_META.directives.label}</h2>
+              <div className="team-section-header reveal-on-scroll visible">
+                <span className="mono-label">— 01 / {t('team.group.directives')}</span>
+                <h2 className="section-display">{t('team.group.directives')}</h2>
                 <p className="team-section-meta">
                   {isFirstBoard && (
-                    <span className="team-section-pill">Primera Mesa Directiva</span>
+                    <span className="team-section-pill">{t('team.firstBoard')}</span>
                   )}
                   {directiveTenure && (
-                    <span className="team-section-pill">Gestión {directiveTenure}</span>
+                    <span className="team-section-pill">{t('team.tenure')} {directiveTenure}</span>
                   )}
                 </p>
               </div>
 
-              <div className="team-grid reveal-on-scroll">
+              <div className="team-grid reveal-on-scroll visible">
                 {grouped.directives.map((member, idx) => (
                   <div key={member._id} className="team-card stagger-child">
                     {member.imageUrl ? (
                       <img
                         src={member.imageUrl}
-                        alt={`${member.name} — ${member.role}`}
+                        alt={`${member.name} — ${tField(member.role, lang)}`}
                         className="team-photo"
                       />
                     ) : (
@@ -131,12 +110,12 @@ function TeamPage() {
                     )}
                     <div className="team-info">
                       <div className="team-name">{member.name}</div>
-                      <div className="team-role">{member.role}</div>
+                      <div className="team-role">{tField(member.role, lang)}</div>
                       {member.career && (
                         <div className="team-career">{member.career}</div>
                       )}
                       <div className="team-links">
-                        {member.email && <a href={`mailto:${member.email}`}>Email</a>}
+                        {member.email && <a href={`mailto:${member.email}`}>{t('team.email')}</a>}
                         {member.linkedinUrl && (
                           <a href={member.linkedinUrl} target="_blank" rel="noopener noreferrer">
                             LinkedIn
@@ -150,24 +129,21 @@ function TeamPage() {
             </div>
           </section>
 
-          {/* NDRG (with photos & links) */}
           <section className="section-spacing">
             <div className="site-container">
-              <div className="team-section-header reveal-on-scroll">
-                <span className="mono-label">{GROUP_META.ndrg.mono}</span>
-                <h2 className="section-display">{GROUP_META.ndrg.label}</h2>
-                {GROUP_META.ndrg.description && (
-                  <p className="team-section-description">{GROUP_META.ndrg.description}</p>
-                )}
+              <div className="team-section-header reveal-on-scroll visible">
+                <span className="mono-label">— 02 / NDRG</span>
+                <h2 className="section-display">{t('team.group.ndrg')}</h2>
+                <p className="team-section-description">{t('team.group.ndrg.body')}</p>
               </div>
 
-              <div className="team-grid reveal-on-scroll">
+              <div className="team-grid reveal-on-scroll visible">
                 {grouped.ndrg.map((member, idx) => (
                   <div key={member._id} className="team-card stagger-child">
                     {member.imageUrl ? (
                       <img
                         src={member.imageUrl}
-                        alt={`${member.name} — ${member.role}`}
+                        alt={`${member.name} — ${tField(member.role, lang)}`}
                         className="team-photo"
                       />
                     ) : (
@@ -177,7 +153,7 @@ function TeamPage() {
                     )}
                     <div className="team-info">
                       <div className="team-name">{member.name}</div>
-                      <div className="team-role">{member.role}</div>
+                      <div className="team-role">{tField(member.role, lang)}</div>
                       {member.career && (
                         <div className="team-career">{member.career}</div>
                       )}
@@ -195,22 +171,19 @@ function TeamPage() {
             </div>
           </section>
 
-          {/* Proteomics & Molecular Biology */}
           <section className="section-spacing">
             <div className="site-container">
-              <div className="team-section-header reveal-on-scroll">
-                <span className="mono-label">{GROUP_META.proteomics.mono}</span>
-                <h2 className="section-display">{GROUP_META.proteomics.label}</h2>
-                {GROUP_META.proteomics.description && (
-                  <p className="team-section-description">{GROUP_META.proteomics.description}</p>
-                )}
+              <div className="team-section-header reveal-on-scroll visible">
+                <span className="mono-label">— 03 / Proteomics</span>
+                <h2 className="section-display">{t('team.group.proteomics')}</h2>
+                <p className="team-section-description">{t('team.group.proteomics.body')}</p>
               </div>
 
-              <ul className="team-list reveal-on-scroll">
+              <ul className="team-list reveal-on-scroll visible">
                 {grouped.proteomics.map((member) => (
                   <li key={member._id} className="team-list-row stagger-child">
                     <div className="team-list-name">{member.name}</div>
-                    <div className="team-list-role">{member.role}</div>
+                    <div className="team-list-role">{tField(member.role, lang)}</div>
                     {member.career && (
                       <div className="team-list-career">{member.career}</div>
                     )}
@@ -230,19 +203,18 @@ function TeamPage() {
             </div>
           </section>
 
-          {/* Student Community Coordinators */}
           <section className="section-spacing">
             <div className="site-container">
-              <div className="team-section-header reveal-on-scroll">
-                <span className="mono-label">{GROUP_META['student-community'].mono}</span>
-                <h2 className="section-display">{GROUP_META['student-community'].label}</h2>
+              <div className="team-section-header reveal-on-scroll visible">
+                <span className="mono-label">— 04 / Community</span>
+                <h2 className="section-display">{t('team.group.studentCommunity')}</h2>
               </div>
 
-              <ul className="team-list reveal-on-scroll">
+              <ul className="team-list reveal-on-scroll visible">
                 {grouped['student-community'].map((member) => (
                   <li key={member._id} className="team-list-row stagger-child">
                     <div className="team-list-name">{member.name}</div>
-                    <div className="team-list-role">{member.role}</div>
+                    <div className="team-list-role">{tField(member.role, lang)}</div>
                     {member.career && (
                       <div className="team-list-career">{member.career}</div>
                     )}
@@ -262,20 +234,16 @@ function TeamPage() {
             </div>
           </section>
 
-          {/* Past boards */}
           <section className="section-spacing">
             <div className="site-container">
-              <div className="content-row reveal-on-scroll">
+              <div className="content-row reveal-on-scroll visible">
                 <div className="content-info">
-                  <span className="mono-label">Archivo / Gestiones</span>
-                  <h3 className="section-display">Mesas Pasadas</h3>
-                  <p className="section-copy">
-                    Conoce a las mesas directivas anteriores que han construido
-                    el legado de GenoBit.
-                  </p>
+                  <span className="mono-label">{t('team.pastBoards.label')}</span>
+                  <h3 className="section-display">{t('team.pastBoards.title')}</h3>
+                  <p className="section-copy">{t('team.pastBoards.body')}</p>
                   <div className="divider" />
                   <Link to="/administrations" className="editorial-btn">
-                    Ver Gestiones Pasadas
+                    {t('team.pastBoards.cta')}
                   </Link>
                 </div>
               </div>

@@ -1,11 +1,18 @@
-import { HeadContent, Link, Outlet, Scripts, createRootRoute, useRouter } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Link,
+  Outlet,
+  Scripts,
+  createRootRoute,
+  useRouter,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ConvexClientProvider } from '../components/ConvexClientProvider'
 import { useEffect, useState } from 'react'
-import { SmoothScroll } from '../components/SmoothScroll'
+import { ConvexClientProvider } from '../components/ConvexClientProvider'
 import { CustomCursor } from '../components/CustomCursor'
+import { LanguageProvider, useLang } from '../i18n/LanguageProvider'
 
 import appCss from '../styles.css?url'
 
@@ -24,7 +31,8 @@ export const Route = createRootRoute({
       },
       {
         name: 'description',
-        content: 'Impulsando el descubrimiento científico a través de la computación. Grupo estudiantil de bioinformática.',
+        content:
+          'Impulsando el descubrimiento científico a través de la computación. Grupo estudiantil de bioinformática.',
       },
     ],
     links: [
@@ -50,15 +58,46 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <ConvexClientProvider>
-      <RootDocument>
-        <Outlet />
-      </RootDocument>
+      <LanguageProvider>
+        <RootDocument>
+          <Outlet />
+        </RootDocument>
+      </LanguageProvider>
     </ConvexClientProvider>
+  )
+}
+
+function LangToggle({ compact = false }: { compact?: boolean }) {
+  const { lang, setLang, t } = useLang()
+  return (
+    <div className="lang-toggle" role="group" aria-label={t('lang.label')}>
+      <button
+        type="button"
+        className={`lang-toggle-btn ${lang === 'es' ? 'is-active' : ''}`}
+        onClick={() => setLang('es')}
+        aria-pressed={lang === 'es'}
+      >
+        ES
+      </button>
+      <span className="lang-toggle-sep" aria-hidden="true">
+        ·
+      </span>
+      <button
+        type="button"
+        className={`lang-toggle-btn ${lang === 'en' ? 'is-active' : ''}`}
+        onClick={() => setLang('en')}
+        aria-pressed={lang === 'en'}
+      >
+        EN
+      </button>
+      {compact ? null : null}
+    </div>
   )
 }
 
 function SiteNav() {
   const router = useRouter()
+  const { t } = useLang()
   const currentPath = router.state.location.pathname
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -77,11 +116,11 @@ function SiteNav() {
   }, [])
 
   const links = [
-    { to: '/', label: 'Inicio' },
-    { to: '/team', label: 'Equipo' },
-    { to: '/research', label: 'Investigación' },
-    { to: '/events', label: 'Eventos' },
-    { to: '/administrations', label: 'Archivo' },
+    { to: '/', label: t('nav.home') },
+    { to: '/team', label: t('nav.team') },
+    { to: '/research', label: t('nav.research') },
+    { to: '/events', label: t('nav.events') },
+    { to: '/administrations', label: t('nav.archive') },
   ] as const
 
   return (
@@ -92,9 +131,18 @@ function SiteNav() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className={`site-nav ${isScrolled ? 'scrolled' : ''}`}
       >
-        <nav className="site-nav-shell" aria-label="Navegación principal">
-          <Link to="/" className="site-logo" aria-label="GenoBit - Inicio" onClick={() => setIsMenuOpen(false)}>
-            <img src="/GenobitLogo.png" alt="Logo GenoBit" className="site-logo-mark" />
+        <nav className="site-nav-shell" aria-label={t('nav.main.label')}>
+          <Link
+            to="/"
+            className="site-logo"
+            aria-label={t('nav.logo.alt')}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <img
+              src="/GenobitLogo.png"
+              alt={t('nav.logo.alt')}
+              className="site-logo-mark"
+            />
           </Link>
 
           <ul className="nav-links desktop-nav">
@@ -114,17 +162,32 @@ function SiteNav() {
             ))}
           </ul>
 
-          <button
-            type="button"
-            onClick={() => setIsMenuOpen((prev) => !prev)}
-            className="mobile-menu-btn"
-            aria-label="Abrir menu"
-            aria-expanded={isMenuOpen}
-          >
-            <motion.span animate={isMenuOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }} />
-            <motion.span animate={isMenuOpen ? { opacity: 0, x: -8 } : { opacity: 1, x: 0 }} />
-            <motion.span animate={isMenuOpen ? { rotate: -45, y: -5 } : { rotate: 0, y: 0 }} />
-          </button>
+          <div className="nav-actions">
+            <LangToggle />
+            <button
+              type="button"
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+              className="mobile-menu-btn"
+              aria-label={t('nav.menu.open')}
+              aria-expanded={isMenuOpen}
+            >
+              <motion.span
+                animate={
+                  isMenuOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }
+                }
+              />
+              <motion.span
+                animate={
+                  isMenuOpen ? { opacity: 0, x: -8 } : { opacity: 1, x: 0 }
+                }
+              />
+              <motion.span
+                animate={
+                  isMenuOpen ? { rotate: -45, y: -5 } : { rotate: 0, y: 0 }
+                }
+              />
+            </button>
+          </div>
         </nav>
       </motion.header>
 
@@ -137,7 +200,7 @@ function SiteNav() {
             transition={{ duration: 0.25 }}
             className="mobile-menu-overlay"
           >
-            <nav className="mobile-menu-panel" aria-label="Menu movil">
+            <nav className="mobile-menu-panel" aria-label={t('nav.menu.label')}>
               {links.map((link, index) => (
                 <motion.div
                   key={link.to}
@@ -156,6 +219,9 @@ function SiteNav() {
                   </Link>
                 </motion.div>
               ))}
+              <div className="mobile-menu-lang">
+                <LangToggle />
+              </div>
             </nav>
           </motion.div>
         )}
@@ -165,24 +231,33 @@ function SiteNav() {
 }
 
 function SiteFooter() {
+  const { t } = useLang()
   return (
     <footer className="site-footer">
       <div className="site-container">
         <div className="footer-cta">
-          <a href="mailto:genobit@university.edu">ÚNETE — HOY</a>
+          <a href="mailto:genobit@university.edu">{t('footer.cta')}</a>
         </div>
         <div className="divider" />
         <div className="footer-bottom">
           <div>© {new Date().getFullYear()} GENOBIT</div>
           <div className="footer-links">
-            <a href="https://github.com/genobit" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://github.com/orgs/GenoBit-mty"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               GitHub
             </a>
-            <a href="https://instagram.com/genobit" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://instagram.com/genobit.mty"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Instagram
             </a>
           </div>
-          <div>BIOINFORMÁTICA · GENÓMICA</div>
+          <div>{t('footer.tagline')}</div>
         </div>
       </div>
     </footer>
@@ -191,7 +266,7 @@ function SiteFooter() {
 
 function ScrollRevealProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    const intersectionObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
@@ -199,19 +274,37 @@ function ScrollRevealProvider({ children }: { children: React.ReactNode }) {
           }
         })
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     )
 
-    // Observe after a short delay to let the page render
-    const timeout = setTimeout(() => {
-      document.querySelectorAll('.reveal-on-scroll').forEach((el) => {
-        observer.observe(el)
-      })
-    }, 100)
+    const observed = new WeakSet<Element>()
+    const observe = (el: Element) => {
+      if (observed.has(el)) return
+      observed.add(el)
+      intersectionObserver.observe(el)
+    }
+
+    const observeAll = () => {
+      document.querySelectorAll('.reveal-on-scroll').forEach(observe)
+    }
+
+    observeAll()
+
+    const mutationObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (!(node instanceof Element)) continue
+          if (node.classList.contains('reveal-on-scroll')) observe(node)
+          node.querySelectorAll('.reveal-on-scroll').forEach(observe)
+        }
+      }
+    })
+
+    mutationObserver.observe(document.body, { childList: true, subtree: true })
 
     return () => {
-      clearTimeout(timeout)
-      observer.disconnect()
+      intersectionObserver.disconnect()
+      mutationObserver.disconnect()
     }
   }, [])
 
@@ -219,21 +312,24 @@ function ScrollRevealProvider({ children }: { children: React.ReactNode }) {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
+  const isAdmin = router.state.location.pathname.startsWith('/admin')
+
   return (
     <html lang="es">
       <head>
         <HeadContent />
       </head>
       <body>
-        <div className="site-noise" aria-hidden="true" />
-        <CustomCursor />
-        <SmoothScroll>
-          <SiteNav />
-          <ScrollRevealProvider>
-            {children}
-          </ScrollRevealProvider>
-          <SiteFooter />
-        </SmoothScroll>
+        {!isAdmin && <div className="site-noise" aria-hidden="true" />}
+        {!isAdmin && <CustomCursor />}
+        {!isAdmin && <SiteNav />}
+        {isAdmin ? (
+          children
+        ) : (
+          <ScrollRevealProvider>{children}</ScrollRevealProvider>
+        )}
+        {!isAdmin && <SiteFooter />}
         <TanStackDevtools
           config={{
             position: 'bottom-right',

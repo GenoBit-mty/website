@@ -201,6 +201,7 @@ body.cursor-on * {
     font-weight: 700;
     font-variation-settings: "opsz" 96, "wdth" 90, "wght" 720;
     font-size: clamp(4.5rem, 14vw, 16rem);
+    font-size-adjust: cap-height 0.72;
     line-height: 0.86;
     letter-spacing: -0.055em;
     text-transform: uppercase;
