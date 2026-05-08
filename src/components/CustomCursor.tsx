@@ -20,17 +20,16 @@ export function CustomCursor() {
   }, [])
 
   useEffect(() => {
+    if (!enabled) return
+
+    document.body.classList.add('cursor-on')
+
     const handleMove = (event: MouseEvent) => {
       pointerX.set(event.clientX)
       pointerY.set(event.clientY)
     }
 
-    const handleEnter = () => {
-      document.body.classList.add('cursor-on')
-    }
-
     const handleLeave = () => {
-      document.body.classList.remove('cursor-on')
       pointerX.set(-100)
       pointerY.set(-100)
     }
@@ -47,20 +46,18 @@ export function CustomCursor() {
     })
 
     window.addEventListener('mousemove', handleMove)
-    window.addEventListener('mouseenter', handleEnter)
     window.addEventListener('mouseleave', handleLeave)
 
     return () => {
+      document.body.classList.remove('cursor-on')
       window.removeEventListener('mousemove', handleMove)
-      window.removeEventListener('mouseenter', handleEnter)
       window.removeEventListener('mouseleave', handleLeave)
       nodes.forEach((node) => {
         node.removeEventListener('mouseenter', onHoverStart)
         node.removeEventListener('mouseleave', onHoverEnd)
       })
-      document.body.classList.remove('cursor-on')
     }
-  }, [pointerX, pointerY])
+  }, [enabled, pointerX, pointerY])
 
   if (!enabled) return null
 
