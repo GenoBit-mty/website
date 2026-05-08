@@ -5,7 +5,7 @@ import { useLang } from '@/i18n/LanguageProvider'
 import { tField } from '@/i18n/types'
 import { MarkdownBody } from '@/components/MarkdownBody'
 
-export const Route = createFileRoute('/research/$slug')({
+export const Route = createFileRoute('/research_/$slug')({
   component: ResearchDetailPage,
 })
 
