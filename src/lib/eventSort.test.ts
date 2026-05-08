@@ -14,7 +14,7 @@ describe('dateKey', () => {
 })
 
 describe('partitionEvents', () => {
-  const events: TestEvent[] = [
+  const events: Array<TestEvent> = [
     { _id: 'a', date: '2026-07-18 · 09:00', isUpcoming: true },
     { _id: 'b', date: '2026-05-12 · 18:00', isUpcoming: true },
     { _id: 'c', date: '2026-06-03 · 19:30', isUpcoming: true },

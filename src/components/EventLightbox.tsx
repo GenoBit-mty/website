@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 
 type Props = {
-  images: string[]
+  images: Array<string>
   activeIndex: number | null
   onClose: () => void
   onPrev: () => void

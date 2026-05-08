@@ -1,10 +1,10 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
+import type { Doc } from '../../convex/_generated/dataModel'
 import { useLang } from '@/i18n/LanguageProvider'
 import { tField } from '@/i18n/types'
 import { partitionEvents } from '@/lib/eventSort'
-import type { Doc } from '../../convex/_generated/dataModel'
 
 export const Route = createFileRoute('/events')({
   component: EventsPage,
@@ -194,7 +194,8 @@ function EventsPage() {
   }
 
   const { upcoming, past } = partitionEvents(events)
-  const [hero, ...restUpcoming] = upcoming
+  const hero = upcoming.at(0)
+  const restUpcoming = upcoming.slice(1)
 
   return (
     <main>
