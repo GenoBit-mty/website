@@ -4,7 +4,7 @@ export function dateKey(s: string): string {
 }
 
 /** Splits events into upcoming (asc) and past (desc). Requires `date` to start with YYYY-MM-DD. */
-export function partitionEvents<T extends { date: string; isUpcoming: boolean }>(
+export function partitionEvents<T extends { date: string; isUpcoming?: boolean }>(
   events: ReadonlyArray<T>,
 ): { upcoming: T[]; past: T[] } {
   const upcoming: T[] = []

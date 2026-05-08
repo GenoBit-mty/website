@@ -193,8 +193,7 @@ function EventsPage() {
     )
   }
 
-  const normalized = events.map((e) => ({ ...e, isUpcoming: e.isUpcoming ?? false }))
-  const { upcoming, past } = partitionEvents(normalized)
+  const { upcoming, past } = partitionEvents(events)
   const [hero, ...restUpcoming] = upcoming
 
   return (
