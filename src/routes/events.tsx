@@ -73,7 +73,7 @@ function HeroCard({ event }: { event: EventDoc }) {
         {paragraphs.map((para, i) => (
           <p key={i} className="event-desc">{para}</p>
         ))}
-        {event.registrationUrl && (
+        {event.requiresRegistration && event.registrationUrl && (
           <div style={{ marginTop: '12px' }}>
             <a
               href={event.registrationUrl}
@@ -114,7 +114,7 @@ function UpcomingGridCard({ event }: { event: EventDoc }) {
         {paragraphs.map((para, i) => (
           <p key={i} className="event-desc">{para}</p>
         ))}
-        {event.registrationUrl && (
+        {event.requiresRegistration && event.registrationUrl && (
           <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
             <a
               href={event.registrationUrl}

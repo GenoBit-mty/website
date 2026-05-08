@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { ConvexClientProvider } from '../components/ConvexClientProvider'
 import { CustomCursor } from '../components/CustomCursor'
@@ -105,7 +105,7 @@ function SiteNav() {
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 40)
     onScroll()
-    window.addEventListener('scroll', onScroll)
+    window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
@@ -125,7 +125,7 @@ function SiteNav() {
 
   return (
     <>
-      <motion.header
+      <m.header
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
@@ -171,17 +171,17 @@ function SiteNav() {
               aria-label={t('nav.menu.open')}
               aria-expanded={isMenuOpen}
             >
-              <motion.span
+              <m.span
                 animate={
                   isMenuOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }
                 }
               />
-              <motion.span
+              <m.span
                 animate={
                   isMenuOpen ? { opacity: 0, x: -8 } : { opacity: 1, x: 0 }
                 }
               />
-              <motion.span
+              <m.span
                 animate={
                   isMenuOpen ? { rotate: -45, y: -5 } : { rotate: 0, y: 0 }
                 }
@@ -189,11 +189,11 @@ function SiteNav() {
             </button>
           </div>
         </nav>
-      </motion.header>
+      </m.header>
 
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -202,7 +202,7 @@ function SiteNav() {
           >
             <nav className="mobile-menu-panel" aria-label={t('nav.menu.label')}>
               {links.map((link, index) => (
-                <motion.div
+                <m.div
                   key={link.to}
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -217,13 +217,13 @@ function SiteNav() {
                     <span className="nav-link-index">0{index + 1}</span>
                     {link.label}
                   </Link>
-                </motion.div>
+                </m.div>
               ))}
               <div className="mobile-menu-lang">
                 <LangToggle />
               </div>
             </nav>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>
@@ -321,15 +321,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {!isAdmin && <div className="site-noise" aria-hidden="true" />}
-        {!isAdmin && <CustomCursor />}
-        {!isAdmin && <SiteNav />}
-        {isAdmin ? (
-          children
-        ) : (
-          <ScrollRevealProvider>{children}</ScrollRevealProvider>
-        )}
-        {!isAdmin && <SiteFooter />}
+        <LazyMotion features={domAnimation} strict>
+          {!isAdmin && <div className="site-noise" aria-hidden="true" />}
+          {!isAdmin && <CustomCursor />}
+          {!isAdmin && <SiteNav />}
+          {isAdmin ? (
+            children
+          ) : (
+            <ScrollRevealProvider>{children}</ScrollRevealProvider>
+          )}
+          {!isAdmin && <SiteFooter />}
+        </LazyMotion>
         <TanStackDevtools
           config={{
             position: 'bottom-right',

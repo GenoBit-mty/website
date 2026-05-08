@@ -31,6 +31,7 @@ const eventSchema = z.object({
   location: z.string().min(1, 'Requerido'),
   imageUrl: z.string().optional(),
   galleryImageUrls: z.array(z.string()).optional(),
+  requiresRegistration: z.boolean().optional(),
   registrationUrl: z.string().optional(),
   isUpcoming: z.boolean().optional(),
 })
@@ -45,6 +46,7 @@ const defaultValues: EventFormValues = {
   location: '',
   imageUrl: '',
   galleryImageUrls: [],
+  requiresRegistration: false,
   registrationUrl: '',
   isUpcoming: false,
 }
@@ -60,6 +62,7 @@ type EventDoc = {
   location: string
   imageUrl?: string
   galleryImageUrls?: Array<string>
+  requiresRegistration?: boolean
   registrationUrl?: string
   isUpcoming?: boolean
 }
@@ -88,7 +91,10 @@ function AdminEventsPage() {
             location: values.location,
             imageUrl: cleanOptional(values.imageUrl),
             galleryImageUrls: values.galleryImageUrls?.length ? values.galleryImageUrls : undefined,
-            registrationUrl: cleanOptional(values.registrationUrl),
+            requiresRegistration: values.requiresRegistration,
+            registrationUrl: values.requiresRegistration
+              ? cleanOptional(values.registrationUrl)
+              : undefined,
             isUpcoming: values.isUpcoming,
           }
           try {
@@ -193,6 +199,7 @@ function EventForm({
           location: initial.location,
           imageUrl: initial.imageUrl ?? '',
           galleryImageUrls: initial.galleryImageUrls ?? [],
+          requiresRegistration: initial.requiresRegistration ?? Boolean(initial.registrationUrl),
           registrationUrl: initial.registrationUrl ?? '',
           isUpcoming: initial.isUpcoming ?? false,
         }
@@ -212,7 +219,14 @@ function EventForm({
         <FieldText<EventFormValues> name="date" label="Fecha" placeholder="2026-04-12 · 18:00" required />
         <FieldText<EventFormValues> name="location" label="Lugar" required />
         <FieldText<EventFormValues> name="category" label="Categoría" />
-        <FieldText<EventFormValues> name="registrationUrl" label="URL de registro" />
+        <FieldCheckbox<EventFormValues>
+          name="requiresRegistration"
+          label="Requiere registro"
+          description="Si está activado, se mostrará un botón de Registrarse con el enlace que indiques."
+        />
+        {form.watch('requiresRegistration') && (
+          <FieldText<EventFormValues> name="registrationUrl" label="URL de registro" />
+        )}
         <FieldCheckbox<EventFormValues> name="isUpcoming" label="Es un evento próximo" />
         <FieldImageUpload<EventFormValues> name="imageUrl" label="Imagen principal" control={form.control} />
         <FieldGallery<EventFormValues> name="galleryImageUrls" label="Galería" control={form.control} />

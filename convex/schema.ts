@@ -46,6 +46,7 @@ export default defineSchema({
     location: v.string(),
     imageUrl: v.optional(v.string()),
     galleryImageUrls: v.optional(v.array(v.string())),
+    requiresRegistration: v.optional(v.boolean()),
     registrationUrl: v.optional(v.string()),
     isUpcoming: v.optional(v.boolean()),
   }),

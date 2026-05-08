@@ -9,6 +9,9 @@ type Props = {
   labels: { close: string; prev: string; next: string }
 }
 
+const BTN_BASE =
+  'absolute flex h-11 w-11 cursor-pointer items-center justify-center border border-[var(--gb-ink)] bg-[var(--gb-paper)] font-mono text-base text-[var(--gb-ink)] transition-colors duration-200 hover:bg-[var(--gb-ink)] hover:text-[var(--gb-paper)]'
+
 export function EventLightbox({ images, activeIndex, onClose, onPrev, onNext, labels }: Props) {
   useEffect(() => {
     if (activeIndex === null) return
@@ -33,20 +36,25 @@ export function EventLightbox({ images, activeIndex, onClose, onPrev, onNext, la
 
   return (
     <div
-      className="event-lightbox-backdrop"
-      onClick={onClose}
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-[rgba(14,23,23,0.92)] p-[clamp(16px,4vw,48px)]"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onClose()
+      }}
       role="dialog"
       aria-modal="true"
+      tabIndex={-1}
     >
       <img
         src={src}
         alt=""
-        className="event-lightbox-image"
-        onClick={(e) => e.stopPropagation()}
+        className="max-h-full max-w-full object-contain shadow-[0_20px_60px_-30px_rgba(0,0,0,0.6)]"
       />
       <button
         type="button"
-        className="event-lightbox-btn close"
+        className={`${BTN_BASE} right-6 top-6`}
         onClick={(e) => {
           e.stopPropagation()
           onClose()
@@ -59,7 +67,7 @@ export function EventLightbox({ images, activeIndex, onClose, onPrev, onNext, la
         <>
           <button
             type="button"
-            className="event-lightbox-btn prev"
+            className={`${BTN_BASE} left-6 top-1/2 -translate-y-1/2`}
             onClick={(e) => {
               e.stopPropagation()
               onPrev()
@@ -70,7 +78,7 @@ export function EventLightbox({ images, activeIndex, onClose, onPrev, onNext, la
           </button>
           <button
             type="button"
-            className="event-lightbox-btn next"
+            className={`${BTN_BASE} right-6 top-1/2 -translate-y-1/2`}
             onClick={(e) => {
               e.stopPropagation()
               onNext()

@@ -11,6 +11,9 @@ export const Route = createFileRoute('/events_/$eventId')({
   component: EventDetailPage,
 })
 
+const BACK_LINK =
+  'mb-8 inline-block font-mono text-[0.72rem] uppercase tracking-[0.16em] text-[var(--gb-ink-mute)] no-underline transition-colors duration-200 hover:text-[var(--gb-ink)]'
+
 function LocationIcon({ title }: { title: string }) {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -30,11 +33,17 @@ function EventDetailPage() {
   if (event === undefined) {
     return (
       <main>
+        <div className="page-header">
+          <div className="site-container">
+            <div className="page-header-content">
+              <div className="skeleton" style={{ width: '120px', height: '14px' }} />
+              <div className="skeleton" style={{ width: '70%', height: '48px' }} />
+              <div className="skeleton" style={{ width: '40%', height: '14px' }} />
+            </div>
+          </div>
+        </div>
         <section className="section-spacing">
           <div className="site-container">
-            <div className="skeleton" style={{ width: '120px', height: '14px', marginBottom: '32px' }} />
-            <div className="skeleton" style={{ width: '70%', height: '40px', marginBottom: '16px' }} />
-            <div className="skeleton" style={{ width: '40%', height: '14px', marginBottom: '32px' }} />
             <div className="skeleton" style={{ width: '100%', height: '420px' }} />
           </div>
         </section>
@@ -45,12 +54,16 @@ function EventDetailPage() {
   if (event === null) {
     return (
       <main>
-        <section className="section-spacing">
+        <div className="page-header">
           <div className="site-container">
-            <Link to="/events" className="event-detail-back">{t('events.detail.back')}</Link>
-            <h1 className="page-title"><em>{t('events.detail.notFound')}</em></h1>
+            <div className="page-header-content">
+              <Link to="/events" className={BACK_LINK}>
+                {t('events.detail.back')}
+              </Link>
+              <h1 className="page-title"><em>{t('events.detail.notFound')}</em></h1>
+            </div>
           </div>
-        </section>
+        </div>
       </main>
     )
   }
@@ -69,36 +82,48 @@ function EventDetailPage() {
 
   return (
     <main>
+      <div className="page-header">
+        <div className="site-container">
+          <div className="page-header-content">
+            <Link to="/events" className={BACK_LINK}>
+              {t('events.detail.back')}
+            </Link>
+
+            {event.category && <span className="mono-label">{event.category}</span>}
+            <h1 className="page-title">
+              <em>{title}</em>
+            </h1>
+
+            <div className="mb-6 flex flex-wrap items-center gap-4">
+              <span className={`editorial-badge ${event.isUpcoming ? 'active' : ''}`}>
+                {event.isUpcoming ? t('events.upcoming') : t('events.past')}
+              </span>
+              <span className="font-[family-name:var(--mono)] text-[0.7rem] tracking-[0.16em] uppercase text-[var(--gb-ink-mute)]">
+                {event.date}
+              </span>
+              <span className="font-[family-name:var(--mono)] text-[0.7rem] tracking-[0.14em] uppercase text-[var(--gb-ink-mute)] inline-flex items-center gap-1.5">
+                <LocationIcon title={t('events.location.alt')} />
+                {event.location}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <section className="section-spacing">
         <div className="site-container">
-          <Link to="/events" className="event-detail-back">{t('events.detail.back')}</Link>
-
-          {event.category && <span className="mono-label">{event.category}</span>}
-          <h1 className="page-title" style={{ marginTop: '12px' }}>
-            <em>{title}</em>
-          </h1>
-
-          <div className="event-detail-meta">
-            <span className={`editorial-badge ${event.isUpcoming ? 'active' : ''}`}>
-              {event.isUpcoming ? t('events.upcoming') : t('events.past')}
-            </span>
-            <span style={{ fontFamily: 'var(--mono)', fontSize: '0.7rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--gb-ink-mute)' }}>
-              {event.date}
-            </span>
-            <span style={{ fontFamily: 'var(--mono)', fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--gb-ink-mute)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <LocationIcon title={t('events.location.alt')} />
-              {event.location}
-            </span>
-          </div>
-
           {event.imageUrl && (
-            <img src={event.imageUrl} alt={title} className="event-detail-hero-image" />
+            <img
+              src={event.imageUrl}
+              alt={title}
+              className="mb-[clamp(28px,3vw,40px)] max-h-[520px] w-full border border-[var(--gb-rule)] object-cover"
+            />
           )}
 
           {paragraphs.length > 0 && (
-            <div className="event-detail-description">
-              {paragraphs.map((para, i) => (
-                <p key={i}>{para}</p>
+            <div className="mb-[clamp(40px,5vw,64px)] max-w-[68ch] font-sans text-[1.05rem] leading-[1.7] text-[var(--gb-ink-soft)] [&_p+p]:mt-[1.1em]">
+              {paragraphs.map((para) => (
+                <p key={`${event._id}-${para}`}>{para}</p>
               ))}
             </div>
           )}
@@ -106,16 +131,16 @@ function EventDetailPage() {
           {showGallery && (
             <div>
               <h2 className="events-section-heading">{t('events.detail.gallery')}</h2>
-              <div className="event-gallery-grid">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">
                 {gallery.map((src, i) => (
                   <button
                     key={src + i}
                     type="button"
-                    className="event-gallery-thumb"
+                    className="aspect-[4/3] cursor-pointer overflow-hidden border border-[var(--gb-rule)] bg-transparent p-0 transition-[border-color_300ms_ease,transform_400ms_cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-[var(--gb-ink)]"
                     onClick={() => setActiveIndex(i)}
                     aria-label={`${title} — ${i + 1}`}
                   >
-                    <img src={src} alt="" />
+                    <img src={src} alt="" className="block h-full w-full object-cover" />
                   </button>
                 ))}
               </div>

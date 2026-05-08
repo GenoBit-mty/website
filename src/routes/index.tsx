@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
+import { AnimatePresence, m, useScroll, useTransform } from 'framer-motion'
 import { DnaHelix } from '@/components/DnaHelix'
 import { TechMarquee } from '@/components/TechMarquee'
 import { useT } from '@/i18n/LanguageProvider'
@@ -41,7 +41,7 @@ function HomePage() {
         }
       })
     }
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -52,7 +52,7 @@ function HomePage() {
     }
 
     onScroll()
-    window.addEventListener('scroll', onScroll)
+    window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
@@ -60,7 +60,7 @@ function HomePage() {
     <>
       <AnimatePresence>
         {isBooting && (
-          <motion.div
+          <m.div
             className="boot-overlay"
             initial={{ opacity: 1 }}
             exit={{
@@ -68,7 +68,7 @@ function HomePage() {
               transition: { duration: 0.5, ease: 'easeInOut' },
             }}
           >
-            <motion.img
+            <m.img
               src="/GenobitLogo.png"
               alt={t('boot.logo.alt')}
               className="boot-logo"
@@ -76,15 +76,15 @@ function HomePage() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.65, ease: 'easeOut' }}
             />
-            <motion.p
+            <m.p
               className="boot-label"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
             >
               {t('boot.tagline')}
-            </motion.p>
-          </motion.div>
+            </m.p>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -93,7 +93,7 @@ function HomePage() {
           <DnaHelix />
         </div>
 
-        <motion.section
+        <m.section
           className="hero-section"
           style={{ opacity: heroOpacity, scale: heroScale }}
         >
@@ -144,7 +144,7 @@ function HomePage() {
               {t('hero.meta.sections')}
             </span>
           </div>
-        </motion.section>
+        </m.section>
 
         <section className="page-section">
           <div className="site-container reveal-on-scroll">

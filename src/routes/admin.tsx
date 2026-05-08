@@ -71,7 +71,7 @@ function AdminLayout() {
 
   if (isLogin) {
     return (
-      <div className="admin-shell admin-login-shell">
+      <div className="flex min-h-screen items-center justify-center bg-[#faf8f5] p-6 font-sans text-[#0e1717]">
         <Outlet />
         <Toaster position="top-right" richColors />
       </div>

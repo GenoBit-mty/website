@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { motion, useMotionValue, useSpring } from 'framer-motion'
+import { m, useMotionValue, useSpring } from 'framer-motion'
 
 export function CustomCursor() {
   const [enabled, setEnabled] = useState(false)
@@ -14,10 +14,12 @@ export function CustomCursor() {
   useEffect(() => {
     const media = window.matchMedia('(hover: hover) and (pointer: fine)')
     setEnabled(media.matches)
-
     const handleMedia = (event: MediaQueryListEvent) => setEnabled(event.matches)
     media.addEventListener('change', handleMedia)
+    return () => media.removeEventListener('change', handleMedia)
+  }, [])
 
+  useEffect(() => {
     const handleMove = (event: MouseEvent) => {
       pointerX.set(event.clientX)
       pointerY.set(event.clientY)
@@ -38,27 +40,21 @@ export function CustomCursor() {
     const onHoverStart = () => setHovered(true)
     const onHoverEnd = () => setHovered(false)
 
-    const bindHoverTargets = () => {
-      const nodes = document.querySelectorAll<HTMLElement>(selectors)
-      nodes.forEach((node) => {
-        node.addEventListener('mouseenter', onHoverStart)
-        node.addEventListener('mouseleave', onHoverEnd)
-      })
-      return nodes
-    }
+    const nodes = document.querySelectorAll<HTMLElement>(selectors)
+    nodes.forEach((node) => {
+      node.addEventListener('mouseenter', onHoverStart)
+      node.addEventListener('mouseleave', onHoverEnd)
+    })
 
     window.addEventListener('mousemove', handleMove)
     window.addEventListener('mouseenter', handleEnter)
     window.addEventListener('mouseleave', handleLeave)
 
-    const hoverTargets = bindHoverTargets()
-
     return () => {
-      media.removeEventListener('change', handleMedia)
       window.removeEventListener('mousemove', handleMove)
       window.removeEventListener('mouseenter', handleEnter)
       window.removeEventListener('mouseleave', handleLeave)
-      hoverTargets.forEach((node) => {
+      nodes.forEach((node) => {
         node.removeEventListener('mouseenter', onHoverStart)
         node.removeEventListener('mouseleave', onHoverEnd)
       })
@@ -70,16 +66,16 @@ export function CustomCursor() {
 
   return (
     <>
-      <motion.div
+      <m.div
         aria-hidden="true"
-        className="cursor-dot"
+        className="pointer-events-none fixed -ml-1 -mt-1 z-[1001] hidden h-2 w-2 rounded-full bg-[var(--gb-primary)] will-change-transform md:block motion-reduce:hidden print:hidden"
         style={{ x: ringX, y: ringY }}
         animate={{ scale: hovered ? 0 : 1, opacity: hovered ? 0 : 1 }}
         transition={{ duration: 0.18 }}
       />
-      <motion.div
+      <m.div
         aria-hidden="true"
-        className="cursor-ring"
+        className="pointer-events-none fixed -ml-[21px] -mt-[21px] z-[1000] hidden h-[42px] w-[42px] rounded-full border border-[rgba(48,219,235,0.9)] shadow-[0_0_22px_rgba(48,219,235,0.22)] will-change-transform md:block motion-reduce:hidden print:hidden"
         style={{ x: ringX, y: ringY }}
         animate={{ scale: hovered ? 1 : 0.2, opacity: hovered ? 1 : 0.5 }}
         transition={{ duration: 0.2 }}

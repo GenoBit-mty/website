@@ -36,22 +36,29 @@ function LoginPage() {
   }
 
   return (
-    <div className="admin-login-card">
-      <h1 className="admin-login-title">Panel de administración</h1>
-      <p className="admin-login-sub">Introduce el código de acceso.</p>
-      <form onSubmit={onSubmit} className="admin-login-form">
+    <div className="w-full max-w-[380px] rounded-lg border border-[rgba(14,23,23,0.08)] bg-white px-10 py-12 shadow-[0_6px_24px_rgba(14,23,23,0.08)]">
+      <h1 className="mb-1 text-xl font-semibold">Panel de administración</h1>
+      <p className="mb-6 text-[13px] opacity-60">Introduce el código de acceso.</p>
+      <form onSubmit={onSubmit} className="flex flex-col gap-3">
         <input
           type="password"
-          autoFocus
           autoComplete="current-password"
           value={passcode}
           onChange={(e) => setPasscode(e.target.value)}
           placeholder="••••••••"
-          className="admin-login-input"
+          className="rounded border border-[rgba(14,23,23,0.15)] bg-white px-3 py-2.5 text-sm text-[#0e1717] focus:border-[#00706f] focus:outline-none"
           required
         />
-        {error && <p className="admin-login-error" role="alert">{error}</p>}
-        <button type="submit" className="admin-login-submit" disabled={submitting}>
+        {error && (
+          <p className="text-[13px] text-[#b03b2c]" role="alert">
+            {error}
+          </p>
+        )}
+        <button
+          type="submit"
+          className="cursor-pointer rounded border-0 bg-[#00706f] px-4 py-2.5 text-sm text-white hover:bg-[#005958] disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={submitting}
+        >
           {submitting ? 'Verificando…' : 'Entrar'}
         </button>
       </form>

@@ -39,8 +39,8 @@ function ResearchPage() {
                 <article key={lab._id} className="research-group-card stagger-child">
                   <span className="mono-label">— Group {String(idx + 1).padStart(2, '0')}</span>
                   <h2 className="research-group-title">{tField(lab.title, lang)}</h2>
-                  {paragraphs.map((para, i) => (
-                    <p key={i} className="research-group-body">{para}</p>
+                  {paragraphs.map((para) => (
+                    <p key={`${lab._id}-${para}`} className="research-group-body">{para}</p>
                   ))}
                 </article>
               )
@@ -56,10 +56,12 @@ function ResearchPage() {
             <div>
               {paperSkeletonKeys.map((key) => (
                 <div key={key} className="research-item">
-                  <div className="skeleton" style={{ width: '200px', height: '140px', flexShrink: 0 }} />
-                  <div style={{ flex: 1 }}>
-                    <div className="skeleton" style={{ width: '80%', height: '24px', marginBottom: '12px' }} />
-                    <div className="skeleton" style={{ width: '50%', height: '14px', marginBottom: '12px' }} />
+                  <div className="skeleton" style={{ width: '60px', height: '14px' }} />
+                  <div className="skeleton" style={{ width: '100%', height: '160px' }} />
+                  <div>
+                    <div className="skeleton" style={{ width: '40%', height: '18px', marginBottom: '14px' }} />
+                    <div className="skeleton" style={{ width: '85%', height: '28px', marginBottom: '12px' }} />
+                    <div className="skeleton" style={{ width: '55%', height: '14px', marginBottom: '16px' }} />
                     <div className="skeleton" style={{ width: '100%', height: '60px' }} />
                   </div>
                 </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
@@ -49,23 +49,6 @@ export function FieldText<TForm extends FieldValues>(
         type={props.type ?? 'text'}
         placeholder={props.placeholder}
         className="admin-input"
-        {...register(props.name)}
-      />
-    </FieldShell>
-  )
-}
-
-export function FieldTextarea<TForm extends FieldValues>(
-  props: BaseFieldProps<TForm> & { rows?: number; placeholder?: string },
-) {
-  const { register, formState } = useFormContext<TForm>()
-  const error = (formState.errors[props.name as string] as { message?: string } | undefined)?.message
-  return (
-    <FieldShell label={props.label} description={props.description} required={props.required} error={error}>
-      <textarea
-        rows={props.rows ?? 4}
-        placeholder={props.placeholder}
-        className="admin-textarea"
         {...register(props.name)}
       />
     </FieldShell>
@@ -198,6 +181,68 @@ export function FieldBilingualTextarea<TForm extends FieldValues>(
   )
 }
 
+function StringListEditor({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: Array<string>
+  onChange: (next: Array<string>) => void
+  placeholder?: string
+}) {
+  const idPrefix = useId()
+  const counterRef = useRef(0)
+  const idsRef = useRef<Array<string>>([])
+  while (idsRef.current.length < value.length) {
+    counterRef.current += 1
+    idsRef.current.push(`${idPrefix}-${counterRef.current}`)
+  }
+  if (idsRef.current.length > value.length) {
+    idsRef.current = idsRef.current.slice(0, value.length)
+  }
+  const ids = idsRef.current
+
+  const setAt = (target: number, str: string) => {
+    onChange(value.map((v, i) => (i === target ? str : v)))
+  }
+  const removeAt = (target: number) => {
+    idsRef.current = ids.filter((_, i) => i !== target)
+    onChange(value.filter((_, i) => i !== target))
+  }
+  const append = () => {
+    counterRef.current += 1
+    idsRef.current = [...ids, `${idPrefix}-${counterRef.current}`]
+    onChange([...value, ''])
+  }
+
+  return (
+    <div className="admin-list">
+      {value.map((item, idx) => (
+        <div key={ids[idx]} className="admin-list-row">
+          <input
+            type="text"
+            className="admin-input"
+            value={item}
+            onChange={(e) => setAt(idx, e.target.value)}
+            placeholder={placeholder}
+          />
+          <button
+            type="button"
+            className="admin-list-remove"
+            onClick={() => removeAt(idx)}
+            aria-label="Eliminar"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <button type="button" className="admin-list-add" onClick={append}>
+        + Agregar
+      </button>
+    </div>
+  )
+}
+
 export function FieldStringList<TForm extends FieldValues>(
   props: BaseFieldProps<TForm> & { placeholder?: string; control: Control<TForm> },
 ) {
@@ -205,52 +250,22 @@ export function FieldStringList<TForm extends FieldValues>(
     <Controller
       control={props.control}
       name={props.name}
-      render={({ field, fieldState }) => {
-        const value = (field.value as Array<string> | undefined) ?? []
-        const update = (next: Array<string>) =>
-          field.onChange(next as PathValue<TForm, Path<TForm>>)
-        return (
-          <FieldShell
-            label={props.label}
-            description={props.description}
-            required={props.required}
-            error={fieldState.error?.message}
-          >
-            <div className="admin-list">
-              {value.map((item, idx) => (
-                <div key={idx} className="admin-list-row">
-                  <input
-                    type="text"
-                    className="admin-input"
-                    value={item}
-                    onChange={(e) => {
-                      const next = [...value]
-                      next[idx] = e.target.value
-                      update(next)
-                    }}
-                    placeholder={props.placeholder}
-                  />
-                  <button
-                    type="button"
-                    className="admin-list-remove"
-                    onClick={() => update(value.filter((_, i) => i !== idx))}
-                    aria-label="Eliminar"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                className="admin-list-add"
-                onClick={() => update([...value, ''])}
-              >
-                + Agregar
-              </button>
-            </div>
-          </FieldShell>
-        )
-      }}
+      render={({ field, fieldState }) => (
+        <FieldShell
+          label={props.label}
+          description={props.description}
+          required={props.required}
+          error={fieldState.error?.message}
+        >
+          <StringListEditor
+            value={(field.value as Array<string> | undefined) ?? []}
+            onChange={(next) =>
+              field.onChange(next as PathValue<TForm, Path<TForm>>)
+            }
+            placeholder={props.placeholder}
+          />
+        </FieldShell>
+      )}
     />
   )
 }
@@ -395,7 +410,7 @@ export function FieldGallery<TForm extends FieldValues>(
           >
             <div className="admin-gallery">
               {value.map((url, idx) => (
-                <div key={idx} className="admin-gallery-tile">
+                <div key={url} className="admin-gallery-tile">
                   <img src={url} alt="" />
                   <button
                     type="button"

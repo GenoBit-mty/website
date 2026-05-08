@@ -237,40 +237,40 @@ function AdminForm({
 
           {fields.map((field, idx) => (
             <div key={field.id} className="admin-member-row">
-              <div className="admin-field">
-                <label className="admin-field-label">Nombre</label>
+              <label className="admin-field">
+                <span className="admin-field-label">Nombre</span>
                 <input
                   className="admin-input"
                   {...form.register(`members.${idx}.name`)}
                 />
-              </div>
-              <div className="admin-field">
-                <label className="admin-field-label">Rol (ES)</label>
+              </label>
+              <label className="admin-field">
+                <span className="admin-field-label">Rol (ES)</span>
                 <input
                   className="admin-input"
                   {...form.register(`members.${idx}.role.es`)}
                 />
-              </div>
-              <div className="admin-field">
-                <label className="admin-field-label">Rol (EN)</label>
+              </label>
+              <label className="admin-field">
+                <span className="admin-field-label">Rol (EN)</span>
                 <input
                   className="admin-input"
                   {...form.register(`members.${idx}.role.en`)}
                 />
-              </div>
+              </label>
               <Controller
                 control={form.control}
                 name={`members.${idx}.imageUrl`}
                 render={({ field: imgField }) => (
-                  <div className="admin-field">
-                    <label className="admin-field-label">Imagen URL</label>
+                  <label className="admin-field">
+                    <span className="admin-field-label">Imagen URL</span>
                     <input
                       className="admin-input"
                       value={imgField.value ?? ''}
                       onChange={imgField.onChange}
                       placeholder="https://…"
                     />
-                  </div>
+                  </label>
                 )}
               />
               <div className="admin-member-actions">
