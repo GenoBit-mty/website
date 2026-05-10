@@ -236,7 +236,7 @@ function SiteFooter() {
     <footer className="site-footer">
       <div className="site-container">
         <div className="footer-cta">
-          <a href="mailto:genobit.mty@gmail.com">{t('footer.cta')}</a>
+          <Link to="/join">{t('footer.cta')}</Link>
         </div>
         <div className="divider" />
         <div className="footer-bottom">

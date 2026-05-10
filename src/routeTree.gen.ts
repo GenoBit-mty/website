@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as ResearchRouteImport } from './routes/research'
+import { Route as JoinRouteImport } from './routes/join'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as AdministrationsRouteImport } from './routes/administrations'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -35,6 +36,11 @@ const TeamRoute = TeamRouteImport.update({
 const ResearchRoute = ResearchRouteImport.update({
   id: '/research',
   path: '/research',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinRoute = JoinRouteImport.update({
+  id: '/join',
+  path: '/join',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EventsRoute = EventsRouteImport.update({
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/administrations': typeof AdministrationsRoute
   '/events': typeof EventsRoute
+  '/join': typeof JoinRoute
   '/research': typeof ResearchRoute
   '/team': typeof TeamRoute
   '/admin/admins': typeof AdminAdminsRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/administrations': typeof AdministrationsRoute
   '/events': typeof EventsRoute
+  '/join': typeof JoinRoute
   '/research': typeof ResearchRoute
   '/team': typeof TeamRoute
   '/admin/admins': typeof AdminAdminsRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/administrations': typeof AdministrationsRoute
   '/events': typeof EventsRoute
+  '/join': typeof JoinRoute
   '/research': typeof ResearchRoute
   '/team': typeof TeamRoute
   '/admin/admins': typeof AdminAdminsRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/administrations'
     | '/events'
+    | '/join'
     | '/research'
     | '/team'
     | '/admin/admins'
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
     | '/'
     | '/administrations'
     | '/events'
+    | '/join'
     | '/research'
     | '/team'
     | '/admin/admins'
@@ -214,6 +225,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/administrations'
     | '/events'
+    | '/join'
     | '/research'
     | '/team'
     | '/admin/admins'
@@ -234,6 +246,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AdministrationsRoute: typeof AdministrationsRoute
   EventsRoute: typeof EventsRoute
+  JoinRoute: typeof JoinRoute
   ResearchRoute: typeof ResearchRoute
   TeamRoute: typeof TeamRoute
   EventsEventIdRoute: typeof EventsEventIdRoute
@@ -254,6 +267,13 @@ declare module '@tanstack/react-router' {
       path: '/research'
       fullPath: '/research'
       preLoaderRoute: typeof ResearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join': {
+      id: '/join'
+      path: '/join'
+      fullPath: '/join'
+      preLoaderRoute: typeof JoinRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/events': {
@@ -395,6 +415,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AdministrationsRoute: AdministrationsRoute,
   EventsRoute: EventsRoute,
+  JoinRoute: JoinRoute,
   ResearchRoute: ResearchRoute,
   TeamRoute: TeamRoute,
   EventsEventIdRoute: EventsEventIdRoute,
