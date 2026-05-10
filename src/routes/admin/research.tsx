@@ -15,6 +15,7 @@ import {
   FieldImageUpload,
   FieldStringList,
   FieldText,
+  FormSection,
 } from '@/components/admin/fields'
 import { slugify } from '../../../convex/lib/slug'
 
@@ -239,37 +240,49 @@ function ResearchForm({
         </div>
       </div>
       <form className="admin-form-shell" onSubmit={form.handleSubmit(onSubmit)}>
-        <FieldBilingualText<ResearchFormValues> name="title" label="Título" required />
-        <FieldBilingualTextarea<ResearchFormValues> name="description" label="Descripción" required rows={4} />
-        <div onInput={() => setSlugDirty(true)}>
-          <FieldText<ResearchFormValues>
-            name="slug"
-            label="Slug (URL)"
-            placeholder="ej. pipeline-somatic-variants"
+        <FormSection title="Datos básicos">
+          <FieldBilingualText<ResearchFormValues> name="title" label="Título" required />
+          <FieldStringList<ResearchFormValues>
+            name="authors"
+            label="Autores"
             required
+            control={form.control}
           />
-        </div>
-        <FieldBilingualTextarea<ResearchFormValues>
-          name="body"
-          label="Cuerpo (Markdown)"
-          description="Markdown soportado: encabezados, listas, enlaces, imágenes."
-          rows={16}
-        />
-        <FieldStringList<ResearchFormValues>
-          name="authors"
-          label="Autores"
-          required
-          control={form.control}
-        />
-        <FieldText<ResearchFormValues> name="publicationDate" label="Fecha de publicación" placeholder="2026" />
-        <FieldText<ResearchFormValues> name="url" label="URL" />
-        <FieldStringList<ResearchFormValues>
-          name="tags"
-          label="Tags"
-          control={form.control}
-        />
-        <FieldImageUpload<ResearchFormValues> name="imageUrl" label="Imagen" control={form.control} />
-        <FieldGallery<ResearchFormValues> name="galleryImageUrls" label="Galería" control={form.control} />
+          <FieldText<ResearchFormValues> name="publicationDate" label="Fecha de publicación" placeholder="2026" />
+          <FieldText<ResearchFormValues> name="url" label="URL" />
+          <div onInput={() => setSlugDirty(true)}>
+            <FieldText<ResearchFormValues>
+              name="slug"
+              label="Slug (URL)"
+              placeholder="ej. pipeline-somatic-variants"
+              required
+            />
+          </div>
+        </FormSection>
+
+        <FormSection title="Contenido">
+          <FieldBilingualTextarea<ResearchFormValues> name="description" label="Descripción" required rows={4} />
+          <FieldBilingualTextarea<ResearchFormValues>
+            name="body"
+            label="Cuerpo (Markdown)"
+            description="Markdown soportado: encabezados, listas, enlaces, imágenes."
+            rows={16}
+          />
+          <FieldImageUpload<ResearchFormValues> name="imageUrl" label="Imagen" control={form.control} />
+        </FormSection>
+
+        <FormSection title="Galería">
+          <FieldGallery<ResearchFormValues> name="galleryImageUrls" label="Galería" control={form.control} />
+        </FormSection>
+
+        <FormSection title="Etiquetas">
+          <FieldStringList<ResearchFormValues>
+            name="tags"
+            label="Tags"
+            control={form.control}
+          />
+        </FormSection>
+
         <div className="admin-form-actions">
           <button type="button" className="admin-btn admin-btn-secondary" onClick={onCancel}>
             Cancelar
