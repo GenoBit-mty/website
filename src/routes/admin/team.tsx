@@ -35,6 +35,7 @@ import {
   FieldNumber,
   FieldSelect,
   FieldText,
+  FormSection,
 } from '@/components/admin/fields'
 
 const teamSearchSchema = z.object({
@@ -523,32 +524,47 @@ function TeamForm({
         className="admin-form-shell"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <FieldText<TeamFormValues> name="name" label="Nombre" required />
-        <FieldBilingualText<TeamFormValues> name="role" label="Rol" required />
-        <FieldSelect<TeamFormValues>
-          name="group"
-          label="Grupo"
-          required
-          options={GROUPS}
-        />
-        <FieldText<TeamFormValues> name="career" label="Carrera" />
-        <FieldText<TeamFormValues> name="tenure" label="Gestión" placeholder="2025-2026" />
-        <FieldCheckbox<TeamFormValues> name="isFirstBoard" label="Primera Mesa Directiva" />
-        <FieldBilingualTextarea<TeamFormValues> name="bio" label="Biografía" />
-        <FieldImageUpload<TeamFormValues>
-          name="imageUrl"
-          label="Foto principal"
-          control={form.control}
-        />
-        <FieldGallery<TeamFormValues>
-          name="galleryImageUrls"
-          label="Galería"
-          control={form.control}
-        />
-        <FieldText<TeamFormValues> name="email" label="Email" type="email" />
-        <FieldText<TeamFormValues> name="linkedinUrl" label="LinkedIn" />
-        <FieldText<TeamFormValues> name="githubUrl" label="GitHub" />
-        <FieldNumber<TeamFormValues> name="order" label="Orden" />
+        <FormSection title="Datos básicos">
+          <FieldText<TeamFormValues> name="name" label="Nombre" required />
+          <FieldBilingualText<TeamFormValues> name="role" label="Rol" required />
+          <FieldSelect<TeamFormValues>
+            name="group"
+            label="Grupo"
+            required
+            options={GROUPS}
+          />
+          <FieldText<TeamFormValues> name="career" label="Carrera" />
+          <FieldText<TeamFormValues> name="tenure" label="Gestión" placeholder="2025-2026" />
+          <FieldCheckbox<TeamFormValues>
+            name="isFirstBoard"
+            label="Primera Mesa Directiva"
+          />
+        </FormSection>
+
+        <FormSection title="Perfil">
+          <FieldImageUpload<TeamFormValues>
+            name="imageUrl"
+            label="Foto principal"
+            control={form.control}
+          />
+          <FieldBilingualTextarea<TeamFormValues> name="bio" label="Biografía" />
+        </FormSection>
+
+        <FormSection title="Galería">
+          <FieldGallery<TeamFormValues>
+            name="galleryImageUrls"
+            label="Galería"
+            control={form.control}
+          />
+        </FormSection>
+
+        <FormSection title="Contacto y orden">
+          <FieldText<TeamFormValues> name="email" label="Email" type="email" />
+          <FieldText<TeamFormValues> name="linkedinUrl" label="LinkedIn" />
+          <FieldText<TeamFormValues> name="githubUrl" label="GitHub" />
+          <FieldNumber<TeamFormValues> name="order" label="Orden" />
+        </FormSection>
+
         <div className="admin-form-actions">
           <button type="button" className="admin-btn admin-btn-secondary" onClick={onCancel}>
             Cancelar
