@@ -15,6 +15,7 @@ import {
   FieldImageUpload,
   FieldStringList,
   FieldText,
+  FormSection,
 } from '@/components/admin/fields'
 
 export const Route = createFileRoute('/admin/labs')({
@@ -205,18 +206,24 @@ function LabForm({
         </div>
       </div>
       <form className="admin-form-shell" onSubmit={form.handleSubmit(onSubmit)}>
-        <FieldBilingualText<LabFormValues> name="title" label="Título" required />
-        <FieldBilingualText<LabFormValues> name="summary" label="Resumen" required />
-        <FieldBilingualTextarea<LabFormValues> name="description" label="Descripción" rows={4} />
-        <FieldStringList<LabFormValues>
-          name="focusAreas"
-          label="Áreas de enfoque"
-          control={form.control}
-        />
-        <FieldText<LabFormValues> name="lead" label="Líder" />
-        <FieldText<LabFormValues> name="location" label="Ubicación" />
-        <FieldImageUpload<LabFormValues> name="imageUrl" label="Imagen" control={form.control} />
-        <FieldGallery<LabFormValues> name="galleryImageUrls" label="Galería" control={form.control} />
+        <FormSection title="Datos básicos">
+          <FieldBilingualText<LabFormValues> name="title" label="Título" required />
+          <FieldText<LabFormValues> name="lead" label="Líder" />
+          <FieldText<LabFormValues> name="location" label="Ubicación" />
+          <FieldStringList<LabFormValues>
+            name="focusAreas"
+            label="Áreas de enfoque"
+            control={form.control}
+          />
+        </FormSection>
+        <FormSection title="Contenido">
+          <FieldBilingualText<LabFormValues> name="summary" label="Resumen" required />
+          <FieldBilingualTextarea<LabFormValues> name="description" label="Descripción" rows={4} />
+          <FieldImageUpload<LabFormValues> name="imageUrl" label="Imagen" control={form.control} />
+        </FormSection>
+        <FormSection title="Galería">
+          <FieldGallery<LabFormValues> name="galleryImageUrls" label="Galería" control={form.control} />
+        </FormSection>
         <div className="admin-form-actions">
           <button type="button" className="admin-btn admin-btn-secondary" onClick={onCancel}>
             Cancelar
