@@ -15,12 +15,14 @@
 ## File Structure
 
 **Create:**
+
 - `convex/lib/slug.ts` — pure `slugify()` helper, shared by Convex functions and the admin client (which already imports from the convex directory via relative paths).
 - `convex/lib/slug.test.ts` — Vitest unit tests for `slugify`.
 - `src/routes/research.$slug.tsx` — paper detail page (file-based TanStack route).
 - `src/components/MarkdownBody.tsx` — small wrapper around `react-markdown` + `remark-gfm` with editorial prose styling class.
 
 **Modify:**
+
 - `convex/schema.ts` — add `slug` (optional string), `body` (optional bilingual), and `by_slug` index on `research` table.
 - `convex/research.ts` — add `getBySlug`, `backfillSlugs`; update `create`, `update`, and `seedResearch` for slug + body.
 - `src/routes/admin/research.tsx` — add slug and body fields to the form, Zod schema, and submit payload.
@@ -34,6 +36,7 @@
 ## Task 1: Add `slugify` helper with tests
 
 **Files:**
+
 - Create: `convex/lib/slug.ts`
 - Create: `convex/lib/slug.test.ts`
 
@@ -109,6 +112,7 @@ git commit -m "feat(convex): add slugify helper with tests"
 ## Task 2: Extend `research` schema with slug and body
 
 **Files:**
+
 - Modify: `convex/schema.ts`
 
 - [ ] **Step 1: Update the `research` table definition**
@@ -147,6 +151,7 @@ git commit -m "feat(convex): add slug and body fields to research table"
 ## Task 3: Add `getBySlug` query
 
 **Files:**
+
 - Modify: `convex/research.ts`
 
 - [ ] **Step 1: Add the query**
@@ -158,11 +163,11 @@ export const getBySlug = query({
   args: { slug: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("research")
-      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
-      .unique();
+      .query('research')
+      .withIndex('by_slug', (q) => q.eq('slug', args.slug))
+      .unique()
   },
-});
+})
 ```
 
 - [ ] **Step 2: Verify Convex regenerates types**
@@ -182,6 +187,7 @@ git commit -m "feat(convex): add getBySlug query for research"
 ## Task 4: Update `create` and `update` mutations to accept slug, body, and enforce uniqueness
 
 **Files:**
+
 - Modify: `convex/research.ts`
 
 - [ ] **Step 1: Update the `create` mutation**
@@ -204,18 +210,18 @@ export const create = mutation({
     tags: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx, args.sessionToken);
-    const { sessionToken, ...rest } = args;
+    await requireAdmin(ctx, args.sessionToken)
+    const { sessionToken, ...rest } = args
     const collision = await ctx.db
-      .query("research")
-      .withIndex("by_slug", (q) => q.eq("slug", rest.slug))
-      .unique();
+      .query('research')
+      .withIndex('by_slug', (q) => q.eq('slug', rest.slug))
+      .unique()
     if (collision) {
-      throw new Error(`Slug "${rest.slug}" ya está en uso`);
+      throw new Error(`Slug "${rest.slug}" ya está en uso`)
     }
-    return await ctx.db.insert("research", rest);
+    return await ctx.db.insert('research', rest)
   },
-});
+})
 ```
 
 - [ ] **Step 2: Update the `update` mutation**
@@ -226,7 +232,7 @@ Replace the existing `update` mutation with:
 export const update = mutation({
   args: {
     sessionToken: v.string(),
-    id: v.id("research"),
+    id: v.id('research'),
     title: v.optional(bilingualValidator),
     description: v.optional(bilingualValidator),
     body: v.optional(bilingualValidator),
@@ -239,21 +245,21 @@ export const update = mutation({
     tags: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    await requireAdmin(ctx, args.sessionToken);
-    const { sessionToken, id, ...rest } = args;
+    await requireAdmin(ctx, args.sessionToken)
+    const { sessionToken, id, ...rest } = args
     if (rest.slug) {
       const collision = await ctx.db
-        .query("research")
-        .withIndex("by_slug", (q) => q.eq("slug", rest.slug as string))
-        .unique();
+        .query('research')
+        .withIndex('by_slug', (q) => q.eq('slug', rest.slug as string))
+        .unique()
       if (collision && collision._id !== id) {
-        throw new Error(`Slug "${rest.slug}" ya está en uso`);
+        throw new Error(`Slug "${rest.slug}" ya está en uso`)
       }
     }
-    await ctx.db.patch(id, rest);
-    return null;
+    await ctx.db.patch(id, rest)
+    return null
   },
-});
+})
 ```
 
 - [ ] **Step 3: Sync Convex types**
@@ -273,6 +279,7 @@ git commit -m "feat(convex): accept slug and body in research mutations with uni
 ## Task 5: Add `backfillSlugs` mutation
 
 **Files:**
+
 - Modify: `convex/research.ts`
 
 - [ ] **Step 1: Add the import**
@@ -280,7 +287,7 @@ git commit -m "feat(convex): accept slug and body in research mutations with uni
 At the top of `convex/research.ts`, add:
 
 ```ts
-import { slugify } from "./lib/slug";
+import { slugify } from './lib/slug'
 ```
 
 - [ ] **Step 2: Append the backfill mutation at the end of `convex/research.ts`**
@@ -290,29 +297,29 @@ export const backfillSlugs = mutation({
   args: { sessionToken: v.string() },
   returns: v.object({ patched: v.number() }),
   handler: async (ctx, args) => {
-    await requireAdmin(ctx, args.sessionToken);
-    const all = await ctx.db.query("research").collect();
-    const used = new Set<string>();
+    await requireAdmin(ctx, args.sessionToken)
+    const all = await ctx.db.query('research').collect()
+    const used = new Set<string>()
     for (const r of all) {
-      if (r.slug) used.add(r.slug);
+      if (r.slug) used.add(r.slug)
     }
-    let patched = 0;
+    let patched = 0
     for (const r of all) {
-      if (r.slug) continue;
-      const base = slugify(r.title.en) || slugify(r.title.es) || "paper";
-      let candidate = base;
-      let n = 2;
+      if (r.slug) continue
+      const base = slugify(r.title.en) || slugify(r.title.es) || 'paper'
+      let candidate = base
+      let n = 2
       while (used.has(candidate)) {
-        candidate = `${base}-${n}`;
-        n += 1;
+        candidate = `${base}-${n}`
+        n += 1
       }
-      used.add(candidate);
-      await ctx.db.patch(r._id, { slug: candidate });
-      patched += 1;
+      used.add(candidate)
+      await ctx.db.patch(r._id, { slug: candidate })
+      patched += 1
     }
-    return { patched };
+    return { patched }
   },
-});
+})
 ```
 
 - [ ] **Step 3: Sync Convex types**
@@ -332,6 +339,7 @@ git commit -m "feat(convex): add backfillSlugs admin mutation"
 ## Task 6: Update `seedResearch` to write slug and a sample body
 
 **Files:**
+
 - Modify: `convex/research.ts`
 
 - [ ] **Step 1: Replace the seed insert**
@@ -390,6 +398,7 @@ git commit -m "feat(convex): seed research with slug and sample markdown body"
 ## Task 7: Add markdown rendering dependencies
 
 **Files:**
+
 - Modify: `package.json`, `bun.lock`
 
 - [ ] **Step 1: Install dependencies**
@@ -414,6 +423,7 @@ git commit -m "chore: add react-markdown and remark-gfm"
 ## Task 8: Create `MarkdownBody` component
 
 **Files:**
+
 - Create: `src/components/MarkdownBody.tsx`
 
 - [ ] **Step 1: Create the component**
@@ -450,6 +460,7 @@ git commit -m "feat: add MarkdownBody component"
 ## Task 9: Add i18n strings for the detail page
 
 **Files:**
+
 - Modify: `src/i18n/strings.ts`
 
 - [ ] **Step 1: Add the new keys**
@@ -480,6 +491,7 @@ git commit -m "feat(i18n): add research detail page strings"
 ## Task 10: Wrap listing cards in Link and drop external button
 
 **Files:**
+
 - Modify: `src/routes/research.tsx`
 
 - [ ] **Step 1: Update imports**
@@ -501,66 +513,66 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 In `src/routes/research.tsx`, replace the entire `papers.map(...)` block (the `<div className="reveal-on-scroll visible">{...}</div>` that maps papers) with:
 
 ```tsx
-            <div className="reveal-on-scroll visible">
-              {papers
-                .filter((p) => Boolean(p.slug))
-                .map((paper, idx) => {
-                const title = tField(paper.title, lang)
-                return (
-                  <Link
-                    key={paper._id}
-                    to="/research/$slug"
-                    params={{ slug: paper.slug as string }}
-                    className="research-item research-item-link stagger-child"
-                  >
-                    <div className="research-index">№ {String(idx + 1).padStart(3, '0')}</div>
-                    {paper.imageUrl ? (
-                      <img
-                        src={paper.imageUrl}
-                        alt={title}
-                        className="research-image"
-                      />
-                    ) : (
-                      <div
-                        className="research-image"
-                        style={{
-                          background: `linear-gradient(135deg, rgba(0, 112, 111, ${0.18 + (idx % 3) * 0.05}), rgba(217, 119, 87, ${0.1 + (idx % 2) * 0.06}))`,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontFamily: 'var(--display)',
-                            fontVariationSettings: '"opsz" 96, "wdth" 90, "wght" 720',
-                            fontSize: '2.4rem',
-                            letterSpacing: '-0.05em',
-                            textTransform: 'uppercase',
-                            color: 'rgba(14, 23, 23, 0.18)',
-                          }}
-                        >
-                          {t('research.placeholder')}
-                        </span>
-                      </div>
-                    )}
-                    <div className="research-body">
-                      <div className="research-tags">
-                        {paper.tags?.map((tag) => (
-                          <span key={tag} className="editorial-badge">{tag}</span>
-                        ))}
-                      </div>
-                      <h2 className="research-title">{title}</h2>
-                      <p className="research-meta">
-                        {paper.authors.join(' · ')}
-                        {paper.publicationDate ? ` — ${paper.publicationDate}` : ''}
-                      </p>
-                      <p className="research-desc">{tField(paper.description, lang)}</p>
-                    </div>
-                  </Link>
-                )
-              })}
+<div className="reveal-on-scroll visible">
+  {papers
+    .filter((p) => Boolean(p.slug))
+    .map((paper, idx) => {
+      const title = tField(paper.title, lang)
+      return (
+        <Link
+          key={paper._id}
+          to="/research/$slug"
+          params={{ slug: paper.slug as string }}
+          className="research-item research-item-link stagger-child"
+        >
+          <div className="research-index">
+            № {String(idx + 1).padStart(3, '0')}
+          </div>
+          {paper.imageUrl ? (
+            <img src={paper.imageUrl} alt={title} className="research-image" />
+          ) : (
+            <div
+              className="research-image"
+              style={{
+                background: `linear-gradient(135deg, rgba(0, 112, 111, ${0.18 + (idx % 3) * 0.05}), rgba(217, 119, 87, ${0.1 + (idx % 2) * 0.06}))`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--display)',
+                  fontVariationSettings: '"opsz" 96, "wdth" 90, "wght" 720',
+                  fontSize: '2.4rem',
+                  letterSpacing: '-0.05em',
+                  textTransform: 'uppercase',
+                  color: 'rgba(14, 23, 23, 0.18)',
+                }}
+              >
+                {t('research.placeholder')}
+              </span>
             </div>
+          )}
+          <div className="research-body">
+            <div className="research-tags">
+              {paper.tags?.map((tag) => (
+                <span key={tag} className="editorial-badge">
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <h2 className="research-title">{title}</h2>
+            <p className="research-meta">
+              {paper.authors.join(' · ')}
+              {paper.publicationDate ? ` — ${paper.publicationDate}` : ''}
+            </p>
+            <p className="research-desc">{tField(paper.description, lang)}</p>
+          </div>
+        </Link>
+      )
+    })}
+</div>
 ```
 
 - [ ] **Step 3: Type-check and run dev**
@@ -582,6 +594,7 @@ git commit -m "feat(research): wrap listing cards as links to detail page"
 ## Task 11: Create the detail route `/research/$slug`
 
 **Files:**
+
 - Create: `src/routes/research.$slug.tsx`
 
 - [ ] **Step 1: Create the route file**
@@ -611,8 +624,14 @@ function ResearchDetailPage() {
         <div className="page-header">
           <div className="site-container">
             <div className="page-header-content">
-              <div className="skeleton" style={{ width: '60%', height: '48px', marginBottom: '16px' }} />
-              <div className="skeleton" style={{ width: '40%', height: '20px' }} />
+              <div
+                className="skeleton"
+                style={{ width: '60%', height: '48px', marginBottom: '16px' }}
+              />
+              <div
+                className="skeleton"
+                style={{ width: '40%', height: '20px' }}
+              />
             </div>
           </div>
         </div>
@@ -649,7 +668,11 @@ function ResearchDetailPage() {
               ← {t('research.detail.back')}
             </Link>
             {paper.imageUrl && (
-              <img src={paper.imageUrl} alt={title} className="research-detail-hero" />
+              <img
+                src={paper.imageUrl}
+                alt={title}
+                className="research-detail-hero"
+              />
             )}
             <h1 className="page-title">{title}</h1>
             <p className="research-meta research-detail-meta">
@@ -659,7 +682,9 @@ function ResearchDetailPage() {
             {paper.tags && paper.tags.length > 0 && (
               <div className="research-tags">
                 {paper.tags.map((tag) => (
-                  <span key={tag} className="editorial-badge">{tag}</span>
+                  <span key={tag} className="editorial-badge">
+                    {tag}
+                  </span>
                 ))}
               </div>
             )}
@@ -727,6 +752,7 @@ git commit -m "feat: add research detail page route"
 ## Task 12: Add styles for the detail page and clickable cards
 
 **Files:**
+
 - Modify: `src/styles.css`
 
 - [ ] **Step 1: Append detail-page styles**
@@ -737,133 +763,139 @@ At the end of `src/styles.css`, append:
 /* ═══════════ RESEARCH DETAIL ═══════════ */
 
 .research-item-link {
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .research-item-link:hover .research-title {
-    color: var(--gb-warm);
+  color: var(--gb-warm);
 }
 
 .research-detail-back {
-    display: inline-block;
-    margin-bottom: 24px;
-    color: var(--gb-warm);
-    text-decoration: none;
+  display: inline-block;
+  margin-bottom: 24px;
+  color: var(--gb-warm);
+  text-decoration: none;
 }
 
 .research-detail-back:hover {
-    color: var(--gb-ink);
+  color: var(--gb-ink);
 }
 
 .research-detail-hero {
-    width: 100%;
-    max-height: 420px;
-    object-fit: cover;
-    border: 1px solid var(--gb-rule);
-    margin-bottom: 32px;
-    filter: grayscale(0.4) contrast(1.05);
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border: 1px solid var(--gb-rule);
+  margin-bottom: 32px;
+  filter: grayscale(0.4) contrast(1.05);
 }
 
 .research-detail-meta {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .research-body-prose {
-    font-family: var(--body);
-    font-size: 1.05rem;
-    color: var(--gb-ink-soft);
-    line-height: 1.75;
-    max-width: 64ch;
+  font-family: var(--body);
+  font-size: 1.05rem;
+  color: var(--gb-ink-soft);
+  line-height: 1.75;
+  max-width: 64ch;
 }
 
 .research-body-prose h2 {
-    font-family: var(--display);
-    font-variation-settings: "opsz" 48, "wdth" 95, "wght" 640;
-    font-size: clamp(1.4rem, 2vw, 1.75rem);
-    line-height: 1.15;
-    letter-spacing: -0.03em;
-    color: var(--gb-ink);
-    margin: 40px 0 16px;
+  font-family: var(--display);
+  font-variation-settings:
+    'opsz' 48,
+    'wdth' 95,
+    'wght' 640;
+  font-size: clamp(1.4rem, 2vw, 1.75rem);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--gb-ink);
+  margin: 40px 0 16px;
 }
 
 .research-body-prose h3 {
-    font-family: var(--display);
-    font-variation-settings: "opsz" 36, "wdth" 95, "wght" 600;
-    font-size: 1.25rem;
-    color: var(--gb-ink);
-    margin: 32px 0 12px;
+  font-family: var(--display);
+  font-variation-settings:
+    'opsz' 36,
+    'wdth' 95,
+    'wght' 600;
+  font-size: 1.25rem;
+  color: var(--gb-ink);
+  margin: 32px 0 12px;
 }
 
 .research-body-prose p {
-    margin: 0 0 18px;
+  margin: 0 0 18px;
 }
 
 .research-body-prose ul,
 .research-body-prose ol {
-    margin: 0 0 18px;
-    padding-left: 22px;
+  margin: 0 0 18px;
+  padding-left: 22px;
 }
 
 .research-body-prose li {
-    margin-bottom: 6px;
+  margin-bottom: 6px;
 }
 
 .research-body-prose a {
-    color: var(--gb-warm);
-    text-decoration: underline;
-    text-underline-offset: 3px;
+  color: var(--gb-warm);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .research-body-prose code {
-    font-family: var(--mono);
-    font-size: 0.9em;
-    background: rgba(0, 0, 0, 0.04);
-    padding: 1px 6px;
-    border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 0.9em;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 1px 6px;
+  border-radius: 2px;
 }
 
 .research-body-prose pre {
-    font-family: var(--mono);
-    background: rgba(0, 0, 0, 0.04);
-    padding: 16px;
-    overflow-x: auto;
-    margin: 0 0 18px;
-    border: 1px solid var(--gb-rule);
+  font-family: var(--mono);
+  background: rgba(0, 0, 0, 0.04);
+  padding: 16px;
+  overflow-x: auto;
+  margin: 0 0 18px;
+  border: 1px solid var(--gb-rule);
 }
 
 .research-body-prose img {
-    max-width: 100%;
-    height: auto;
-    border: 1px solid var(--gb-rule);
-    margin: 16px 0;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--gb-rule);
+  margin: 16px 0;
 }
 
 .research-detail-actions {
-    margin: 40px 0;
+  margin: 40px 0;
 }
 
 .research-detail-gallery {
-    margin-top: 56px;
+  margin-top: 56px;
 }
 
 .research-detail-gallery .mono-label {
-    display: block;
-    margin-bottom: 16px;
+  display: block;
+  margin-bottom: 16px;
 }
 
 .research-detail-gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
 }
 
 .research-detail-gallery-grid img {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    border: 1px solid var(--gb-rule);
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid var(--gb-rule);
 }
 ```
 
@@ -884,6 +916,7 @@ git commit -m "feat(styles): add research detail page styles and link hover"
 ## Task 13: Update admin form — slug and body fields
 
 **Files:**
+
 - Modify: `src/routes/admin/research.tsx`
 
 - [ ] **Step 1: Update imports and add `useEffect` + `useState`**
@@ -964,22 +997,24 @@ type ResearchDoc = {
 Inside `AdminResearchPage`, replace the existing `payload` object inside the `onSubmit` handler with:
 
 ```ts
-          const body =
-            values.body && (values.body.es.trim() || values.body.en.trim())
-              ? values.body
-              : undefined
-          const payload = {
-            title: values.title,
-            description: values.description,
-            body,
-            slug: values.slug.trim(),
-            authors,
-            publicationDate: cleanOptional(values.publicationDate),
-            url: cleanOptional(values.url),
-            imageUrl: cleanOptional(values.imageUrl),
-            galleryImageUrls: values.galleryImageUrls?.length ? values.galleryImageUrls : undefined,
-            tags: cleanList(values.tags).length ? cleanList(values.tags) : undefined,
-          }
+const body =
+  values.body && (values.body.es.trim() || values.body.en.trim())
+    ? values.body
+    : undefined
+const payload = {
+  title: values.title,
+  description: values.description,
+  body,
+  slug: values.slug.trim(),
+  authors,
+  publicationDate: cleanOptional(values.publicationDate),
+  url: cleanOptional(values.url),
+  imageUrl: cleanOptional(values.imageUrl),
+  galleryImageUrls: values.galleryImageUrls?.length
+    ? values.galleryImageUrls
+    : undefined,
+  tags: cleanList(values.tags).length ? cleanList(values.tags) : undefined,
+}
 ```
 
 - [ ] **Step 5: Update `ResearchForm` defaults to include slug + body**
@@ -1008,18 +1043,21 @@ Inside `ResearchForm`, replace the existing `defaultValues` argument to `useForm
 Add this block inside `ResearchForm`, immediately after the `const form = useForm(...)` call:
 
 ```tsx
-  const [slugDirty, setSlugDirty] = useState(Boolean(initial?.slug))
-  const titleEn = form.watch('title.en')
-  const slugValue = form.watch('slug')
+const [slugDirty, setSlugDirty] = useState(Boolean(initial?.slug))
+const titleEn = form.watch('title.en')
+const slugValue = form.watch('slug')
 
-  useEffect(() => {
-    if (!slugDirty) {
-      const generated = slugify(titleEn ?? '')
-      if (generated !== slugValue) {
-        form.setValue('slug', generated, { shouldValidate: false, shouldDirty: false })
-      }
+useEffect(() => {
+  if (!slugDirty) {
+    const generated = slugify(titleEn ?? '')
+    if (generated !== slugValue) {
+      form.setValue('slug', generated, {
+        shouldValidate: false,
+        shouldDirty: false,
+      })
     }
-  }, [titleEn, slugDirty, slugValue, form])
+  }
+}, [titleEn, slugDirty, slugValue, form])
 ```
 
 - [ ] **Step 7: Render the slug and body fields in the form**

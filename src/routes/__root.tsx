@@ -236,7 +236,7 @@ function SiteFooter() {
     <footer className="site-footer">
       <div className="site-container">
         <div className="footer-cta">
-          <a href="mailto:genobit@university.edu">{t('footer.cta')}</a>
+          <a href="mailto:genobit.mty@gmail.com">{t('footer.cta')}</a>
         </div>
         <div className="divider" />
         <div className="footer-bottom">
@@ -255,6 +255,13 @@ function SiteFooter() {
               rel="noopener noreferrer"
             >
               Instagram
+            </a>
+            <a
+              href="https://linktr.ee/genobit"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Linktree
             </a>
           </div>
           <div>{t('footer.tagline')}</div>

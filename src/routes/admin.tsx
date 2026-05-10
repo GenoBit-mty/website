@@ -1,4 +1,10 @@
-import { Link, Outlet, createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  useNavigate,
+  useRouter,
+} from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 import { Toaster } from 'sonner'
@@ -10,11 +16,13 @@ export const Route = createFileRoute('/admin')({
 })
 
 const NAV = [
+  { to: '/admin', label: 'Inicio', exact: true },
   { to: '/admin/team', label: 'Equipo' },
   { to: '/admin/events', label: 'Eventos' },
   { to: '/admin/research', label: 'Investigación' },
   { to: '/admin/labs', label: 'Labs' },
   { to: '/admin/admins', label: 'Mesas pasadas' },
+  { to: '/admin/home', label: 'Portada' },
 ] as const
 
 function AdminLayout() {
@@ -48,13 +56,6 @@ function AdminLayout() {
       navigate({ to: '/admin/login' })
     }
   }, [checked, token, session, isLogin, navigate])
-
-  useEffect(() => {
-    if (!checked) return
-    if (path === '/admin' && token) {
-      navigate({ to: '/admin/team' })
-    }
-  }, [path, token, checked, navigate])
 
   const onLogout = async () => {
     if (token) {
@@ -90,7 +91,9 @@ function AdminLayout() {
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <div className="admin-brand">
-          <Link to="/" className="admin-brand-link">GenoBit · Admin</Link>
+          <Link to="/" className="admin-brand-link">
+            GenoBit · Admin
+          </Link>
         </div>
         <nav className="admin-nav" aria-label="Admin sections">
           {NAV.map((item) => (
@@ -99,6 +102,7 @@ function AdminLayout() {
               to={item.to}
               className="admin-nav-link"
               activeProps={{ className: 'admin-nav-link is-active' }}
+              activeOptions={item.exact ? { exact: true } : undefined}
             >
               {item.label}
             </Link>

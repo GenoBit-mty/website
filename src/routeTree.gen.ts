@@ -22,7 +22,9 @@ import { Route as AdminTeamRouteImport } from './routes/admin/team'
 import { Route as AdminResearchRouteImport } from './routes/admin/research'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLabsRouteImport } from './routes/admin/labs'
+import { Route as AdminHomeRouteImport } from './routes/admin/home'
 import { Route as AdminEventsRouteImport } from './routes/admin/events'
+import { Route as AdminBoardTransitionRouteImport } from './routes/admin/board-transition'
 import { Route as AdminAdminsRouteImport } from './routes/admin/admins'
 
 const TeamRoute = TeamRouteImport.update({
@@ -90,9 +92,19 @@ const AdminLabsRoute = AdminLabsRouteImport.update({
   path: '/labs',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminHomeRoute = AdminHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminEventsRoute = AdminEventsRouteImport.update({
   id: '/events',
   path: '/events',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBoardTransitionRoute = AdminBoardTransitionRouteImport.update({
+  id: '/board-transition',
+  path: '/board-transition',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminAdminsRoute = AdminAdminsRouteImport.update({
@@ -109,7 +121,9 @@ export interface FileRoutesByFullPath {
   '/research': typeof ResearchRoute
   '/team': typeof TeamRoute
   '/admin/admins': typeof AdminAdminsRoute
+  '/admin/board-transition': typeof AdminBoardTransitionRoute
   '/admin/events': typeof AdminEventsRoute
+  '/admin/home': typeof AdminHomeRoute
   '/admin/labs': typeof AdminLabsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/research': typeof AdminResearchRoute
@@ -125,7 +139,9 @@ export interface FileRoutesByTo {
   '/research': typeof ResearchRoute
   '/team': typeof TeamRoute
   '/admin/admins': typeof AdminAdminsRoute
+  '/admin/board-transition': typeof AdminBoardTransitionRoute
   '/admin/events': typeof AdminEventsRoute
+  '/admin/home': typeof AdminHomeRoute
   '/admin/labs': typeof AdminLabsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/research': typeof AdminResearchRoute
@@ -143,7 +159,9 @@ export interface FileRoutesById {
   '/research': typeof ResearchRoute
   '/team': typeof TeamRoute
   '/admin/admins': typeof AdminAdminsRoute
+  '/admin/board-transition': typeof AdminBoardTransitionRoute
   '/admin/events': typeof AdminEventsRoute
+  '/admin/home': typeof AdminHomeRoute
   '/admin/labs': typeof AdminLabsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/research': typeof AdminResearchRoute
@@ -162,7 +180,9 @@ export interface FileRouteTypes {
     | '/research'
     | '/team'
     | '/admin/admins'
+    | '/admin/board-transition'
     | '/admin/events'
+    | '/admin/home'
     | '/admin/labs'
     | '/admin/login'
     | '/admin/research'
@@ -178,7 +198,9 @@ export interface FileRouteTypes {
     | '/research'
     | '/team'
     | '/admin/admins'
+    | '/admin/board-transition'
     | '/admin/events'
+    | '/admin/home'
     | '/admin/labs'
     | '/admin/login'
     | '/admin/research'
@@ -195,7 +217,9 @@ export interface FileRouteTypes {
     | '/research'
     | '/team'
     | '/admin/admins'
+    | '/admin/board-transition'
     | '/admin/events'
+    | '/admin/home'
     | '/admin/labs'
     | '/admin/login'
     | '/admin/research'
@@ -309,11 +333,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLabsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/home': {
+      id: '/admin/home'
+      path: '/home'
+      fullPath: '/admin/home'
+      preLoaderRoute: typeof AdminHomeRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/events': {
       id: '/admin/events'
       path: '/events'
       fullPath: '/admin/events'
       preLoaderRoute: typeof AdminEventsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/board-transition': {
+      id: '/admin/board-transition'
+      path: '/board-transition'
+      fullPath: '/admin/board-transition'
+      preLoaderRoute: typeof AdminBoardTransitionRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/admins': {
@@ -328,7 +366,9 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAdminsRoute: typeof AdminAdminsRoute
+  AdminBoardTransitionRoute: typeof AdminBoardTransitionRoute
   AdminEventsRoute: typeof AdminEventsRoute
+  AdminHomeRoute: typeof AdminHomeRoute
   AdminLabsRoute: typeof AdminLabsRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminResearchRoute: typeof AdminResearchRoute
@@ -338,7 +378,9 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAdminsRoute: AdminAdminsRoute,
+  AdminBoardTransitionRoute: AdminBoardTransitionRoute,
   AdminEventsRoute: AdminEventsRoute,
+  AdminHomeRoute: AdminHomeRoute,
   AdminLabsRoute: AdminLabsRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminResearchRoute: AdminResearchRoute,

@@ -21,7 +21,8 @@ function AdministrationsPage() {
           <div className="page-header-content">
             <span className="mono-label">{t('archive.header.eyebrow')}</span>
             <h1 className="page-title">
-              <em>{t('archive.header.title.pre')}</em> {t('archive.header.title.post')}
+              <em>{t('archive.header.title.pre')}</em>{' '}
+              {t('archive.header.title.post')}
             </h1>
             <p className="page-lead">{t('archive.header.lead')}</p>
           </div>
@@ -33,16 +34,43 @@ function AdministrationsPage() {
           {admins === undefined ? (
             <div>
               {archiveSkeletonKeys.map((key) => (
-                <div key={key} className="archive-card" style={{ marginBottom: '48px' }}>
+                <div
+                  key={key}
+                  className="archive-card"
+                  style={{ marginBottom: '48px' }}
+                >
                   <div className="archive-header">
-                    <div className="skeleton" style={{ width: '20%', height: '14px', marginBottom: '12px' }} />
-                    <div className="skeleton" style={{ width: '50%', height: '28px' }} />
+                    <div
+                      className="skeleton"
+                      style={{
+                        width: '20%',
+                        height: '14px',
+                        marginBottom: '12px',
+                      }}
+                    />
+                    <div
+                      className="skeleton"
+                      style={{ width: '50%', height: '28px' }}
+                    />
                   </div>
                   <div className="archive-body">
-                    <div className="skeleton" style={{ width: '280px', height: '200px', flexShrink: 0 }} />
+                    <div
+                      className="skeleton"
+                      style={{ width: '280px', height: '200px', flexShrink: 0 }}
+                    />
                     <div style={{ flex: 1 }}>
-                      <div className="skeleton" style={{ width: '100%', height: '80px', marginBottom: '24px' }} />
-                      <div className="skeleton" style={{ width: '100%', height: '100px' }} />
+                      <div
+                        className="skeleton"
+                        style={{
+                          width: '100%',
+                          height: '80px',
+                          marginBottom: '24px',
+                        }}
+                      />
+                      <div
+                        className="skeleton"
+                        style={{ width: '100%', height: '100px' }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -69,18 +97,29 @@ function AdministrationsPage() {
                     <div className="archive-content">
                       {admin.description && (
                         <div>
-                          <h3 className="archive-section-title">{t('archive.highlights')}</h3>
-                          <p className="archive-desc">{tField(admin.description, lang)}</p>
+                          <h3 className="archive-section-title">
+                            {t('archive.highlights')}
+                          </h3>
+                          <p className="archive-desc">
+                            {tField(admin.description, lang)}
+                          </p>
                         </div>
                       )}
 
                       <div>
-                        <h3 className="archive-section-title">{t('archive.team')}</h3>
+                        <h3 className="archive-section-title">
+                          {t('archive.team')}
+                        </h3>
                         <div className="members-grid">
                           {admin.members.map((member) => (
-                            <div key={`${member.name}-${tField(member.role, lang)}`} className="member-chip">
+                            <div
+                              key={`${member.name}-${tField(member.role, lang)}`}
+                              className="member-chip"
+                            >
                               <div className="member-name">{member.name}</div>
-                              <div className="member-role">{tField(member.role, lang)}</div>
+                              <div className="member-role">
+                                {tField(member.role, lang)}
+                              </div>
                             </div>
                           ))}
                         </div>

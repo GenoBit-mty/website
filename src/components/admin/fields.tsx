@@ -29,11 +29,19 @@ function FieldShell({
     <div className="admin-field">
       <label className="admin-field-label">
         {label}
-        {required ? <span className="admin-field-required" aria-hidden="true">*</span> : null}
+        {required ? (
+          <span className="admin-field-required" aria-hidden="true">
+            *
+          </span>
+        ) : null}
       </label>
       {description && <p className="admin-field-desc">{description}</p>}
       {children}
-      {error && <p className="admin-field-error" role="alert">{error}</p>}
+      {error && (
+        <p className="admin-field-error" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   )
 }
@@ -42,9 +50,16 @@ export function FieldText<TForm extends FieldValues>(
   props: BaseFieldProps<TForm> & { placeholder?: string; type?: string },
 ) {
   const { register, formState } = useFormContext<TForm>()
-  const error = (formState.errors[props.name as string] as { message?: string } | undefined)?.message
+  const error = (
+    formState.errors[props.name as string] as { message?: string } | undefined
+  )?.message
   return (
-    <FieldShell label={props.label} description={props.description} required={props.required} error={error}>
+    <FieldShell
+      label={props.label}
+      description={props.description}
+      required={props.required}
+      error={error}
+    >
       <input
         type={props.type ?? 'text'}
         placeholder={props.placeholder}
@@ -55,11 +70,20 @@ export function FieldText<TForm extends FieldValues>(
   )
 }
 
-export function FieldNumber<TForm extends FieldValues>(props: BaseFieldProps<TForm>) {
+export function FieldNumber<TForm extends FieldValues>(
+  props: BaseFieldProps<TForm>,
+) {
   const { register, formState } = useFormContext<TForm>()
-  const error = (formState.errors[props.name as string] as { message?: string } | undefined)?.message
+  const error = (
+    formState.errors[props.name as string] as { message?: string } | undefined
+  )?.message
   return (
-    <FieldShell label={props.label} description={props.description} required={props.required} error={error}>
+    <FieldShell
+      label={props.label}
+      description={props.description}
+      required={props.required}
+      error={error}
+    >
       <input
         type="number"
         className="admin-input"
@@ -79,22 +103,36 @@ export function FieldCheckbox<TForm extends FieldValues>(
         <input type="checkbox" {...register(props.name)} />
         <span>{props.label}</span>
       </label>
-      {props.description && <p className="admin-field-desc">{props.description}</p>}
+      {props.description && (
+        <p className="admin-field-desc">{props.description}</p>
+      )}
     </div>
   )
 }
 
 export function FieldSelect<TForm extends FieldValues>(
-  props: BaseFieldProps<TForm> & { options: Array<{ value: string; label: string }>; allowEmpty?: boolean },
+  props: BaseFieldProps<TForm> & {
+    options: Array<{ value: string; label: string }>
+    allowEmpty?: boolean
+  },
 ) {
   const { register, formState } = useFormContext<TForm>()
-  const error = (formState.errors[props.name as string] as { message?: string } | undefined)?.message
+  const error = (
+    formState.errors[props.name as string] as { message?: string } | undefined
+  )?.message
   return (
-    <FieldShell label={props.label} description={props.description} required={props.required} error={error}>
+    <FieldShell
+      label={props.label}
+      description={props.description}
+      required={props.required}
+      error={error}
+    >
       <select className="admin-input" {...register(props.name)}>
         {props.allowEmpty && <option value="">—</option>}
         {props.options.map((opt) => (
-          <option key={opt.value} value={opt.value}>{opt.label}</option>
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
         ))}
       </select>
     </FieldShell>
@@ -125,7 +163,9 @@ export function FieldBilingualText<TForm extends FieldValues>(
             {...register(`${props.name}.es` as Path<TForm>)}
           />
         </div>
-        {errs?.es?.message && <p className="admin-field-error">{errs.es.message}</p>}
+        {errs?.es?.message && (
+          <p className="admin-field-error">{errs.es.message}</p>
+        )}
         <div className="admin-bilingual-row">
           <span className="admin-bilingual-tag">EN</span>
           <input
@@ -135,7 +175,9 @@ export function FieldBilingualText<TForm extends FieldValues>(
             {...register(`${props.name}.en` as Path<TForm>)}
           />
         </div>
-        {errs?.en?.message && <p className="admin-field-error">{errs.en.message}</p>}
+        {errs?.en?.message && (
+          <p className="admin-field-error">{errs.en.message}</p>
+        )}
       </div>
     </FieldShell>
   )
@@ -165,7 +207,9 @@ export function FieldBilingualTextarea<TForm extends FieldValues>(
             {...register(`${props.name}.es` as Path<TForm>)}
           />
         </div>
-        {errs?.es?.message && <p className="admin-field-error">{errs.es.message}</p>}
+        {errs?.es?.message && (
+          <p className="admin-field-error">{errs.es.message}</p>
+        )}
         <div className="admin-bilingual-row">
           <span className="admin-bilingual-tag">EN</span>
           <textarea
@@ -175,7 +219,9 @@ export function FieldBilingualTextarea<TForm extends FieldValues>(
             {...register(`${props.name}.en` as Path<TForm>)}
           />
         </div>
-        {errs?.en?.message && <p className="admin-field-error">{errs.en.message}</p>}
+        {errs?.en?.message && (
+          <p className="admin-field-error">{errs.en.message}</p>
+        )}
       </div>
     </FieldShell>
   )
@@ -244,7 +290,10 @@ function StringListEditor({
 }
 
 export function FieldStringList<TForm extends FieldValues>(
-  props: BaseFieldProps<TForm> & { placeholder?: string; control: Control<TForm> },
+  props: BaseFieldProps<TForm> & {
+    placeholder?: string
+    control: Control<TForm>
+  },
 ) {
   return (
     <Controller
@@ -298,10 +347,15 @@ export function FieldImageUpload<TForm extends FieldValues>(
             })
             if (!res.ok) throw new Error('Falló la subida')
             const { storageId } = (await res.json()) as { storageId: string }
-            const { url } = await resolveUploadedUrl({ sessionToken: token, storageId })
+            const { url } = await resolveUploadedUrl({
+              sessionToken: token,
+              storageId,
+            })
             field.onChange(url as PathValue<TForm, Path<TForm>>)
           } catch (err) {
-            setUploadError(err instanceof Error ? err.message : 'Error de subida')
+            setUploadError(
+              err instanceof Error ? err.message : 'Error de subida',
+            )
           } finally {
             setUploading(false)
           }
@@ -320,7 +374,9 @@ export function FieldImageUpload<TForm extends FieldValues>(
                   <button
                     type="button"
                     className="admin-image-clear"
-                    onClick={() => field.onChange('' as PathValue<TForm, Path<TForm>>)}
+                    onClick={() =>
+                      field.onChange('' as PathValue<TForm, Path<TForm>>)
+                    }
                     aria-label="Quitar imagen"
                   >
                     ×
@@ -334,7 +390,11 @@ export function FieldImageUpload<TForm extends FieldValues>(
                 className="admin-input"
                 placeholder="URL de imagen"
                 value={value}
-                onChange={(e) => field.onChange(e.target.value as PathValue<TForm, Path<TForm>>)}
+                onChange={(e) =>
+                  field.onChange(
+                    e.target.value as PathValue<TForm, Path<TForm>>,
+                  )
+                }
               />
               <label className="admin-image-upload">
                 <input
@@ -390,12 +450,17 @@ export function FieldGallery<TForm extends FieldValues>(
               })
               if (!res.ok) throw new Error('Falló la subida')
               const { storageId } = (await res.json()) as { storageId: string }
-              const { url } = await resolveUploadedUrl({ sessionToken: token, storageId })
+              const { url } = await resolveUploadedUrl({
+                sessionToken: token,
+                storageId,
+              })
               uploaded.push(url)
             }
             update([...value, ...uploaded])
           } catch (err) {
-            setUploadError(err instanceof Error ? err.message : 'Error de subida')
+            setUploadError(
+              err instanceof Error ? err.message : 'Error de subida',
+            )
           } finally {
             setUploading(false)
           }
@@ -428,7 +493,8 @@ export function FieldGallery<TForm extends FieldValues>(
                   accept="image/*"
                   multiple
                   onChange={(e) => {
-                    if (e.target.files && e.target.files.length > 0) onFiles(e.target.files)
+                    if (e.target.files && e.target.files.length > 0)
+                      onFiles(e.target.files)
                     e.target.value = ''
                   }}
                   disabled={uploading}
@@ -440,5 +506,20 @@ export function FieldGallery<TForm extends FieldValues>(
         )
       }}
     />
+  )
+}
+
+export function FormSection({
+  title,
+  children,
+}: {
+  title: string
+  children: React.ReactNode
+}) {
+  return (
+    <fieldset className="admin-form-section">
+      <legend className="admin-form-section-title">{title}</legend>
+      <div className="admin-form-section-body">{children}</div>
+    </fieldset>
   )
 }

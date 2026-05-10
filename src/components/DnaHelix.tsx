@@ -66,7 +66,12 @@ function buildDnaGroup() {
       const direction = new THREE.Vector3().subVectors(end, start)
       const length = direction.length()
 
-      const pairGeo = new THREE.CylinderGeometry(TUBE_RADIUS * 0.8, TUBE_RADIUS * 0.8, length, 6)
+      const pairGeo = new THREE.CylinderGeometry(
+        TUBE_RADIUS * 0.8,
+        TUBE_RADIUS * 0.8,
+        length,
+        6,
+      )
       const colorIdx = (i / BASE_PAIR_FREQUENCY) % basePairColors.length
       const pairMat = new THREE.MeshPhongMaterial({
         color: basePairColors[colorIdx],
@@ -102,8 +107,20 @@ function buildDnaGroup() {
   const curve1 = new THREE.CatmullRomCurve3(strand1Points)
   const curve2 = new THREE.CatmullRomCurve3(strand2Points)
 
-  const tubeGeo1 = new THREE.TubeGeometry(curve1, TOTAL_POINTS * 4, TUBE_RADIUS, 8, false)
-  const tubeGeo2 = new THREE.TubeGeometry(curve2, TOTAL_POINTS * 4, TUBE_RADIUS, 8, false)
+  const tubeGeo1 = new THREE.TubeGeometry(
+    curve1,
+    TOTAL_POINTS * 4,
+    TUBE_RADIUS,
+    8,
+    false,
+  )
+  const tubeGeo2 = new THREE.TubeGeometry(
+    curve2,
+    TOTAL_POINTS * 4,
+    TUBE_RADIUS,
+    8,
+    false,
+  )
   dnaGroup.add(new THREE.Mesh(tubeGeo1, strand1Material))
   dnaGroup.add(new THREE.Mesh(tubeGeo2, strand2Material))
 
@@ -138,7 +155,10 @@ function buildParticles() {
       (Math.random() - 0.5) * 0.004,
     )
   }
-  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3))
+  particleGeo.setAttribute(
+    'position',
+    new THREE.BufferAttribute(particlePositions, 3),
+  )
   const particleMat = new THREE.PointsMaterial({
     color: LOGO_INDIGO,
     size: 0.06,
@@ -147,7 +167,13 @@ function buildParticles() {
     sizeAttenuation: true,
   })
   const particles = new THREE.Points(particleGeo, particleMat)
-  return { particles, particleGeo, particleMat, particleVelocities, particleCount }
+  return {
+    particles,
+    particleGeo,
+    particleMat,
+    particleVelocities,
+    particleCount,
+  }
 }
 
 function tickParticles(
@@ -187,7 +213,9 @@ export function DnaHelix() {
 
   useEffect(() => {
     if (!containerRef.current) return
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches
     const container = containerRef.current
     const width = container.clientWidth
     const height = container.clientHeight
@@ -205,11 +233,17 @@ export function DnaHelix() {
     const dnaGroup = buildDnaGroup()
     scene.add(dnaGroup)
 
-    const { ambientLight, pointLight1, pointLight2, pointLight3 } = buildLights()
+    const { ambientLight, pointLight1, pointLight2, pointLight3 } =
+      buildLights()
     scene.add(ambientLight, pointLight1, pointLight2, pointLight3)
 
-    const { particles, particleGeo, particleMat, particleVelocities, particleCount } =
-      buildParticles()
+    const {
+      particles,
+      particleGeo,
+      particleMat,
+      particleVelocities,
+      particleCount,
+    } = buildParticles()
     scene.add(particles)
 
     const mouseTarget = new THREE.Vector2(0, 0)
@@ -233,11 +267,14 @@ export function DnaHelix() {
         dnaGroup.rotation.y = elapsed * 0.065 + mouseCurrent.x * 0.18
         dnaGroup.rotation.x = 0.12 + mouseCurrent.y * 0.1
         dnaGroup.rotation.z = 0.08 + mouseCurrent.x * 0.05
-        dnaGroup.position.y = Math.sin(elapsed * 0.22) * 0.24 + mouseCurrent.y * 0.35
+        dnaGroup.position.y =
+          Math.sin(elapsed * 0.22) * 0.24 + mouseCurrent.y * 0.35
         dnaGroup.position.x = mouseCurrent.x * 0.5
         tickParticles(particleGeo, particleVelocities, particleCount)
-        pointLight1.position.x = Math.sin(elapsed * 0.3) * 6 + mouseCurrent.x * 3
-        pointLight2.position.x = Math.cos(elapsed * 0.22) * 6 - mouseCurrent.x * 2
+        pointLight1.position.x =
+          Math.sin(elapsed * 0.3) * 6 + mouseCurrent.x * 3
+        pointLight2.position.x =
+          Math.cos(elapsed * 0.22) * 6 - mouseCurrent.x * 2
         pointLight1.position.y = 5 + mouseCurrent.y * 2
       }
       renderer.render(scene, camera)

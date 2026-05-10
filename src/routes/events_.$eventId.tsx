@@ -16,7 +16,16 @@ const BACK_LINK =
 
 function LocationIcon({ title }: { title: string }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <title>{title}</title>
       <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
       <circle cx="12" cy="10" r="3" />
@@ -36,15 +45,27 @@ function EventDetailPage() {
         <div className="page-header">
           <div className="site-container">
             <div className="page-header-content">
-              <div className="skeleton" style={{ width: '120px', height: '14px' }} />
-              <div className="skeleton" style={{ width: '70%', height: '48px' }} />
-              <div className="skeleton" style={{ width: '40%', height: '14px' }} />
+              <div
+                className="skeleton"
+                style={{ width: '120px', height: '14px' }}
+              />
+              <div
+                className="skeleton"
+                style={{ width: '70%', height: '48px' }}
+              />
+              <div
+                className="skeleton"
+                style={{ width: '40%', height: '14px' }}
+              />
             </div>
           </div>
         </div>
         <section className="section-spacing">
           <div className="site-container">
-            <div className="skeleton" style={{ width: '100%', height: '420px' }} />
+            <div
+              className="skeleton"
+              style={{ width: '100%', height: '420px' }}
+            />
           </div>
         </section>
       </main>
@@ -60,7 +81,9 @@ function EventDetailPage() {
               <Link to="/events" className={BACK_LINK}>
                 {t('events.detail.back')}
               </Link>
-              <h1 className="page-title"><em>{t('events.detail.notFound')}</em></h1>
+              <h1 className="page-title">
+                <em>{t('events.detail.notFound')}</em>
+              </h1>
             </div>
           </div>
         </div>
@@ -70,13 +93,17 @@ function EventDetailPage() {
 
   const title = tField(event.title, lang)
   const description = tField(event.description, lang)
-  const paragraphs = description ? description.split(/\n\n+/).filter(Boolean) : []
+  const paragraphs = description
+    ? description.split(/\n\n+/).filter(Boolean)
+    : []
   const gallery = event.galleryImageUrls ?? []
   const showGallery = gallery.length >= 2
 
   const closeLightbox = () => setActiveIndex(null)
   const prevImage = () =>
-    setActiveIndex((i) => (i === null ? null : (i - 1 + gallery.length) % gallery.length))
+    setActiveIndex((i) =>
+      i === null ? null : (i - 1 + gallery.length) % gallery.length,
+    )
   const nextImage = () =>
     setActiveIndex((i) => (i === null ? null : (i + 1) % gallery.length))
 
@@ -89,13 +116,17 @@ function EventDetailPage() {
               {t('events.detail.back')}
             </Link>
 
-            {event.category && <span className="mono-label">{event.category}</span>}
+            {event.category && (
+              <span className="mono-label">{event.category}</span>
+            )}
             <h1 className="page-title">
               <em>{title}</em>
             </h1>
 
             <div className="mb-6 flex flex-wrap items-center gap-4">
-              <span className={`editorial-badge ${event.isUpcoming ? 'active' : ''}`}>
+              <span
+                className={`editorial-badge ${event.isUpcoming ? 'active' : ''}`}
+              >
                 {event.isUpcoming ? t('events.upcoming') : t('events.past')}
               </span>
               <span className="font-[family-name:var(--mono)] text-[0.7rem] tracking-[0.16em] uppercase text-[var(--gb-ink-mute)]">
@@ -130,7 +161,9 @@ function EventDetailPage() {
 
           {showGallery && (
             <div>
-              <h2 className="events-section-heading">{t('events.detail.gallery')}</h2>
+              <h2 className="events-section-heading">
+                {t('events.detail.gallery')}
+              </h2>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">
                 {gallery.map((src, i) => (
                   <button
@@ -140,7 +173,11 @@ function EventDetailPage() {
                     onClick={() => setActiveIndex(i)}
                     aria-label={`${title} — ${i + 1}`}
                   >
-                    <img src={src} alt="" className="block h-full w-full object-cover" />
+                    <img
+                      src={src}
+                      alt=""
+                      className="block h-full w-full object-cover"
+                    />
                   </button>
                 ))}
               </div>

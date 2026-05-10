@@ -15,15 +15,21 @@ import {
   FieldImageUpload,
   FieldStringList,
   FieldText,
+  FormSection,
 } from '@/components/admin/fields'
 
 export const Route = createFileRoute('/admin/labs')({
   component: AdminLabsPage,
 })
 
-const bilingual = z.object({ es: z.string().min(1, 'Requerido'), en: z.string().min(1, 'Requerido') })
+const bilingual = z.object({
+  es: z.string().min(1, 'Requerido'),
+  en: z.string().min(1, 'Requerido'),
+})
 
-const optionalBilingual = z.object({ es: z.string(), en: z.string() }).optional()
+const optionalBilingual = z
+  .object({ es: z.string(), en: z.string() })
+  .optional()
 
 const labSchema = z.object({
   title: bilingual,
@@ -50,7 +56,8 @@ const defaultValues: LabFormValues = {
 }
 
 const cleanOptional = (v: string | undefined) => (v && v.trim() ? v : undefined)
-const cleanList = (l: Array<string> | undefined) => l?.filter((x) => x.trim()) ?? []
+const cleanList = (l: Array<string> | undefined) =>
+  l?.filter((x) => x.trim()) ?? []
 const cleanBilingual = (b: { es?: string; en?: string } | undefined) =>
   !b || (!b.es && !b.en) ? undefined : { es: b.es ?? '', en: b.en ?? '' }
 
@@ -86,11 +93,15 @@ function AdminLabsPage() {
             title: values.title,
             summary: values.summary,
             description: cleanBilingual(values.description),
-            focusAreas: cleanList(values.focusAreas).length ? cleanList(values.focusAreas) : undefined,
+            focusAreas: cleanList(values.focusAreas).length
+              ? cleanList(values.focusAreas)
+              : undefined,
             lead: cleanOptional(values.lead),
             location: cleanOptional(values.location),
             imageUrl: cleanOptional(values.imageUrl),
-            galleryImageUrls: values.galleryImageUrls?.length ? values.galleryImageUrls : undefined,
+            galleryImageUrls: values.galleryImageUrls?.length
+              ? values.galleryImageUrls
+              : undefined,
           }
           try {
             if (lab) {
@@ -114,9 +125,15 @@ function AdminLabsPage() {
       <div className="admin-page-header">
         <div>
           <h1 className="admin-page-title">Labs</h1>
-          <p className="admin-page-sub">Grupos de investigación y áreas de trabajo.</p>
+          <p className="admin-page-sub">
+            Grupos de investigación y áreas de trabajo.
+          </p>
         </div>
-        <button type="button" className="admin-btn" onClick={() => setEditing('new')}>
+        <button
+          type="button"
+          className="admin-btn"
+          onClick={() => setEditing('new')}
+        >
           + Nuevo lab
         </button>
       </div>
@@ -201,27 +218,63 @@ function LabForm({
     <FormProvider {...form}>
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">{initial ? 'Editar lab' : 'Nuevo lab'}</h1>
+          <h1 className="admin-page-title">
+            {initial ? 'Editar lab' : 'Nuevo lab'}
+          </h1>
         </div>
       </div>
       <form className="admin-form-shell" onSubmit={form.handleSubmit(onSubmit)}>
-        <FieldBilingualText<LabFormValues> name="title" label="Título" required />
-        <FieldBilingualText<LabFormValues> name="summary" label="Resumen" required />
-        <FieldBilingualTextarea<LabFormValues> name="description" label="Descripción" rows={4} />
-        <FieldStringList<LabFormValues>
-          name="focusAreas"
-          label="Áreas de enfoque"
-          control={form.control}
-        />
-        <FieldText<LabFormValues> name="lead" label="Líder" />
-        <FieldText<LabFormValues> name="location" label="Ubicación" />
-        <FieldImageUpload<LabFormValues> name="imageUrl" label="Imagen" control={form.control} />
-        <FieldGallery<LabFormValues> name="galleryImageUrls" label="Galería" control={form.control} />
+        <FormSection title="Datos básicos">
+          <FieldBilingualText<LabFormValues>
+            name="title"
+            label="Título"
+            required
+          />
+          <FieldText<LabFormValues> name="lead" label="Líder" />
+          <FieldText<LabFormValues> name="location" label="Ubicación" />
+          <FieldStringList<LabFormValues>
+            name="focusAreas"
+            label="Áreas de enfoque"
+            control={form.control}
+          />
+        </FormSection>
+        <FormSection title="Contenido">
+          <FieldBilingualText<LabFormValues>
+            name="summary"
+            label="Resumen"
+            required
+          />
+          <FieldBilingualTextarea<LabFormValues>
+            name="description"
+            label="Descripción"
+            rows={4}
+          />
+          <FieldImageUpload<LabFormValues>
+            name="imageUrl"
+            label="Imagen"
+            control={form.control}
+          />
+        </FormSection>
+        <FormSection title="Galería">
+          <FieldGallery<LabFormValues>
+            name="galleryImageUrls"
+            label="Galería"
+            control={form.control}
+          />
+        </FormSection>
         <div className="admin-form-actions">
-          <button type="button" className="admin-btn admin-btn-secondary" onClick={onCancel}>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary"
+            onClick={onCancel}
+          >
             Cancelar
           </button>
-          <button type="submit" className="admin-btn" disabled={form.formState.isSubmitting}>
+          <button
+            type="submit"
+            className="admin-btn"
+            disabled={form.formState.isSubmitting}
+          >
             {form.formState.isSubmitting ? 'Guardando…' : 'Guardar'}
           </button>
         </div>

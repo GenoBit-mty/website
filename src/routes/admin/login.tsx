@@ -38,7 +38,9 @@ function LoginPage() {
   return (
     <div className="w-full max-w-[380px] rounded-lg border border-[rgba(14,23,23,0.08)] bg-white px-10 py-12 shadow-[0_6px_24px_rgba(14,23,23,0.08)]">
       <h1 className="mb-1 text-xl font-semibold">Panel de administración</h1>
-      <p className="mb-6 text-[13px] opacity-60">Introduce el código de acceso.</p>
+      <p className="mb-6 text-[13px] opacity-60">
+        Introduce el código de acceso.
+      </p>
       <form onSubmit={onSubmit} className="flex flex-col gap-3">
         <input
           type="password"
