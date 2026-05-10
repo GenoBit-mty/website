@@ -1,6 +1,6 @@
 import { ConvexError, v } from 'convex/values'
 import { mutation, query } from './_generated/server'
-import { requireAdmin } from './admin'
+import { requireAdmin, requireAdminQuery } from './admin'
 
 const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000
 
@@ -98,14 +98,7 @@ export const submit = mutation({
 export const list = query({
   args: { sessionToken: v.string() },
   handler: async (ctx, args) => {
-    // Use a query (not mutation) — call requireAdmin via shared logic.
-    // requireAdmin requires MutationCtx, so re-implement read-only check here.
-    const session = await ctx.db
-      .query('adminSessions')
-      .withIndex('by_token', (q) => q.eq('token', args.sessionToken))
-      .unique()
-    if (!session) throw new Error('Unauthorized')
-    if (session.expiresAt < Date.now()) throw new Error('Session expired')
+    await requireAdminQuery(ctx, args.sessionToken)
 
     return await ctx.db
       .query('applications')
@@ -118,12 +111,7 @@ export const list = query({
 export const getById = query({
   args: { sessionToken: v.string(), id: v.id('applications') },
   handler: async (ctx, args) => {
-    const session = await ctx.db
-      .query('adminSessions')
-      .withIndex('by_token', (q) => q.eq('token', args.sessionToken))
-      .unique()
-    if (!session) throw new Error('Unauthorized')
-    if (session.expiresAt < Date.now()) throw new Error('Session expired')
+    await requireAdminQuery(ctx, args.sessionToken)
     return await ctx.db.get(args.id)
   },
 })

@@ -37,6 +37,20 @@ export async function requireAdmin(
   await ctx.db.patch(session._id, { expiresAt: now + SESSION_DURATION_MS })
 }
 
+export async function requireAdminQuery(
+  ctx: QueryCtx,
+  sessionToken: string,
+): Promise<void> {
+  // Read-only variant of requireAdmin: queries cannot delete expired sessions,
+  // so we only validate and throw; mutation paths handle cleanup on next use.
+  const session = await ctx.db
+    .query('adminSessions')
+    .withIndex('by_token', (q) => q.eq('token', sessionToken))
+    .unique()
+  if (!session) throw new Error('Unauthorized')
+  if (session.expiresAt < Date.now()) throw new Error('Session expired')
+}
+
 export const login = mutation({
   args: { passcode: v.string() },
   handler: async (ctx, args) => {
