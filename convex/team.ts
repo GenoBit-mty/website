@@ -196,3 +196,42 @@ export const seedGenobitTeam = mutation({
     return { inserted, deleted: existing.length };
   },
 });
+
+export const bulkCreate = mutation({
+  args: {
+    sessionToken: v.string(),
+    group: v.string(),
+    rows: v.array(
+      v.object({
+        name: v.string(),
+        roleEs: v.string(),
+        roleEn: v.string(),
+        career: v.optional(v.string()),
+      }),
+    ),
+  },
+  returns: v.object({ inserted: v.number() }),
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx, args.sessionToken);
+
+    const existing = await ctx.db.query("teamMembers").collect();
+    let nextOrder =
+      existing.reduce(
+        (max, m) => Math.max(max, m.order ?? -1),
+        -1,
+      ) + 1;
+
+    let inserted = 0;
+    for (const row of args.rows) {
+      await ctx.db.insert("teamMembers", {
+        name: row.name,
+        role: { es: row.roleEs, en: row.roleEn },
+        career: row.career,
+        group: args.group,
+        order: nextOrder++,
+      });
+      inserted++;
+    }
+    return { inserted };
+  },
+});
