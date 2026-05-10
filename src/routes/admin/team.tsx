@@ -1,10 +1,27 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { api } from '../../../convex/_generated/api'
 import type { Id } from '../../../convex/_generated/dataModel'
 import { getAdminToken } from '@/lib/adminAuth'
@@ -97,7 +114,6 @@ function AdminTeamPage() {
   const create = useMutation(api.team.create)
   const update = useMutation(api.team.update)
   const remove = useMutation(api.team.remove)
-  // TASK 14: const reorder = useMutation(api.team.reorder)
 
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
@@ -257,97 +273,27 @@ function AdminTeamPage() {
         <p className="admin-empty">Cargando…</p>
       ) : (
         visibleGroups.map((g) => (
-          <div key={g.value} className="admin-list-section">
-            <div className="admin-list-section-header">
-              <h2 className="admin-list-section-title">{g.label}</h2>
-              {g.value !== 'directives' ? (
-                <button
-                  type="button"
-                  className="admin-btn admin-btn-secondary admin-btn-small"
-                  onClick={() => setBulkImportGroup(g.value)}
-                >
-                  Importar lista
-                </button>
-              ) : null}
-            </div>
-            {grouped[g.value].length ? (
-              grouped[g.value].map((m) => (
-                <div key={m._id} className="admin-card">
-                  {m.imageUrl ? (
-                    <img src={m.imageUrl} alt="" className="admin-card-thumb" />
-                  ) : (
-                    <div className="admin-card-thumb-fallback">{m.name.charAt(0)}</div>
-                  )}
-                  <div className="admin-card-body">
-                    <p className="admin-card-title">{m.name}</p>
-                    <p className="admin-card-meta">
-                      {m.role.es} · {m.role.en}
-                    </p>
-                  </div>
-                  <div className="admin-card-actions">
-                    <button
-                      type="button"
-                      className="admin-icon-btn"
-                      onClick={() => {}}
-                      aria-label="Subir"
-                    >
-                      ↑
-                      {/* TASK 14:
-                      onClick={async () => {
-                        const token = getAdminToken()
-                        if (!token) return
-                        await reorder({ sessionToken: token, id: m._id, direction: 'up' })
-                      }}
-                      */}
-                    </button>
-                    <button
-                      type="button"
-                      className="admin-icon-btn"
-                      onClick={() => {}}
-                      aria-label="Bajar"
-                    >
-                      ↓
-                      {/* TASK 14:
-                      onClick={async () => {
-                        const token = getAdminToken()
-                        if (!token) return
-                        await reorder({ sessionToken: token, id: m._id, direction: 'down' })
-                      }}
-                      */}
-                    </button>
-                    <button
-                      type="button"
-                      className="admin-icon-btn"
-                      onClick={() => setEditing(m._id)}
-                      aria-label="Editar"
-                    >
-                      ✎
-                    </button>
-                    <button
-                      type="button"
-                      className="admin-icon-btn"
-                      onClick={async () => {
-                        if (!confirm(`¿Eliminar a "${m.name}"?`)) return
-                        const token = getAdminToken()
-                        if (!token) return
-                        try {
-                          await remove({ sessionToken: token, id: m._id })
-                          toast.success('Miembro eliminado')
-                        } catch (err) {
-                          toast.error(err instanceof Error ? err.message : 'Error al eliminar')
-                        }
-                      }}
-                      aria-label="Eliminar"
-                    >
-                      ×
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="admin-empty">Sin miembros en {GROUP_LABELS[g.value]}</p>
-            )}
-          </div>
+          <SortableGroupSection
+            key={g.value}
+            group={g.value}
+            groupLabel={g.label}
+            members={grouped[g.value]}
+            onEdit={(id) => setEditing(id)}
+            onDelete={async (id, name) => {
+              if (!confirm(`¿Eliminar a "${name}"?`)) return
+              const token = getAdminToken()
+              if (!token) return
+              try {
+                await remove({ sessionToken: token, id })
+                toast.success('Miembro eliminado')
+              } catch (err) {
+                toast.error(err instanceof Error ? err.message : 'Error al eliminar')
+              }
+            }}
+            onOpenBulkImport={
+              g.value !== 'directives' ? () => setBulkImportGroup(g.value) : null
+            }
+          />
         ))
       )}
       {bulkImportGroup ? (
@@ -360,6 +306,161 @@ function AdminTeamPage() {
           }}
         />
       ) : null}
+    </div>
+  )
+}
+
+function SortableGroupSection({
+  group,
+  groupLabel,
+  members,
+  onEdit,
+  onDelete,
+  onOpenBulkImport,
+}: {
+  group: string
+  groupLabel: string
+  members: Array<TeamMemberDoc>
+  onEdit: (id: Id<'teamMembers'>) => void
+  onDelete: (id: Id<'teamMembers'>, name: string) => void
+  onOpenBulkImport: (() => void) | null
+}) {
+  const setOrder = useMutation(api.team.setOrder)
+  const [localOrder, setLocalOrder] = useState<Array<Id<'teamMembers'>>>(
+    members.map((m) => m._id),
+  )
+
+  // Keep local order in sync if server data changes (e.g. after add/delete).
+  useEffect(() => {
+    setLocalOrder(members.map((m) => m._id))
+  }, [members])
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  )
+
+  const onDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const oldIndex = localOrder.indexOf(active.id as Id<'teamMembers'>)
+    const newIndex = localOrder.indexOf(over.id as Id<'teamMembers'>)
+    if (oldIndex < 0 || newIndex < 0) return
+    const next = arrayMove(localOrder, oldIndex, newIndex)
+    setLocalOrder(next)
+    const token = getAdminToken()
+    if (!token) return
+    try {
+      await setOrder({ sessionToken: token, group, orderedIds: next })
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Error al reordenar')
+      setLocalOrder(members.map((m) => m._id))
+    }
+  }
+
+  const orderedMembers = localOrder
+    .map((id) => members.find((m) => m._id === id))
+    .filter((m): m is TeamMemberDoc => Boolean(m))
+
+  return (
+    <div className="admin-list-section">
+      <div className="admin-list-section-header">
+        <h2 className="admin-list-section-title">{groupLabel}</h2>
+        {onOpenBulkImport ? (
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary admin-btn-small"
+            onClick={onOpenBulkImport}
+          >
+            Importar lista
+          </button>
+        ) : null}
+      </div>
+      {orderedMembers.length === 0 ? (
+        <p className="admin-empty">Sin miembros en {groupLabel}</p>
+      ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={onDragEnd}
+        >
+          <SortableContext
+            items={localOrder}
+            strategy={verticalListSortingStrategy}
+          >
+            {orderedMembers.map((m) => (
+              <SortableMemberCard
+                key={m._id}
+                member={m}
+                onEdit={() => onEdit(m._id)}
+                onDelete={() => onDelete(m._id, m.name)}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
+      )}
+    </div>
+  )
+}
+
+function SortableMemberCard({
+  member: m,
+  onEdit,
+  onDelete,
+}: {
+  member: TeamMemberDoc
+  onEdit: () => void
+  onDelete: () => void
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: m._id })
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+  }
+  return (
+    <div ref={setNodeRef} style={style} className="admin-card">
+      <button
+        type="button"
+        className="admin-drag-handle"
+        aria-label="Arrastrar para reordenar"
+        {...attributes}
+        {...listeners}
+      >
+        ⋮⋮
+      </button>
+      {m.imageUrl ? (
+        <img src={m.imageUrl} alt="" className="admin-card-thumb" />
+      ) : (
+        <div className="admin-card-thumb-fallback">{m.name.charAt(0)}</div>
+      )}
+      <div className="admin-card-body">
+        <p className="admin-card-title">{m.name}</p>
+        <p className="admin-card-meta">
+          {m.role.es} · {m.role.en}
+        </p>
+      </div>
+      <div className="admin-card-actions">
+        <button
+          type="button"
+          className="admin-icon-btn"
+          onClick={onEdit}
+          aria-label="Editar"
+        >
+          ✎
+        </button>
+        <button
+          type="button"
+          className="admin-icon-btn"
+          onClick={onDelete}
+          aria-label="Eliminar"
+        >
+          ×
+        </button>
+      </div>
     </div>
   )
 }

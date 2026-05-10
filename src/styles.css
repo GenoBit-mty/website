@@ -3302,3 +3302,22 @@ main {
   color: #faf8f5;
   border-color: #0e1717;
 }
+
+.admin-drag-handle {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: #b0a99a;
+  padding: 0 6px;
+  cursor: grab;
+  user-select: none;
+  line-height: 1;
+}
+
+.admin-drag-handle:active {
+  cursor: grabbing;
+}
+
+.admin-drag-handle:hover {
+  color: #0e1717;
+}
