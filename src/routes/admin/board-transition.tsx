@@ -2,7 +2,12 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 import { toast } from 'sonner'
-import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form'
+import {
+  Controller,
+  FormProvider,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form'
 import { api } from '../../../convex/_generated/api'
 import { getAdminToken } from '@/lib/adminAuth'
 import {
@@ -88,14 +93,12 @@ function BoardTransitionPage() {
     const detected = inferCurrentPeriod(team) ?? ''
     setState({
       outgoingPeriod: detected,
-      incomingPeriod: detected ? nextPeriod(detected) ?? '' : '',
+      incomingPeriod: detected ? (nextPeriod(detected) ?? '') : '',
       presidentName: findPresidentName(outgoing),
       description: { es: '', en: '' },
       imageUrl: '',
       galleryImageUrls: [],
-      incomingMembers: outgoing.map((m) =>
-        emptyIncoming(m.role.es, m.role.en),
-      ),
+      incomingMembers: outgoing.map((m) => emptyIncoming(m.role.es, m.role.en)),
     })
   }, [team, state, outgoing])
 
@@ -247,9 +250,8 @@ function Step1Confirm({
     <div className="admin-wizard-step-body">
       <p>
         Estás a punto de archivar la Mesa Directiva{' '}
-        <strong>{state.outgoingPeriod || '—'}</strong>. Los{' '}
-        {outgoing.length} directivos actuales se moverán a "Mesas pasadas" con
-        su perfil completo.
+        <strong>{state.outgoingPeriod || '—'}</strong>. Los {outgoing.length}{' '}
+        directivos actuales se moverán a "Mesas pasadas" con su perfil completo.
       </p>
 
       <div className="admin-wizard-grid">
@@ -360,7 +362,11 @@ function Step2Metadata({
               {...form.register('presidentName')}
             />
           </label>
-          <FieldBilingualTextarea name="description" label="Descripción" rows={4} />
+          <FieldBilingualTextarea
+            name="description"
+            label="Descripción"
+            rows={4}
+          />
         </FormSection>
 
         <FormSection title="Foto y galería">
@@ -417,9 +423,11 @@ function Step3Roster({
     onContinue()
   })
 
-  const allValid = form.watch('members').every(
-    (m) => m.skip || (m.name.trim() && m.roleEs.trim() && m.roleEn.trim()),
-  )
+  const allValid = form
+    .watch('members')
+    .every(
+      (m) => m.skip || (m.name.trim() && m.roleEs.trim() && m.roleEn.trim()),
+    )
 
   return (
     <form className="admin-wizard-step-body" onSubmit={submit}>
@@ -562,7 +570,9 @@ function Step4Review({
     <div className="admin-wizard-step-body">
       <div className="admin-wizard-review-cols">
         <section>
-          <h3 className="admin-list-section-title">Archivando · {state.outgoingPeriod}</h3>
+          <h3 className="admin-list-section-title">
+            Archivando · {state.outgoingPeriod}
+          </h3>
           {outgoing.map((m) => (
             <div key={m._id} className="admin-card admin-card-readonly">
               {m.imageUrl ? (
@@ -582,7 +592,9 @@ function Step4Review({
           ))}
         </section>
         <section>
-          <h3 className="admin-list-section-title">Creando · {state.incomingPeriod}</h3>
+          <h3 className="admin-list-section-title">
+            Creando · {state.incomingPeriod}
+          </h3>
           {state.incomingMembers.map((m, idx) => (
             <div key={idx} className="admin-card admin-card-readonly">
               {m.imageUrl ? (
@@ -610,9 +622,9 @@ function Step4Review({
 
       <div className="admin-wizard-warning">
         Esto creará la mesa pasada <strong>{state.outgoingPeriod}</strong> y
-        reemplazará los <strong>{outgoing.length}</strong> directivos actuales con
-        la nueva mesa <strong>{state.incomingPeriod}</strong>. Esta acción no se
-        puede deshacer fácilmente.
+        reemplazará los <strong>{outgoing.length}</strong> directivos actuales
+        con la nueva mesa <strong>{state.incomingPeriod}</strong>. Esta acción
+        no se puede deshacer fácilmente.
       </div>
 
       <div className="admin-form-actions">

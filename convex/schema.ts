@@ -1,10 +1,10 @@
-import { defineSchema, defineTable } from "convex/server";
-import { v } from "convex/values";
+import { defineSchema, defineTable } from 'convex/server'
+import { v } from 'convex/values'
 
 const bilingual = v.object({
   es: v.string(),
   en: v.string(),
-});
+})
 
 export default defineSchema({
   teamMembers: defineTable({
@@ -69,7 +69,7 @@ export default defineSchema({
     imageUrl: v.optional(v.string()),
     galleryImageUrls: v.optional(v.array(v.string())),
     tags: v.optional(v.array(v.string())),
-  }).index("by_slug", ["slug"]),
+  }).index('by_slug', ['slug']),
 
   labs: defineTable({
     title: bilingual,
@@ -85,10 +85,10 @@ export default defineSchema({
   adminSessions: defineTable({
     token: v.string(),
     expiresAt: v.number(),
-  }).index("by_token", ["token"]),
+  }).index('by_token', ['token']),
 
   homeImages: defineTable({
     slot: v.string(),
     imageUrl: v.string(),
-  }).index("by_slot", ["slot"]),
-});
+  }).index('by_slot', ['slot']),
+})

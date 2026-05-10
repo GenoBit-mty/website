@@ -30,7 +30,7 @@ A `slugify(text: string)` helper lives in `convex/lib/slug.ts` so the admin clie
 
 Form additions:
 
-- **Slug field** (`FieldText`). Default value is `slugify(title.en)`, recomputed live as the English title changes *until the user edits the slug field manually* — then auto-sync stops (tracked via a local "dirty" flag). Validation regex: `/^[a-z0-9-]+$/`. Required.
+- **Slug field** (`FieldText`). Default value is `slugify(title.en)`, recomputed live as the English title changes _until the user edits the slug field manually_ — then auto-sync stops (tracked via a local "dirty" flag). Validation regex: `/^[a-z0-9-]+$/`. Required.
 - **Body field** — bilingual markdown textarea using `FieldBilingualTextarea` with `rows={16}`. A small helper line below reads "Markdown supported (headings, lists, links, images)."
 
 The Zod schema is updated accordingly: `slug` required and regex-validated; `body` optional bilingual.

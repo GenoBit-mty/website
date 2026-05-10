@@ -8,7 +8,9 @@ export function nextPeriod(period: string): string | null {
 
 type MemberLike = { group?: string; tenure?: string }
 
-export function inferCurrentPeriod(members: ReadonlyArray<MemberLike>): string | null {
+export function inferCurrentPeriod(
+  members: ReadonlyArray<MemberLike>,
+): string | null {
   const counts = new Map<string, number>()
   for (const m of members) {
     if (m.group !== 'directives') continue

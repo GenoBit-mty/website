@@ -9,11 +9,16 @@ export const Route = createFileRoute('/admin/home')({
   component: AdminHomePage,
 })
 
-const SLOTS: Array<{ key: 'research' | 'team' | 'events'; label: string; description: string }> = [
+const SLOTS: Array<{
+  key: 'research' | 'team' | 'events'
+  label: string
+  description: string
+}> = [
   {
     key: 'research',
     label: 'Investigación',
-    description: 'Imagen mostrada junto al bloque de investigación en la portada.',
+    description:
+      'Imagen mostrada junto al bloque de investigación en la portada.',
   },
   {
     key: 'team',
@@ -64,7 +69,10 @@ function AdminHomePage() {
       })
       if (!res.ok) throw new Error('Falló la subida')
       const { storageId } = (await res.json()) as { storageId: string }
-      const { url } = await resolveUploadedUrl({ sessionToken: token, storageId })
+      const { url } = await resolveUploadedUrl({
+        sessionToken: token,
+        storageId,
+      })
       await setSlot({ sessionToken: token, slot, imageUrl: url })
       toast.success('Imagen subida')
     } catch (err) {
@@ -91,8 +99,8 @@ function AdminHomePage() {
         <div>
           <h1 className="admin-page-title">Portada</h1>
           <p className="admin-page-sub">
-            Selecciona las imágenes mostradas en los bloques de la página principal. Puedes subir
-            nuevas o reutilizar imágenes ya cargadas.
+            Selecciona las imágenes mostradas en los bloques de la página
+            principal. Puedes subir nuevas o reutilizar imágenes ya cargadas.
           </p>
         </div>
       </div>
@@ -109,13 +117,21 @@ function AdminHomePage() {
                 {current ? (
                   <img src={current} alt="" className="admin-card-thumb" />
                 ) : (
-                  <div className="admin-card-thumb-fallback">{slot.label.charAt(0)}</div>
+                  <div className="admin-card-thumb-fallback">
+                    {slot.label.charAt(0)}
+                  </div>
                 )}
                 <div className="admin-card-body">
                   <p className="admin-card-title">{slot.label}</p>
                   <p className="admin-card-meta">{slot.description}</p>
-                  <div className="admin-form-actions" style={{ marginTop: 12, justifyContent: 'flex-start' }}>
-                    <label className="admin-btn admin-btn-secondary" style={{ cursor: 'pointer' }}>
+                  <div
+                    className="admin-form-actions"
+                    style={{ marginTop: 12, justifyContent: 'flex-start' }}
+                  >
+                    <label
+                      className="admin-btn admin-btn-secondary"
+                      style={{ cursor: 'pointer' }}
+                    >
                       <input
                         type="file"
                         accept="image/*"
@@ -209,7 +225,11 @@ function BrowseModal({
             </h2>
             <p className="admin-page-sub">Selecciona una imagen ya subida.</p>
           </div>
-          <button type="button" className="admin-btn admin-btn-secondary" onClick={onClose}>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary"
+            onClick={onClose}
+          >
             Cerrar
           </button>
         </div>
@@ -220,7 +240,11 @@ function BrowseModal({
         ) : (
           <div
             className="admin-gallery"
-            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12 }}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+              gap: 12,
+            }}
           >
             {images.map((url) => (
               <button
@@ -239,7 +263,12 @@ function BrowseModal({
                 <img
                   src={url}
                   alt=""
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                  }}
                 />
               </button>
             ))}

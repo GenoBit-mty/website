@@ -25,8 +25,13 @@ export const Route = createFileRoute('/admin/admins')({
   validateSearch: adminsSearchSchema,
 })
 
-const bilingual = z.object({ es: z.string().min(1, 'Requerido'), en: z.string().min(1, 'Requerido') })
-const optionalBilingual = z.object({ es: z.string(), en: z.string() }).optional()
+const bilingual = z.object({
+  es: z.string().min(1, 'Requerido'),
+  en: z.string().min(1, 'Requerido'),
+})
+const optionalBilingual = z
+  .object({ es: z.string(), en: z.string() })
+  .optional()
 
 const memberSchema = z.object({
   name: z.string().min(1, 'Requerido'),
@@ -106,7 +111,8 @@ function AdminAdminsPage() {
   }, [search.editId, editing, navigate])
 
   if (editing !== null) {
-    const adm = editing === 'new' ? null : admins?.find((a) => a._id === editing)
+    const adm =
+      editing === 'new' ? null : admins?.find((a) => a._id === editing)
     return (
       <AdminForm
         initial={adm ?? null}
@@ -119,7 +125,9 @@ function AdminAdminsPage() {
             presidentName: values.presidentName,
             description: cleanBilingual(values.description),
             imageUrl: cleanOptional(values.imageUrl),
-            galleryImageUrls: values.galleryImageUrls?.length ? values.galleryImageUrls : undefined,
+            galleryImageUrls: values.galleryImageUrls?.length
+              ? values.galleryImageUrls
+              : undefined,
             members: values.members.map((m) => ({
               name: m.name,
               role: m.role,
@@ -127,7 +135,9 @@ function AdminAdminsPage() {
               tenure: cleanOptional(m.tenure),
               bio: cleanBilingual(m.bio),
               imageUrl: cleanOptional(m.imageUrl),
-              galleryImageUrls: m.galleryImageUrls?.length ? m.galleryImageUrls : undefined,
+              galleryImageUrls: m.galleryImageUrls?.length
+                ? m.galleryImageUrls
+                : undefined,
               email: cleanOptional(m.email),
               linkedinUrl: cleanOptional(m.linkedinUrl),
               githubUrl: cleanOptional(m.githubUrl),
@@ -155,9 +165,15 @@ function AdminAdminsPage() {
       <div className="admin-page-header">
         <div>
           <h1 className="admin-page-title">Mesas pasadas</h1>
-          <p className="admin-page-sub">Archivo histórico de mesas directivas.</p>
+          <p className="admin-page-sub">
+            Archivo histórico de mesas directivas.
+          </p>
         </div>
-        <button type="button" className="admin-btn" onClick={() => setEditing('new')}>
+        <button
+          type="button"
+          className="admin-btn"
+          onClick={() => setEditing('new')}
+        >
           + Nueva mesa
         </button>
       </div>
@@ -172,7 +188,9 @@ function AdminAdminsPage() {
             {a.imageUrl ? (
               <img src={a.imageUrl} alt="" className="admin-card-thumb" />
             ) : (
-              <div className="admin-card-thumb-fallback">{a.period.charAt(0)}</div>
+              <div className="admin-card-thumb-fallback">
+                {a.period.charAt(0)}
+              </div>
             )}
             <div className="admin-card-body">
               <p className="admin-card-title">{a.period}</p>
@@ -258,25 +276,53 @@ function AdminForm({
     <FormProvider {...form}>
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">{initial ? 'Editar mesa' : 'Nueva mesa'}</h1>
+          <h1 className="admin-page-title">
+            {initial ? 'Editar mesa' : 'Nueva mesa'}
+          </h1>
         </div>
       </div>
       <form className="admin-form-shell" onSubmit={form.handleSubmit(onSubmit)}>
         <FormSection title="Datos básicos">
-          <FieldText<AdminFormValues> name="period" label="Periodo" placeholder="2023-2024" required />
-          <FieldText<AdminFormValues> name="presidentName" label="Nombre del presidente" required />
-          <FieldBilingualTextarea<AdminFormValues> name="description" label="Descripción" rows={4} />
+          <FieldText<AdminFormValues>
+            name="period"
+            label="Periodo"
+            placeholder="2023-2024"
+            required
+          />
+          <FieldText<AdminFormValues>
+            name="presidentName"
+            label="Nombre del presidente"
+            required
+          />
+          <FieldBilingualTextarea<AdminFormValues>
+            name="description"
+            label="Descripción"
+            rows={4}
+          />
         </FormSection>
 
         <FormSection title="Foto y galería">
-          <FieldImageUpload<AdminFormValues> name="imageUrl" label="Foto principal" control={form.control} />
-          <FieldGallery<AdminFormValues> name="galleryImageUrls" label="Galería" control={form.control} />
+          <FieldImageUpload<AdminFormValues>
+            name="imageUrl"
+            label="Foto principal"
+            control={form.control}
+          />
+          <FieldGallery<AdminFormValues>
+            name="galleryImageUrls"
+            label="Galería"
+            control={form.control}
+          />
         </FormSection>
 
         <FormSection title="Miembros">
           <div className="admin-members-section">
-            <div className="admin-page-header" style={{ marginBottom: 12, paddingBottom: 8 }}>
-              <h2 style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>Miembros</h2>
+            <div
+              className="admin-page-header"
+              style={{ marginBottom: 12, paddingBottom: 8 }}
+            >
+              <h2 style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>
+                Miembros
+              </h2>
               <button
                 type="button"
                 className="admin-btn admin-btn-secondary"
@@ -329,7 +375,10 @@ function AdminForm({
                   />
                 </label>
                 <FieldImageUpload<AdminFormValues>
-                  name={`members.${idx}.imageUrl` as const as keyof AdminFormValues & string}
+                  name={
+                    `members.${idx}.imageUrl` as const as keyof AdminFormValues &
+                      string
+                  }
                   label="Foto"
                   control={form.control}
                 />
@@ -349,10 +398,18 @@ function AdminForm({
         </FormSection>
 
         <div className="admin-form-actions">
-          <button type="button" className="admin-btn admin-btn-secondary" onClick={onCancel}>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary"
+            onClick={onCancel}
+          >
             Cancelar
           </button>
-          <button type="submit" className="admin-btn" disabled={form.formState.isSubmitting}>
+          <button
+            type="submit"
+            className="admin-btn"
+            disabled={form.formState.isSubmitting}
+          >
             {form.formState.isSubmitting ? 'Guardando…' : 'Guardar'}
           </button>
         </div>

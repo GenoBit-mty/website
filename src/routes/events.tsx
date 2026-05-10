@@ -12,7 +12,16 @@ export const Route = createFileRoute('/events')({
 
 function LocationIcon({ title }: { title: string }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <title>{title}</title>
       <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
       <circle cx="12" cy="10" r="3" />
@@ -22,13 +31,22 @@ function LocationIcon({ title }: { title: string }) {
 
 type EventDoc = Doc<'events'>
 
-function EventImage({ src, alt, placeholder }: { src?: string; alt: string; placeholder: string }) {
+function EventImage({
+  src,
+  alt,
+  placeholder,
+}: {
+  src?: string
+  alt: string
+  placeholder: string
+}) {
   if (src) return <img src={src} alt={alt} className="event-image" />
   return (
     <div
       className="event-image"
       style={{
-        background: 'linear-gradient(135deg, rgba(0, 112, 111, 0.16), rgba(217, 119, 87, 0.12))',
+        background:
+          'linear-gradient(135deg, rgba(0, 112, 111, 0.16), rgba(217, 119, 87, 0.12))',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -54,12 +72,18 @@ function HeroCard({ event }: { event: EventDoc }) {
   const { lang, t } = useLang()
   const title = tField(event.title, lang)
   const description = tField(event.description, lang)
-  const paragraphs = description ? description.split(/\n\n+/).filter(Boolean) : []
+  const paragraphs = description
+    ? description.split(/\n\n+/).filter(Boolean)
+    : []
   return (
     <article className="event-card-hero">
       <div className="event-image-wrap">
         <span className="event-date-block">{event.date}</span>
-        <EventImage src={event.imageUrl} alt={title} placeholder={t('events.placeholder')} />
+        <EventImage
+          src={event.imageUrl}
+          alt={title}
+          placeholder={t('events.placeholder')}
+        />
       </div>
       <div className="event-body">
         <div className="event-header">
@@ -71,7 +95,9 @@ function HeroCard({ event }: { event: EventDoc }) {
           {event.location}
         </div>
         {paragraphs.map((para, i) => (
-          <p key={i} className="event-desc">{para}</p>
+          <p key={i} className="event-desc">
+            {para}
+          </p>
         ))}
         {event.requiresRegistration && event.registrationUrl && (
           <div style={{ marginTop: '12px' }}>
@@ -95,12 +121,18 @@ function UpcomingGridCard({ event }: { event: EventDoc }) {
   const { lang, t } = useLang()
   const title = tField(event.title, lang)
   const description = tField(event.description, lang)
-  const paragraphs = description ? description.split(/\n\n+/).filter(Boolean) : []
+  const paragraphs = description
+    ? description.split(/\n\n+/).filter(Boolean)
+    : []
   return (
     <article className="event-card stagger-child">
       <div className="event-image-wrap">
         <span className="event-date-block">{event.date}</span>
-        <EventImage src={event.imageUrl} alt={title} placeholder={t('events.placeholder')} />
+        <EventImage
+          src={event.imageUrl}
+          alt={title}
+          placeholder={t('events.placeholder')}
+        />
       </div>
       <div className="event-body">
         <div className="event-header">
@@ -112,7 +144,9 @@ function UpcomingGridCard({ event }: { event: EventDoc }) {
           {event.location}
         </div>
         {paragraphs.map((para, i) => (
-          <p key={i} className="event-desc">{para}</p>
+          <p key={i} className="event-desc">
+            {para}
+          </p>
         ))}
         {event.requiresRegistration && event.registrationUrl && (
           <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
@@ -143,7 +177,11 @@ function PastCard({ event }: { event: EventDoc }) {
     >
       <div className="event-image-wrap">
         <span className="event-date-block">{event.date}</span>
-        <EventImage src={event.imageUrl} alt={title} placeholder={t('events.placeholder')} />
+        <EventImage
+          src={event.imageUrl}
+          alt={title}
+          placeholder={t('events.placeholder')}
+        />
       </div>
       <div className="event-body">
         <h3 className="event-title">{title}</h3>
@@ -168,21 +206,39 @@ function EventsPage() {
             <div className="sticky-type page-watermark">eventos</div>
             <div className="page-header-content">
               <span className="mono-label">{t('events.header.eyebrow')}</span>
-              <h1 className="page-title"><em>{t('events.header.title')}</em></h1>
+              <h1 className="page-title">
+                <em>{t('events.header.title')}</em>
+              </h1>
               <p className="page-lead">{t('events.header.lead')}</p>
             </div>
           </div>
         </div>
         <section className="section-spacing">
           <div className="site-container">
-            <div className="skeleton" style={{ width: '100%', height: '320px', marginBottom: '40px' }} />
+            <div
+              className="skeleton"
+              style={{ width: '100%', height: '320px', marginBottom: '40px' }}
+            />
             <div className="events-past-grid">
               {['s1', 's2', 's3'].map((k) => (
                 <div key={k} className="event-card-compact">
-                  <div className="skeleton" style={{ width: '100%', height: '140px' }} />
+                  <div
+                    className="skeleton"
+                    style={{ width: '100%', height: '140px' }}
+                  />
                   <div style={{ padding: '16px' }}>
-                    <div className="skeleton" style={{ width: '70%', height: '16px', marginBottom: '8px' }} />
-                    <div className="skeleton" style={{ width: '50%', height: '12px' }} />
+                    <div
+                      className="skeleton"
+                      style={{
+                        width: '70%',
+                        height: '16px',
+                        marginBottom: '8px',
+                      }}
+                    />
+                    <div
+                      className="skeleton"
+                      style={{ width: '50%', height: '12px' }}
+                    />
                   </div>
                 </div>
               ))}
@@ -204,7 +260,9 @@ function EventsPage() {
           <div className="sticky-type page-watermark">eventos</div>
           <div className="page-header-content">
             <span className="mono-label">{t('events.header.eyebrow')}</span>
-            <h1 className="page-title"><em>{t('events.header.title')}</em></h1>
+            <h1 className="page-title">
+              <em>{t('events.header.title')}</em>
+            </h1>
             <p className="page-lead">{t('events.header.lead')}</p>
           </div>
         </div>
@@ -213,7 +271,9 @@ function EventsPage() {
       <section className="section-spacing">
         <div className="site-container reveal-on-scroll visible">
           <div className="events-section-block">
-            <h2 className="events-section-heading">{t('events.section.upcoming')}</h2>
+            <h2 className="events-section-heading">
+              {t('events.section.upcoming')}
+            </h2>
             {hero ? (
               <>
                 <HeroCard event={hero} />
@@ -232,7 +292,9 @@ function EventsPage() {
 
           {past.length > 0 && (
             <div className="events-section-block">
-              <h2 className="events-section-heading">{t('events.section.past')}</h2>
+              <h2 className="events-section-heading">
+                {t('events.section.past')}
+              </h2>
               <div className="events-past-grid">
                 {past.map((event) => (
                   <PastCard key={event._id} event={event} />

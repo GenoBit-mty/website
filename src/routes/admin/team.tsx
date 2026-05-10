@@ -7,12 +7,11 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import {
   DndContext,
-  
   KeyboardSensor,
   PointerSensor,
   closestCenter,
   useSensor,
-  useSensors
+  useSensors,
 } from '@dnd-kit/core'
 import {
   SortableContext,
@@ -23,7 +22,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { api } from '../../../convex/_generated/api'
-import type {DragEndEvent} from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core'
 import type { Id } from '../../../convex/_generated/dataModel'
 import { getAdminToken } from '@/lib/adminAuth'
 import { BulkImportModal } from '@/components/admin/BulkImportModal'
@@ -84,7 +83,9 @@ const GROUPS: Array<{ value: string; label: string }> = [
   { value: 'student-community', label: 'Student Community' },
 ]
 
-const GROUP_LABELS: Record<string, string> = Object.fromEntries(GROUPS.map((g) => [g.value, g.label]))
+const GROUP_LABELS: Record<string, string> = Object.fromEntries(
+  GROUPS.map((g) => [g.value, g.label]),
+)
 
 const defaultValues: TeamFormValues = {
   name: '',
@@ -165,7 +166,13 @@ function AdminTeamPage() {
 
   const groupCounts = useMemo(() => {
     if (!members) {
-      return { all: 0, directives: 0, ndrg: 0, proteomics: 0, 'student-community': 0 }
+      return {
+        all: 0,
+        directives: 0,
+        ndrg: 0,
+        proteomics: 0,
+        'student-community': 0,
+      }
     }
     const counts = {
       all: members.length,
@@ -186,7 +193,8 @@ function AdminTeamPage() {
     : GROUPS
 
   if (editing !== null) {
-    const member = editing === 'new' ? null : members?.find((m) => m._id === editing)
+    const member =
+      editing === 'new' ? null : members?.find((m) => m._id === editing)
     return (
       <TeamForm
         initial={member ?? null}
@@ -203,7 +211,9 @@ function AdminTeamPage() {
             isFirstBoard: values.isFirstBoard,
             bio: cleanBilingual(values.bio),
             imageUrl: cleanOptional(values.imageUrl),
-            galleryImageUrls: values.galleryImageUrls?.length ? values.galleryImageUrls : undefined,
+            galleryImageUrls: values.galleryImageUrls?.length
+              ? values.galleryImageUrls
+              : undefined,
             email: cleanOptional(values.email),
             linkedinUrl: cleanOptional(values.linkedinUrl),
             githubUrl: cleanOptional(values.githubUrl),
@@ -231,14 +241,24 @@ function AdminTeamPage() {
       <div className="admin-page-header">
         <div>
           <h1 className="admin-page-title">Equipo</h1>
-          <p className="admin-page-sub">Gestiona los miembros del equipo y su orden por grupo.</p>
+          <p className="admin-page-sub">
+            Gestiona los miembros del equipo y su orden por grupo.
+          </p>
         </div>
-        <button type="button" className="admin-btn" onClick={() => setEditing('new')}>
+        <button
+          type="button"
+          className="admin-btn"
+          onClick={() => setEditing('new')}
+        >
           + Nuevo miembro
         </button>
       </div>
 
-      <div className="admin-filter-chips" role="tablist" aria-label="Filtrar grupo">
+      <div
+        className="admin-filter-chips"
+        role="tablist"
+        aria-label="Filtrar grupo"
+      >
         <button
           type="button"
           role="tab"
@@ -257,8 +277,7 @@ function AdminTeamPage() {
             className={`admin-chip ${activeGroup === g.value ? 'is-active' : ''}`}
             onClick={() => setActiveGroup(g.value)}
           >
-            {g.label} ·{' '}
-            {groupCounts[g.value as keyof typeof groupCounts]}
+            {g.label} · {groupCounts[g.value as keyof typeof groupCounts]}
           </button>
         ))}
       </div>
@@ -289,11 +308,15 @@ function AdminTeamPage() {
                 await remove({ sessionToken: token, id })
                 toast.success('Miembro eliminado')
               } catch (err) {
-                toast.error(err instanceof Error ? err.message : 'Error al eliminar')
+                toast.error(
+                  err instanceof Error ? err.message : 'Error al eliminar',
+                )
               }
             }}
             onOpenBulkImport={
-              g.value !== 'directives' ? () => setBulkImportGroup(g.value) : null
+              g.value !== 'directives'
+                ? () => setBulkImportGroup(g.value)
+                : null
             }
           />
         ))
@@ -416,8 +439,14 @@ function SortableMemberCard({
   onEdit: () => void
   onDelete: () => void
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: m._id })
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: m._id })
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -518,16 +547,19 @@ function TeamForm({
     <FormProvider {...form}>
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">{initial ? 'Editar miembro' : 'Nuevo miembro'}</h1>
+          <h1 className="admin-page-title">
+            {initial ? 'Editar miembro' : 'Nuevo miembro'}
+          </h1>
         </div>
       </div>
-      <form
-        className="admin-form-shell"
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
+      <form className="admin-form-shell" onSubmit={form.handleSubmit(onSubmit)}>
         <FormSection title="Datos básicos">
           <FieldText<TeamFormValues> name="name" label="Nombre" required />
-          <FieldBilingualText<TeamFormValues> name="role" label="Rol" required />
+          <FieldBilingualText<TeamFormValues>
+            name="role"
+            label="Rol"
+            required
+          />
           <FieldSelect<TeamFormValues>
             name="group"
             label="Grupo"
@@ -535,7 +567,11 @@ function TeamForm({
             options={GROUPS}
           />
           <FieldText<TeamFormValues> name="career" label="Carrera" />
-          <FieldText<TeamFormValues> name="tenure" label="Gestión" placeholder="2025-2026" />
+          <FieldText<TeamFormValues>
+            name="tenure"
+            label="Gestión"
+            placeholder="2025-2026"
+          />
           <FieldCheckbox<TeamFormValues>
             name="isFirstBoard"
             label="Primera Mesa Directiva"
@@ -548,7 +584,10 @@ function TeamForm({
             label="Foto principal"
             control={form.control}
           />
-          <FieldBilingualTextarea<TeamFormValues> name="bio" label="Biografía" />
+          <FieldBilingualTextarea<TeamFormValues>
+            name="bio"
+            label="Biografía"
+          />
         </FormSection>
 
         <FormSection title="Galería">
@@ -567,10 +606,18 @@ function TeamForm({
         </FormSection>
 
         <div className="admin-form-actions">
-          <button type="button" className="admin-btn admin-btn-secondary" onClick={onCancel}>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary"
+            onClick={onCancel}
+          >
             Cancelar
           </button>
-          <button type="submit" className="admin-btn" disabled={form.formState.isSubmitting}>
+          <button
+            type="submit"
+            className="admin-btn"
+            disabled={form.formState.isSubmitting}
+          >
             {form.formState.isSubmitting ? 'Guardando…' : 'Guardar'}
           </button>
         </div>

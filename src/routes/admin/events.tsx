@@ -22,7 +22,10 @@ export const Route = createFileRoute('/admin/events')({
   component: AdminEventsPage,
 })
 
-const bilingual = z.object({ es: z.string().min(1, 'Requerido'), en: z.string().min(1, 'Requerido') })
+const bilingual = z.object({
+  es: z.string().min(1, 'Requerido'),
+  en: z.string().min(1, 'Requerido'),
+})
 
 const eventSchema = z.object({
   category: z.string().optional(),
@@ -91,7 +94,9 @@ function AdminEventsPage() {
             date: values.date,
             location: values.location,
             imageUrl: cleanOptional(values.imageUrl),
-            galleryImageUrls: values.galleryImageUrls?.length ? values.galleryImageUrls : undefined,
+            galleryImageUrls: values.galleryImageUrls?.length
+              ? values.galleryImageUrls
+              : undefined,
             requiresRegistration: values.requiresRegistration,
             registrationUrl: values.requiresRegistration
               ? cleanOptional(values.registrationUrl)
@@ -120,9 +125,15 @@ function AdminEventsPage() {
       <div className="admin-page-header">
         <div>
           <h1 className="admin-page-title">Eventos</h1>
-          <p className="admin-page-sub">Talleres, conferencias y actividades.</p>
+          <p className="admin-page-sub">
+            Talleres, conferencias y actividades.
+          </p>
         </div>
-        <button type="button" className="admin-btn" onClick={() => setEditing('new')}>
+        <button
+          type="button"
+          className="admin-btn"
+          onClick={() => setEditing('new')}
+        >
           + Nuevo evento
         </button>
       </div>
@@ -200,7 +211,8 @@ function EventForm({
           location: initial.location,
           imageUrl: initial.imageUrl ?? '',
           galleryImageUrls: initial.galleryImageUrls ?? [],
-          requiresRegistration: initial.requiresRegistration ?? Boolean(initial.registrationUrl),
+          requiresRegistration:
+            initial.requiresRegistration ?? Boolean(initial.registrationUrl),
           registrationUrl: initial.registrationUrl ?? '',
           isUpcoming: initial.isUpcoming ?? false,
         }
@@ -211,23 +223,50 @@ function EventForm({
     <FormProvider {...form}>
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">{initial ? 'Editar evento' : 'Nuevo evento'}</h1>
+          <h1 className="admin-page-title">
+            {initial ? 'Editar evento' : 'Nuevo evento'}
+          </h1>
         </div>
       </div>
       <form className="admin-form-shell" onSubmit={form.handleSubmit(onSubmit)}>
         <FormSection title="Datos básicos">
           <FieldText<EventFormValues> name="category" label="Categoría" />
-          <FieldBilingualText<EventFormValues> name="title" label="Título" required />
-          <FieldText<EventFormValues> name="date" label="Fecha" placeholder="2026-04-12 · 18:00" required />
+          <FieldBilingualText<EventFormValues>
+            name="title"
+            label="Título"
+            required
+          />
+          <FieldText<EventFormValues>
+            name="date"
+            label="Fecha"
+            placeholder="2026-04-12 · 18:00"
+            required
+          />
           <FieldText<EventFormValues> name="location" label="Lugar" required />
-          <FieldCheckbox<EventFormValues> name="isUpcoming" label="Es un evento próximo" />
+          <FieldCheckbox<EventFormValues>
+            name="isUpcoming"
+            label="Es un evento próximo"
+          />
         </FormSection>
         <FormSection title="Contenido">
-          <FieldBilingualTextarea<EventFormValues> name="description" label="Descripción" required rows={4} />
-          <FieldImageUpload<EventFormValues> name="imageUrl" label="Imagen principal" control={form.control} />
+          <FieldBilingualTextarea<EventFormValues>
+            name="description"
+            label="Descripción"
+            required
+            rows={4}
+          />
+          <FieldImageUpload<EventFormValues>
+            name="imageUrl"
+            label="Imagen principal"
+            control={form.control}
+          />
         </FormSection>
         <FormSection title="Galería">
-          <FieldGallery<EventFormValues> name="galleryImageUrls" label="Galería" control={form.control} />
+          <FieldGallery<EventFormValues>
+            name="galleryImageUrls"
+            label="Galería"
+            control={form.control}
+          />
         </FormSection>
         <FormSection title="Inscripción">
           <FieldCheckbox<EventFormValues>
@@ -236,14 +275,25 @@ function EventForm({
             description="Si está activado, se mostrará un botón de Registrarse con el enlace que indiques."
           />
           {form.watch('requiresRegistration') && (
-            <FieldText<EventFormValues> name="registrationUrl" label="URL de registro" />
+            <FieldText<EventFormValues>
+              name="registrationUrl"
+              label="URL de registro"
+            />
           )}
         </FormSection>
         <div className="admin-form-actions">
-          <button type="button" className="admin-btn admin-btn-secondary" onClick={onCancel}>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary"
+            onClick={onCancel}
+          >
             Cancelar
           </button>
-          <button type="submit" className="admin-btn" disabled={form.formState.isSubmitting}>
+          <button
+            type="submit"
+            className="admin-btn"
+            disabled={form.formState.isSubmitting}
+          >
             {form.formState.isSubmitting ? 'Guardando…' : 'Guardar'}
           </button>
         </div>

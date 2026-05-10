@@ -11,6 +11,7 @@
 **Spec:** `docs/superpowers/specs/2026-05-09-admin-page-improvements-design.md`
 
 **Pre-flight:**
+
 - After any change to `convex/schema.ts` or files in `convex/*.ts`, run `npx convex codegen --typecheck=disable` once to regenerate `convex/_generated/*`. Frontend imports break otherwise. (Alternative: keep `npx convex dev` running in a side terminal for auto-regeneration.)
 - Baseline (already verified before plan execution): `npm run test` passes (12 tests across 2 files).
 
@@ -21,6 +22,7 @@
 Adds optional fields so archived board members keep full profile fidelity. Convex permits additive optional fields without migration.
 
 **Files:**
+
 - Modify: `convex/schema.ts`
 
 - [ ] **Step 1: Update the `pastAdministrations` table definition**
@@ -75,6 +77,7 @@ git commit -m "feat(convex): widen pastAdministrations.members for full profile 
 Mirror the schema change in `convex/pastAdmin.ts` so create/update accept the new optional fields.
 
 **Files:**
+
 - Modify: `convex/pastAdmin.ts`
 
 - [ ] **Step 1: Replace the `memberValidator` constant**
@@ -93,7 +96,7 @@ const memberValidator = v.object({
   email: v.optional(v.string()),
   linkedinUrl: v.optional(v.string()),
   githubUrl: v.optional(v.string()),
-});
+})
 ```
 
 - [ ] **Step 2: Verify type regeneration**
@@ -115,6 +118,7 @@ git commit -m "feat(convex): accept full member profile in pastAdmin create/upda
 Pure functions used by the dashboard and the wizard. `inferCurrentPeriod` reads tenures off the directives; `nextPeriod` increments a `YYYY-YYYY` string.
 
 **Files:**
+
 - Create: `src/lib/periodInference.ts`
 - Test: `src/lib/periodInference.test.ts`
 
@@ -187,7 +191,9 @@ export function nextPeriod(period: string): string | null {
 
 type MemberLike = { group?: string; tenure?: string }
 
-export function inferCurrentPeriod(members: ReadonlyArray<MemberLike>): string | null {
+export function inferCurrentPeriod(
+  members: ReadonlyArray<MemberLike>,
+): string | null {
   const counts = new Map<string, number>()
   for (const m of members) {
     if (m.group !== 'directives') continue
@@ -221,6 +227,7 @@ git commit -m "feat(team): add period inference helpers"
 Parses the textarea content for the bulk-import modal. Pure function with strict validation, returns either a list of rows or row-level errors.
 
 **Files:**
+
 - Create: `src/lib/bulkImport.ts`
 - Test: `src/lib/bulkImport.test.ts`
 
@@ -409,6 +416,7 @@ git commit -m "feat(team): add bulk-roster parser with row-level validation"
 Inserts many `teamMembers` rows in one transaction.
 
 **Files:**
+
 - Modify: `convex/team.ts`
 
 - [ ] **Step 1: Append the new mutation to `convex/team.ts`**
@@ -431,29 +439,26 @@ export const bulkCreate = mutation({
   },
   returns: v.object({ inserted: v.number() }),
   handler: async (ctx, args) => {
-    await requireAdmin(ctx, args.sessionToken);
+    await requireAdmin(ctx, args.sessionToken)
 
-    const existing = await ctx.db.query("teamMembers").collect();
+    const existing = await ctx.db.query('teamMembers').collect()
     let nextOrder =
-      existing.reduce(
-        (max, m) => Math.max(max, m.order ?? -1),
-        -1,
-      ) + 1;
+      existing.reduce((max, m) => Math.max(max, m.order ?? -1), -1) + 1
 
-    let inserted = 0;
+    let inserted = 0
     for (const row of args.rows) {
-      await ctx.db.insert("teamMembers", {
+      await ctx.db.insert('teamMembers', {
         name: row.name,
         role: { es: row.roleEs, en: row.roleEn },
         career: row.career,
         group: args.group,
         order: nextOrder++,
-      });
-      inserted++;
+      })
+      inserted++
     }
-    return { inserted };
+    return { inserted }
   },
-});
+})
 ```
 
 - [ ] **Step 2: Verify type regeneration**
@@ -475,6 +480,7 @@ git commit -m "feat(convex): add team.bulkCreate mutation for bulk roster import
 Replaces the swap-with-neighbor `reorder` with a "rewrite group order from a sorted id list" call. Makes drag-and-drop trivial; arrows go away in Task 14.
 
 **Files:**
+
 - Modify: `convex/team.ts`
 
 - [ ] **Step 1: Replace the `reorder` export with `setOrder`**
@@ -486,38 +492,38 @@ export const setOrder = mutation({
   args: {
     sessionToken: v.string(),
     group: v.string(),
-    orderedIds: v.array(v.id("teamMembers")),
+    orderedIds: v.array(v.id('teamMembers')),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    await requireAdmin(ctx, args.sessionToken);
+    await requireAdmin(ctx, args.sessionToken)
 
-    const all = await ctx.db.query("teamMembers").collect();
-    const groupMembers = all.filter((m) => m.group === args.group);
-    const groupIds = new Set(groupMembers.map((m) => m._id));
+    const all = await ctx.db.query('teamMembers').collect()
+    const groupMembers = all.filter((m) => m.group === args.group)
+    const groupIds = new Set(groupMembers.map((m) => m._id))
 
     for (const id of args.orderedIds) {
       if (!groupIds.has(id)) {
-        throw new Error(`Member ${id} is not in group ${args.group}`);
+        throw new Error(`Member ${id} is not in group ${args.group}`)
       }
     }
     if (args.orderedIds.length !== groupMembers.length) {
       throw new Error(
         `Expected ${groupMembers.length} ids for group ${args.group}, got ${args.orderedIds.length}`,
-      );
+      )
     }
 
     const otherMaxOrder = all
       .filter((m) => m.group !== args.group)
-      .reduce((max, m) => Math.max(max, m.order ?? -1), -1);
+      .reduce((max, m) => Math.max(max, m.order ?? -1), -1)
 
-    let nextOrder = otherMaxOrder + 1;
+    let nextOrder = otherMaxOrder + 1
     for (const id of args.orderedIds) {
-      await ctx.db.patch(id, { order: nextOrder++ });
+      await ctx.db.patch(id, { order: nextOrder++ })
     }
-    return null;
+    return null
   },
-});
+})
 ```
 
 - [ ] **Step 2: Verify type regeneration**
@@ -543,6 +549,7 @@ git commit -m "feat(convex): replace team.reorder with team.setOrder; stub UI ca
 The atomic board-transition mutation called by Step 4 of the wizard.
 
 **Files:**
+
 - Modify: `convex/team.ts`
 
 - [ ] **Step 1: Append the mutation**
@@ -573,12 +580,12 @@ export const transitionBoard = mutation({
       }),
     ),
   },
-  returns: v.object({ pastAdminId: v.id("pastAdministrations") }),
+  returns: v.object({ pastAdminId: v.id('pastAdministrations') }),
   handler: async (ctx, args) => {
-    await requireAdmin(ctx, args.sessionToken);
+    await requireAdmin(ctx, args.sessionToken)
 
-    const all = await ctx.db.query("teamMembers").collect();
-    const outgoing = all.filter((m) => m.group === "directives");
+    const all = await ctx.db.query('teamMembers').collect()
+    const outgoing = all.filter((m) => m.group === 'directives')
 
     const archivedMembers = outgoing.map((m) => ({
       name: m.name,
@@ -591,32 +598,32 @@ export const transitionBoard = mutation({
       email: m.email,
       linkedinUrl: m.linkedinUrl,
       githubUrl: m.githubUrl,
-    }));
+    }))
 
-    const pastAdminId = await ctx.db.insert("pastAdministrations", {
+    const pastAdminId = await ctx.db.insert('pastAdministrations', {
       period: args.outgoingPeriod,
       presidentName: args.pastAdmin.presidentName,
       description: args.pastAdmin.description,
       imageUrl: args.pastAdmin.imageUrl,
       galleryImageUrls: args.pastAdmin.galleryImageUrls,
       members: archivedMembers,
-    });
+    })
 
     for (const m of outgoing) {
-      await ctx.db.delete(m._id);
+      await ctx.db.delete(m._id)
     }
 
     const otherMaxOrder = all
-      .filter((m) => m.group !== "directives")
-      .reduce((max, m) => Math.max(max, m.order ?? -1), -1);
+      .filter((m) => m.group !== 'directives')
+      .reduce((max, m) => Math.max(max, m.order ?? -1), -1)
 
-    let nextOrder = otherMaxOrder + 1;
+    let nextOrder = otherMaxOrder + 1
     for (const incoming of args.incomingMembers) {
-      await ctx.db.insert("teamMembers", {
+      await ctx.db.insert('teamMembers', {
         name: incoming.name,
         role: incoming.role,
         career: incoming.career,
-        group: "directives",
+        group: 'directives',
         tenure: args.incomingPeriod,
         isFirstBoard: false,
         email: incoming.email,
@@ -624,12 +631,12 @@ export const transitionBoard = mutation({
         githubUrl: incoming.githubUrl,
         imageUrl: incoming.imageUrl,
         order: nextOrder++,
-      });
+      })
     }
 
-    return { pastAdminId };
+    return { pastAdminId }
   },
-});
+})
 ```
 
 - [ ] **Step 2: Verify regeneration and build**
@@ -651,6 +658,7 @@ git commit -m "feat(convex): add transactional team.transitionBoard mutation"
 Lightweight visual wrapper that gives forms grouped headers without adding a dependency.
 
 **Files:**
+
 - Modify: `src/components/admin/fields.tsx`
 - Modify: `src/styles.css`
 
@@ -724,6 +732,7 @@ git commit -m "feat(admin): add FormSection wrapper for grouped form headers"
 Reusable modal that hosts the textarea, parsing preview, and commit. Used by Task 12 from the team page.
 
 **Files:**
+
 - Create: `src/components/admin/BulkImportModal.tsx`
 - Modify: `src/styles.css`
 
@@ -815,7 +824,8 @@ export function BulkImportModal({
               <code>Nombre | Rol ES | Rol EN | Carrera (opcional)</code>
             </p>
             <p className="admin-field-desc">
-              Las líneas vacías y las que empiezan con <code>#</code> se ignoran.
+              Las líneas vacías y las que empiezan con <code>#</code> se
+              ignoran.
             </p>
             <textarea
               className="admin-textarea admin-bulk-textarea"
@@ -882,7 +892,9 @@ export function BulkImportModal({
               <button
                 type="button"
                 className="admin-btn"
-                disabled={result.hasErrors || validRows.length === 0 || submitting}
+                disabled={
+                  result.hasErrors || validRows.length === 0 || submitting
+                }
                 onClick={onCommit}
               >
                 {submitting
@@ -997,6 +1009,7 @@ git commit -m "feat(admin): add BulkImportModal with parse-preview-commit flow"
 Stop redirecting to `/admin/team`. Render a real dashboard with stat tiles + the wizard CTA.
 
 **Files:**
+
 - Modify: `src/routes/admin/index.tsx`
 - Modify: `src/styles.css`
 
@@ -1112,7 +1125,9 @@ Append to `src/styles.css`:
   background: #fdfcf9;
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.18s ease, transform 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    transform 0.18s ease;
 }
 
 .admin-tile:hover {
@@ -1172,6 +1187,7 @@ git commit -m "feat(admin): replace redirect with stat-tile dashboard"
 ## Task 11: Add "Inicio" link to the admin sidebar
 
 **Files:**
+
 - Modify: `src/routes/admin.tsx`
 
 - [ ] **Step 1: Update the `NAV` constant**
@@ -1194,17 +1210,19 @@ const NAV = [
 In the same file, update the `Link` rendering inside the `NAV.map(...)` block to use `activeOptions` so `Inicio` doesn't stay highlighted on every sub-route:
 
 ```tsx
-{NAV.map((item) => (
-  <Link
-    key={item.to}
-    to={item.to}
-    className="admin-nav-link"
-    activeProps={{ className: 'admin-nav-link is-active' }}
-    activeOptions={item.exact ? { exact: true } : undefined}
-  >
-    {item.label}
-  </Link>
-))}
+{
+  NAV.map((item) => (
+    <Link
+      key={item.to}
+      to={item.to}
+      className="admin-nav-link"
+      activeProps={{ className: 'admin-nav-link is-active' }}
+      activeOptions={item.exact ? { exact: true } : undefined}
+    >
+      {item.label}
+    </Link>
+  ))
+}
 ```
 
 Also remove the `path === '/admin'` redirect-to-team `useEffect` block (around lines 52–57) since `/admin` now renders a real page:
@@ -1242,6 +1260,7 @@ git commit -m "feat(admin): add Inicio sidebar link, drop legacy /admin → /adm
 Add the `Importar lista` button to the three non-board group sections, opening `BulkImportModal`.
 
 **Files:**
+
 - Modify: `src/routes/admin/team.tsx`
 
 - [ ] **Step 1: Import the modal and add state**
@@ -1263,16 +1282,18 @@ const [bulkImportGroup, setBulkImportGroup] = useState<string | null>(null)
 Just before the closing `</div>` of the list view (around line 266, just inside the outermost `return (<div>…)` for the non-editing branch), add:
 
 ```tsx
-{bulkImportGroup ? (
-  <BulkImportModal
-    group={bulkImportGroup}
-    groupLabel={GROUP_LABELS[bulkImportGroup] ?? bulkImportGroup}
-    onClose={() => setBulkImportGroup(null)}
-    onImported={() => {
-      // Convex `useQuery` auto-revalidates, no manual refetch needed.
-    }}
-  />
-) : null}
+{
+  bulkImportGroup ? (
+    <BulkImportModal
+      group={bulkImportGroup}
+      groupLabel={GROUP_LABELS[bulkImportGroup] ?? bulkImportGroup}
+      onClose={() => setBulkImportGroup(null)}
+      onImported={() => {
+        // Convex `useQuery` auto-revalidates, no manual refetch needed.
+      }}
+    />
+  ) : null
+}
 ```
 
 - [ ] **Step 3: Add the per-section button**
@@ -1345,6 +1366,7 @@ git commit -m "feat(admin): expose bulk-roster import on non-board team groups"
 Replace the implicit "show all groups stacked" with a chip row that filters and persists in the URL.
 
 **Files:**
+
 - Modify: `src/routes/admin/team.tsx`
 
 - [ ] **Step 1: Read and write the URL search param**
@@ -1395,7 +1417,13 @@ Add right after the existing `grouped` `useMemo`:
 ```tsx
 const groupCounts = useMemo(() => {
   if (!members) {
-    return { all: 0, directives: 0, ndrg: 0, proteomics: 0, 'student-community': 0 }
+    return {
+      all: 0,
+      directives: 0,
+      ndrg: 0,
+      proteomics: 0,
+      'student-community': 0,
+    }
   }
   const counts = {
     all: members.length,
@@ -1440,8 +1468,7 @@ Just above the existing `<input type="text" className="admin-filter-input" …>`
       className={`admin-chip ${activeGroup === g.value ? 'is-active' : ''}`}
       onClick={() => setActiveGroup(g.value)}
     >
-      {g.label} ·{' '}
-      {groupCounts[g.value as keyof typeof groupCounts] ?? 0}
+      {g.label} · {groupCounts[g.value as keyof typeof groupCounts] ?? 0}
     </button>
   ))}
 </div>
@@ -1507,6 +1534,7 @@ git commit -m "feat(admin): add group filter chips with URL persistence on team 
 Replace `↑/↓` arrows with dnd-kit drag handles. Each group is its own sortable context. Wires the `team.setOrder` mutation from Task 6.
 
 **Files:**
+
 - Modify: `package.json`
 - Modify: `src/routes/admin/team.tsx`
 - Modify: `src/styles.css`
@@ -1543,29 +1571,31 @@ import { CSS } from '@dnd-kit/utilities'
 Inside `AdminTeamPage`, replace the entire `GROUPS.map(...)` (now `visibleGroups.map(...)`) block with:
 
 ```tsx
-{visibleGroups.map((g) => (
-  <SortableGroupSection
-    key={g.value}
-    group={g.value}
-    groupLabel={g.label}
-    members={grouped[g.value]}
-    onEdit={(id) => setEditing(id)}
-    onDelete={async (id, name) => {
-      if (!confirm(`¿Eliminar a "${name}"?`)) return
-      const token = getAdminToken()
-      if (!token) return
-      try {
-        await remove({ sessionToken: token, id })
-        toast.success('Miembro eliminado')
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Error al eliminar')
+{
+  visibleGroups.map((g) => (
+    <SortableGroupSection
+      key={g.value}
+      group={g.value}
+      groupLabel={g.label}
+      members={grouped[g.value]}
+      onEdit={(id) => setEditing(id)}
+      onDelete={async (id, name) => {
+        if (!confirm(`¿Eliminar a "${name}"?`)) return
+        const token = getAdminToken()
+        if (!token) return
+        try {
+          await remove({ sessionToken: token, id })
+          toast.success('Miembro eliminado')
+        } catch (err) {
+          toast.error(err instanceof Error ? err.message : 'Error al eliminar')
+        }
+      }}
+      onOpenBulkImport={
+        g.value !== 'directives' ? () => setBulkImportGroup(g.value) : null
       }
-    }}
-    onOpenBulkImport={
-      g.value !== 'directives' ? () => setBulkImportGroup(g.value) : null
-    }
-  />
-))}
+    />
+  ))
+}
 ```
 
 Then remove the `reorder` references entirely from `AdminTeamPage` (the `const reorder = useMutation(api.team.reorder)` line and the temp-stubbed handlers from Task 6). The `setOrder` mutation is consumed inside the new `SortableGroupSection` component below — `AdminTeamPage` itself does not need a `setOrder` hook.
@@ -1677,8 +1707,14 @@ function SortableMemberCard({
   onEdit: () => void
   onDelete: () => void
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: m._id })
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: m._id })
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -1781,6 +1817,7 @@ git commit -m "feat(admin): replace order arrows with dnd-kit drag handles"
 The flagship feature: a 4-step wizard that archives the outgoing Mesa Directiva and creates the new one in one mutation.
 
 **Files:**
+
 - Create: `src/routes/admin/board-transition.tsx`
 - Modify: `src/styles.css`
 
@@ -1793,7 +1830,12 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 import { toast } from 'sonner'
-import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form'
+import {
+  Controller,
+  FormProvider,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form'
 import { api } from '../../../convex/_generated/api'
 import { getAdminToken } from '@/lib/adminAuth'
 import {
@@ -1878,14 +1920,12 @@ function BoardTransitionPage() {
     const detected = inferCurrentPeriod(team) ?? ''
     setState({
       outgoingPeriod: detected,
-      incomingPeriod: detected ? nextPeriod(detected) ?? '' : '',
+      incomingPeriod: detected ? (nextPeriod(detected) ?? '') : '',
       presidentName: findPresidentName(outgoing),
       description: { es: '', en: '' },
       imageUrl: '',
       galleryImageUrls: [],
-      incomingMembers: outgoing.map((m) =>
-        emptyIncoming(m.role.es, m.role.en),
-      ),
+      incomingMembers: outgoing.map((m) => emptyIncoming(m.role.es, m.role.en)),
     })
   }, [team, state, outgoing])
 
@@ -2037,9 +2077,8 @@ function Step1Confirm({
     <div className="admin-wizard-step-body">
       <p>
         Estás a punto de archivar la Mesa Directiva{' '}
-        <strong>{state.outgoingPeriod || '—'}</strong>. Los{' '}
-        {outgoing.length} directivos actuales se moverán a "Mesas pasadas" con
-        su perfil completo.
+        <strong>{state.outgoingPeriod || '—'}</strong>. Los {outgoing.length}{' '}
+        directivos actuales se moverán a "Mesas pasadas" con su perfil completo.
       </p>
 
       <div className="admin-wizard-grid">
@@ -2150,7 +2189,11 @@ function Step2Metadata({
               {...form.register('presidentName')}
             />
           </label>
-          <FieldBilingualTextarea name="description" label="Descripción" rows={4} />
+          <FieldBilingualTextarea
+            name="description"
+            label="Descripción"
+            rows={4}
+          />
         </FormSection>
 
         <FormSection title="Foto y galería">
@@ -2207,9 +2250,11 @@ function Step3Roster({
     onContinue()
   })
 
-  const allValid = form.watch('members').every(
-    (m) => m.skip || (m.name.trim() && m.roleEs.trim() && m.roleEn.trim()),
-  )
+  const allValid = form
+    .watch('members')
+    .every(
+      (m) => m.skip || (m.name.trim() && m.roleEs.trim() && m.roleEn.trim()),
+    )
 
   return (
     <form className="admin-wizard-step-body" onSubmit={submit}>
@@ -2352,7 +2397,9 @@ function Step4Review({
     <div className="admin-wizard-step-body">
       <div className="admin-wizard-review-cols">
         <section>
-          <h3 className="admin-list-section-title">Archivando · {state.outgoingPeriod}</h3>
+          <h3 className="admin-list-section-title">
+            Archivando · {state.outgoingPeriod}
+          </h3>
           {outgoing.map((m) => (
             <div key={m._id} className="admin-card admin-card-readonly">
               {m.imageUrl ? (
@@ -2372,7 +2419,9 @@ function Step4Review({
           ))}
         </section>
         <section>
-          <h3 className="admin-list-section-title">Creando · {state.incomingPeriod}</h3>
+          <h3 className="admin-list-section-title">
+            Creando · {state.incomingPeriod}
+          </h3>
           {state.incomingMembers.map((m, idx) => (
             <div key={idx} className="admin-card admin-card-readonly">
               {m.imageUrl ? (
@@ -2400,9 +2449,9 @@ function Step4Review({
 
       <div className="admin-wizard-warning">
         Esto creará la mesa pasada <strong>{state.outgoingPeriod}</strong> y
-        reemplazará los <strong>{outgoing.length}</strong> directivos actuales con
-        la nueva mesa <strong>{state.incomingPeriod}</strong>. Esta acción no se
-        puede deshacer fácilmente.
+        reemplazará los <strong>{outgoing.length}</strong> directivos actuales
+        con la nueva mesa <strong>{state.incomingPeriod}</strong>. Esta acción
+        no se puede deshacer fácilmente.
       </div>
 
       <div className="admin-form-actions">
@@ -2583,6 +2632,7 @@ git commit -m "feat(admin): add 4-step Mesa Directiva transition wizard"
 The wizard navigates to `/admin/admins` with `editId` in search; this task makes `/admin/admins` honor that param.
 
 **Files:**
+
 - Modify: `src/routes/admin/admins.tsx`
 
 - [ ] **Step 1: Add `validateSearch` to the route**
@@ -2643,6 +2693,7 @@ git commit -m "feat(admin): open Mesa pasada editor from URL param after transit
 Use `<FormSection>` to break the long team form into 4 grouped chunks. No logic changes.
 
 **Files:**
+
 - Modify: `src/routes/admin/team.tsx`
 
 - [ ] **Step 1: Import `FormSection`**
@@ -2733,6 +2784,7 @@ git commit -m "refactor(admin): group team form fields under FormSection heading
 ## Task 18: Section the events form
 
 **Files:**
+
 - Modify: `src/routes/admin/events.tsx`
 
 - [ ] **Step 1: Open `src/routes/admin/events.tsx` and add `FormSection` to imports**
@@ -2771,6 +2823,7 @@ git commit -m "refactor(admin): group events form fields under FormSection headi
 ## Task 19: Section the research form
 
 **Files:**
+
 - Modify: `src/routes/admin/research.tsx`
 
 - [ ] **Step 1: Add `FormSection` import**
@@ -2807,6 +2860,7 @@ git commit -m "refactor(admin): group research form fields under FormSection hea
 ## Task 20: Section the labs form
 
 **Files:**
+
 - Modify: `src/routes/admin/labs.tsx`
 
 - [ ] **Step 1: Add `FormSection` import**
@@ -2844,6 +2898,7 @@ git commit -m "refactor(admin): group labs form fields under FormSection heading
 Two changes in one file: section the form, and replace the per-member `Imagen URL` text input with `FieldImageUpload`.
 
 **Files:**
+
 - Modify: `src/routes/admin/admins.tsx`
 
 - [ ] **Step 1: Extend imports**
@@ -2917,7 +2972,10 @@ function FieldShellWithUpload({
       })
       if (!res.ok) throw new Error('Falló la subida')
       const { storageId } = (await res.json()) as { storageId: string }
-      const { url } = await resolveUploadedUrl({ sessionToken: token, storageId })
+      const { url } = await resolveUploadedUrl({
+        sessionToken: token,
+        storageId,
+      })
       onChange(url)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error de subida')

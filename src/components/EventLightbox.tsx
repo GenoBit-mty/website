@@ -12,7 +12,14 @@ type Props = {
 const BTN_BASE =
   'absolute flex h-11 w-11 cursor-pointer items-center justify-center border border-[var(--gb-ink)] bg-[var(--gb-paper)] font-mono text-base text-[var(--gb-ink)] transition-colors duration-200 hover:bg-[var(--gb-ink)] hover:text-[var(--gb-paper)]'
 
-export function EventLightbox({ images, activeIndex, onClose, onPrev, onNext, labels }: Props) {
+export function EventLightbox({
+  images,
+  activeIndex,
+  onClose,
+  onPrev,
+  onNext,
+  labels,
+}: Props) {
   useEffect(() => {
     if (activeIndex === null) return
     const onKey = (e: KeyboardEvent) => {

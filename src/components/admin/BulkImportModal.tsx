@@ -2,9 +2,9 @@ import { useMemo, useState } from 'react'
 import { useMutation } from 'convex/react'
 import { toast } from 'sonner'
 import { api } from '../../../convex/_generated/api'
-import type {BulkRow} from '@/lib/bulkImport';
+import type { BulkRow } from '@/lib/bulkImport'
 import { getAdminToken } from '@/lib/adminAuth'
-import {  parseBulkRoster } from '@/lib/bulkImport'
+import { parseBulkRoster } from '@/lib/bulkImport'
 
 type Phase = 'edit' | 'preview'
 
@@ -82,7 +82,8 @@ export function BulkImportModal({
               <code>Nombre | Rol ES | Rol EN | Carrera (opcional)</code>
             </p>
             <p className="admin-field-desc">
-              Las líneas vacías y las que empiezan con <code>#</code> se ignoran.
+              Las líneas vacías y las que empiezan con <code>#</code> se
+              ignoran.
             </p>
             <textarea
               className="admin-textarea admin-bulk-textarea"
@@ -149,7 +150,9 @@ export function BulkImportModal({
               <button
                 type="button"
                 className="admin-btn"
-                disabled={result.hasErrors || validRows.length === 0 || submitting}
+                disabled={
+                  result.hasErrors || validRows.length === 0 || submitting
+                }
                 onClick={onCommit}
               >
                 {submitting

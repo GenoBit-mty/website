@@ -1,4 +1,6 @@
-export function normalizeExternalUrl(input: string | undefined | null): string | undefined {
+export function normalizeExternalUrl(
+  input: string | undefined | null,
+): string | undefined {
   if (!input) return undefined
   const trimmed = input.trim()
   if (!trimmed) return undefined

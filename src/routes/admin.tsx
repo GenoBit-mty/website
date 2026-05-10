@@ -1,4 +1,10 @@
-import { Link, Outlet, createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  useNavigate,
+  useRouter,
+} from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 import { Toaster } from 'sonner'
@@ -51,7 +57,6 @@ function AdminLayout() {
     }
   }, [checked, token, session, isLogin, navigate])
 
-
   const onLogout = async () => {
     if (token) {
       try {
@@ -86,7 +91,9 @@ function AdminLayout() {
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <div className="admin-brand">
-          <Link to="/" className="admin-brand-link">GenoBit · Admin</Link>
+          <Link to="/" className="admin-brand-link">
+            GenoBit · Admin
+          </Link>
         </div>
         <nav className="admin-nav" aria-label="Admin sections">
           {NAV.map((item) => (

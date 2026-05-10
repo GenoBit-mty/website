@@ -23,7 +23,10 @@ export const Route = createFileRoute('/admin/research')({
   component: AdminResearchPage,
 })
 
-const bilingual = z.object({ es: z.string().min(1, 'Requerido'), en: z.string().min(1, 'Requerido') })
+const bilingual = z.object({
+  es: z.string().min(1, 'Requerido'),
+  en: z.string().min(1, 'Requerido'),
+})
 
 const researchSchema = z.object({
   title: bilingual,
@@ -57,7 +60,8 @@ const defaultValues: ResearchFormValues = {
 }
 
 const cleanOptional = (v: string | undefined) => (v && v.trim() ? v : undefined)
-const cleanList = (l: Array<string> | undefined) => l?.filter((x) => x.trim()) ?? []
+const cleanList = (l: Array<string> | undefined) =>
+  l?.filter((x) => x.trim()) ?? []
 
 type ResearchDoc = {
   _id: Id<'research'>
@@ -81,7 +85,8 @@ function AdminResearchPage() {
   const [editing, setEditing] = useState<'new' | string | null>(null)
 
   if (editing !== null) {
-    const paper = editing === 'new' ? null : papers?.find((p) => p._id === editing)
+    const paper =
+      editing === 'new' ? null : papers?.find((p) => p._id === editing)
     return (
       <ResearchForm
         initial={paper ?? null}
@@ -107,8 +112,12 @@ function AdminResearchPage() {
             publicationDate: cleanOptional(values.publicationDate),
             url: cleanOptional(values.url),
             imageUrl: cleanOptional(values.imageUrl),
-            galleryImageUrls: values.galleryImageUrls?.length ? values.galleryImageUrls : undefined,
-            tags: cleanList(values.tags).length ? cleanList(values.tags) : undefined,
+            galleryImageUrls: values.galleryImageUrls?.length
+              ? values.galleryImageUrls
+              : undefined,
+            tags: cleanList(values.tags).length
+              ? cleanList(values.tags)
+              : undefined,
           }
           try {
             if (paper) {
@@ -134,7 +143,11 @@ function AdminResearchPage() {
           <h1 className="admin-page-title">Investigación</h1>
           <p className="admin-page-sub">Papers y publicaciones.</p>
         </div>
-        <button type="button" className="admin-btn" onClick={() => setEditing('new')}>
+        <button
+          type="button"
+          className="admin-btn"
+          onClick={() => setEditing('new')}
+        >
           + Nuevo paper
         </button>
       </div>
@@ -154,7 +167,8 @@ function AdminResearchPage() {
             <div className="admin-card-body">
               <p className="admin-card-title">{p.title.es}</p>
               <p className="admin-card-meta">
-                {p.authors.join(' · ')} {p.publicationDate ? `— ${p.publicationDate}` : ''}
+                {p.authors.join(' · ')}{' '}
+                {p.publicationDate ? `— ${p.publicationDate}` : ''}
               </p>
             </div>
             <div className="admin-card-actions">
@@ -227,7 +241,10 @@ function ResearchForm({
     if (!slugDirty) {
       const generated = slugify(titleEn ?? '')
       if (generated !== slugValue) {
-        form.setValue('slug', generated, { shouldValidate: false, shouldDirty: false })
+        form.setValue('slug', generated, {
+          shouldValidate: false,
+          shouldDirty: false,
+        })
       }
     }
   }, [titleEn, slugDirty, slugValue, form])
@@ -236,19 +253,29 @@ function ResearchForm({
     <FormProvider {...form}>
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">{initial ? 'Editar paper' : 'Nuevo paper'}</h1>
+          <h1 className="admin-page-title">
+            {initial ? 'Editar paper' : 'Nuevo paper'}
+          </h1>
         </div>
       </div>
       <form className="admin-form-shell" onSubmit={form.handleSubmit(onSubmit)}>
         <FormSection title="Datos básicos">
-          <FieldBilingualText<ResearchFormValues> name="title" label="Título" required />
+          <FieldBilingualText<ResearchFormValues>
+            name="title"
+            label="Título"
+            required
+          />
           <FieldStringList<ResearchFormValues>
             name="authors"
             label="Autores"
             required
             control={form.control}
           />
-          <FieldText<ResearchFormValues> name="publicationDate" label="Fecha de publicación" placeholder="2026" />
+          <FieldText<ResearchFormValues>
+            name="publicationDate"
+            label="Fecha de publicación"
+            placeholder="2026"
+          />
           <FieldText<ResearchFormValues> name="url" label="URL" />
           <div onInput={() => setSlugDirty(true)}>
             <FieldText<ResearchFormValues>
@@ -261,18 +288,31 @@ function ResearchForm({
         </FormSection>
 
         <FormSection title="Contenido">
-          <FieldBilingualTextarea<ResearchFormValues> name="description" label="Descripción" required rows={4} />
+          <FieldBilingualTextarea<ResearchFormValues>
+            name="description"
+            label="Descripción"
+            required
+            rows={4}
+          />
           <FieldBilingualTextarea<ResearchFormValues>
             name="body"
             label="Cuerpo (Markdown)"
             description="Markdown soportado: encabezados, listas, enlaces, imágenes."
             rows={16}
           />
-          <FieldImageUpload<ResearchFormValues> name="imageUrl" label="Imagen" control={form.control} />
+          <FieldImageUpload<ResearchFormValues>
+            name="imageUrl"
+            label="Imagen"
+            control={form.control}
+          />
         </FormSection>
 
         <FormSection title="Galería">
-          <FieldGallery<ResearchFormValues> name="galleryImageUrls" label="Galería" control={form.control} />
+          <FieldGallery<ResearchFormValues>
+            name="galleryImageUrls"
+            label="Galería"
+            control={form.control}
+          />
         </FormSection>
 
         <FormSection title="Etiquetas">
@@ -284,10 +324,18 @@ function ResearchForm({
         </FormSection>
 
         <div className="admin-form-actions">
-          <button type="button" className="admin-btn admin-btn-secondary" onClick={onCancel}>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary"
+            onClick={onCancel}
+          >
             Cancelar
           </button>
-          <button type="submit" className="admin-btn" disabled={form.formState.isSubmitting}>
+          <button
+            type="submit"
+            className="admin-btn"
+            disabled={form.formState.isSubmitting}
+          >
             {form.formState.isSubmitting ? 'Guardando…' : 'Guardar'}
           </button>
         </div>

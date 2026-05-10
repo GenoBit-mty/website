@@ -14,7 +14,8 @@ export function CustomCursor() {
   useEffect(() => {
     const media = window.matchMedia('(hover: hover) and (pointer: fine)')
     setEnabled(media.matches)
-    const handleMedia = (event: MediaQueryListEvent) => setEnabled(event.matches)
+    const handleMedia = (event: MediaQueryListEvent) =>
+      setEnabled(event.matches)
     media.addEventListener('change', handleMedia)
     return () => media.removeEventListener('change', handleMedia)
   }, [])
@@ -34,7 +35,8 @@ export function CustomCursor() {
       pointerY.set(-100)
     }
 
-    const selectors = 'a,button,[data-cursor-hover],input,textarea,select,[role="button"]'
+    const selectors =
+      'a,button,[data-cursor-hover],input,textarea,select,[role="button"]'
 
     const onHoverStart = () => setHovered(true)
     const onHoverEnd = () => setHovered(false)

@@ -10,12 +10,14 @@ Make the admin section intuitive enough that a future non-technical board member
 ## Audience
 
 Mixed:
+
 - Developer (Eduardo) handles annual heavy lifting (board archival) and initial setup.
 - Future non-technical board members handle day-to-day edits.
 
 ## Scope
 
 **In scope**
+
 - One-click board transition wizard for Mesa Directiva.
 - Bulk-roster import for the three non-board groups (NDRG / Proteomics / Student Community).
 - Schema upgrade so archived board members keep full profile fidelity.
@@ -26,6 +28,7 @@ Mixed:
 - Inline image upload for per-member photos in the past-admins form.
 
 **Out of scope (deferred)**
+
 - "Confirm by typing" destructive-action dialogs.
 - Better empty-state copy.
 - Public-facing past-admin detail pages (the schema change enables them, but rendering is not in this spec).
@@ -107,10 +110,10 @@ Footer: `[← Atrás] [Continuar →]`.
 Renders one row per outgoing role slot, in the same order. Each row:
 
 - **Rol ES / EN** — pre-filled from the outgoing directive in that slot, editable in case the org renames a position.
-- **Nombre** *(required unless "Skip — fill later" is on)*.
-- **Carrera** *(optional)*.
-- **Email / LinkedIn / GitHub** *(optional)*.
-- **Foto** *(optional, `FieldImageUpload`)*.
+- **Nombre** _(required unless "Skip — fill later" is on)_.
+- **Carrera** _(optional)_.
+- **Email / LinkedIn / GitHub** _(optional)_.
+- **Foto** _(optional, `FieldImageUpload`)_.
 - A **"Skip — fill later"** toggle on the right of the row. When on, only `name` and `role` are required; the slot still creates a `teamMembers` doc with placeholder data so the public site has the right number of directives. Toggling skip greys out the optional fields.
 
 The user can also **add a slot** (button below the rows) or **remove a slot** (× per row) if the new board has a different headcount than the outgoing one. Removing a slot does not affect archival of the corresponding outgoing directive.
@@ -120,6 +123,7 @@ Footer: `[← Atrás] [Revisar →]`.
 ### Step 4 — Review & commit
 
 Two columns:
+
 - **Archivando** — list of the 9 outgoing directives (photo, name, role).
 - **Creando** — list of the new directives from Step 3 (photo if provided, name, role, "(pendiente)" badge for any slot in skip mode).
 
@@ -182,10 +186,10 @@ Footer: `[Cancelar] [Vista previa →]`.
 
 The preview replaces the textarea with a table:
 
-| # | Nombre | Rol ES | Rol EN | Carrera | Estado |
-| - | ------ | ------ | ------ | ------- | ------ |
-| 1 | …      | …      | …      | …       | ✓      |
-| 2 | …      | (vacío) | …     | —       | ✗ Rol ES requerido |
+| #   | Nombre | Rol ES  | Rol EN | Carrera | Estado             |
+| --- | ------ | ------- | ------ | ------- | ------------------ |
+| 1   | …      | …       | …      | …       | ✓                  |
+| 2   | …      | (vacío) | …      | —       | ✗ Rol ES requerido |
 
 If any rows are invalid, the commit button is disabled and the user is sent back to fix them (button changes to `← Editar`).
 
@@ -203,29 +207,34 @@ The mutation is purely additive — no existing members are touched. On success 
 Introduce a small `<FormSection title>` component (no library, just a `<fieldset>`-like wrapper with a heading and consistent spacing).
 
 **Team form (`/admin/team` editor)**:
+
 - Datos básicos — nombre, rol, grupo, carrera, gestión, primera mesa directiva.
 - Perfil — foto principal, biografía.
 - Galería — gallery field.
 - Contacto y orden — email, LinkedIn, GitHub, orden.
 
 **Events form**:
+
 - Datos básicos — categoría, título, fecha, lugar, próximo evento.
 - Contenido — descripción, foto principal.
 - Galería.
 - Inscripción — requiere registro, URL.
 
 **Research form**:
+
 - Datos básicos — título, autores, fecha de publicación, URL externa, slug.
 - Contenido — descripción, cuerpo, foto principal.
 - Galería.
 - Etiquetas.
 
 **Labs form**:
+
 - Datos básicos — título, lead, ubicación, áreas de enfoque.
 - Contenido — resumen, descripción, foto principal.
 - Galería.
 
 **Past-admins form**:
+
 - Datos básicos — periodo, presidente, descripción.
 - Foto y galería.
 - Miembros — the existing per-member array editor (now with image upload — see 5e).
