@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { api } from '../../../convex/_generated/api'
 import type { Id } from '../../../convex/_generated/dataModel'
 import { getAdminToken } from '@/lib/adminAuth'
+import { BulkImportModal } from '@/components/admin/BulkImportModal'
 import {
   FieldBilingualText,
   FieldBilingualTextarea,
@@ -93,6 +94,7 @@ function AdminTeamPage() {
 
   const [editing, setEditing] = useState<'new' | string | null>(null)
   const [filter, setFilter] = useState('')
+  const [bulkImportGroup, setBulkImportGroup] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
     if (!members) return []
@@ -188,7 +190,18 @@ function AdminTeamPage() {
       ) : (
         GROUPS.map((g) => (
           <div key={g.value} className="admin-list-section">
-            <h2 className="admin-list-section-title">{g.label}</h2>
+            <div className="admin-list-section-header">
+              <h2 className="admin-list-section-title">{g.label}</h2>
+              {g.value !== 'directives' ? (
+                <button
+                  type="button"
+                  className="admin-btn admin-btn-secondary admin-btn-small"
+                  onClick={() => setBulkImportGroup(g.value)}
+                >
+                  Importar lista
+                </button>
+              ) : null}
+            </div>
             {grouped[g.value].length ? (
               grouped[g.value].map((m) => (
                 <div key={m._id} className="admin-card">
@@ -269,6 +282,16 @@ function AdminTeamPage() {
           </div>
         ))
       )}
+      {bulkImportGroup ? (
+        <BulkImportModal
+          group={bulkImportGroup}
+          groupLabel={GROUP_LABELS[bulkImportGroup] ?? bulkImportGroup}
+          onClose={() => setBulkImportGroup(null)}
+          onImported={() => {
+            // Convex `useQuery` auto-revalidates, no manual refetch needed.
+          }}
+        />
+      ) : null}
     </div>
   )
 }
