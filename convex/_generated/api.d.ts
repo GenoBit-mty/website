@@ -17,6 +17,7 @@ import type * as labs from "../labs.js";
 import type * as lib_slug from "../lib/slug.js";
 import type * as pastAdmin from "../pastAdmin.js";
 import type * as research from "../research.js";
+import type * as siteSettings from "../siteSettings.js";
 import type * as team from "../team.js";
 
 import type {
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   "lib/slug": typeof lib_slug;
   pastAdmin: typeof pastAdmin;
   research: typeof research;
+  siteSettings: typeof siteSettings;
   team: typeof team;
 }>;
 
