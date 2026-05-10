@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { Link } from '@tanstack/react-router'
 import { ConvexError } from 'convex/values'
 import { useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
@@ -354,9 +355,9 @@ export function JoinForm() {
           )}
           <p className="join-privacy-note">
             {t('join.field.privacy')}{' '}
-            <a href="/privacy" className="join-privacy-link">
+            <Link to="/privacy" className="join-privacy-link">
               {t('join.field.privacy.link')}
-            </a>
+            </Link>
             .
           </p>
         </div>
