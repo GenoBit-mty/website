@@ -3098,6 +3098,32 @@ main {
     cursor: pointer;
 }
 
+/* ═══════════ FORM SECTION ═══════════ */
+
+.admin-form-section {
+  border: 1px solid #e6e1d7;
+  border-radius: 12px;
+  padding: 18px 20px 20px;
+  margin: 0 0 20px 0;
+  background: #fdfcf9;
+}
+
+.admin-form-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b665b;
+  padding: 0 8px;
+}
+
+.admin-form-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 6px;
+}
+
 .research-item-link:hover .research-title {
     color: var(--gb-warm);
 }

@@ -442,3 +442,18 @@ export function FieldGallery<TForm extends FieldValues>(
     />
   )
 }
+
+export function FormSection({
+  title,
+  children,
+}: {
+  title: string
+  children: React.ReactNode
+}) {
+  return (
+    <fieldset className="admin-form-section">
+      <legend className="admin-form-section-title">{title}</legend>
+      <div className="admin-form-section-body">{children}</div>
+    </fieldset>
+  )
+}
