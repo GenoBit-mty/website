@@ -29,6 +29,7 @@ import { Route as AdminEventsRouteImport } from './routes/admin/events'
 import { Route as AdminBoardTransitionRouteImport } from './routes/admin/board-transition'
 import { Route as AdminApplicationsRouteImport } from './routes/admin/applications'
 import { Route as AdminAdminsRouteImport } from './routes/admin/admins'
+import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications_.$id'
 
 const TeamRoute = TeamRouteImport.update({
   id: '/team',
@@ -130,6 +131,11 @@ const AdminAdminsRoute = AdminAdminsRouteImport.update({
   path: '/admins',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
+  id: '/applications_/$id',
+  path: '/applications/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/events/$eventId': typeof EventsEventIdRoute
   '/research/$slug': typeof ResearchSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/applications/$id': typeof AdminApplicationsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/events/$eventId': typeof EventsEventIdRoute
   '/research/$slug': typeof ResearchSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/applications/$id': typeof AdminApplicationsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -196,6 +204,7 @@ export interface FileRoutesById {
   '/events_/$eventId': typeof EventsEventIdRoute
   '/research_/$slug': typeof ResearchSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/applications_/$id': typeof AdminApplicationsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/research/$slug'
     | '/admin/'
+    | '/admin/applications/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/research/$slug'
     | '/admin'
+    | '/admin/applications/$id'
   id:
     | '__root__'
     | '/'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/events_/$eventId'
     | '/research_/$slug'
     | '/admin/'
+    | '/admin/applications_/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -420,6 +432,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/applications_/$id': {
+      id: '/admin/applications_/$id'
+      path: '/applications/$id'
+      fullPath: '/admin/applications/$id'
+      preLoaderRoute: typeof AdminApplicationsIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
@@ -434,6 +453,7 @@ interface AdminRouteChildren {
   AdminResearchRoute: typeof AdminResearchRoute
   AdminTeamRoute: typeof AdminTeamRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminApplicationsIdRoute: typeof AdminApplicationsIdRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -447,6 +467,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminResearchRoute: AdminResearchRoute,
   AdminTeamRoute: AdminTeamRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminApplicationsIdRoute: AdminApplicationsIdRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

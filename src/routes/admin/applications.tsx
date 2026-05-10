@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 import { toast } from 'sonner'
@@ -215,13 +215,13 @@ function AdminApplicationsPage() {
           {filtered.map((a) => (
             <tr key={a._id}>
               <td>
-                {/* TODO: swap to <Link to="/admin/applications/$id" params={{ id: a._id }}> after Task 11 creates the route */}
-                <a
-                  href={`/admin/applications/${a._id}`}
+                <Link
+                  to="/admin/applications/$id"
+                  params={{ id: a._id }}
                   className="admin-table-link"
                 >
                   {a.fullName}
-                </a>
+                </Link>
                 <div className="admin-table-sub">{a.email}</div>
               </td>
               <td>{GROUP_LABEL[a.group] ?? a.group}</td>
