@@ -61,7 +61,8 @@ function findPresidentName(
   const president = outgoing.find((m) =>
     /^(presidenta|presidente)$/i.test(m.role.es.trim()),
   )
-  return president?.name ?? outgoing[0]?.name ?? ''
+  if (president) return president.name
+  return outgoing.length > 0 ? outgoing[0].name : ''
 }
 
 function BoardTransitionPage() {

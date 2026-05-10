@@ -7,12 +7,12 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import {
   DndContext,
+  
   KeyboardSensor,
   PointerSensor,
   closestCenter,
   useSensor,
-  useSensors,
-  type DragEndEvent,
+  useSensors
 } from '@dnd-kit/core'
 import {
   SortableContext,
@@ -23,6 +23,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { api } from '../../../convex/_generated/api'
+import type {DragEndEvent} from '@dnd-kit/core';
 import type { Id } from '../../../convex/_generated/dataModel'
 import { getAdminToken } from '@/lib/adminAuth'
 import { BulkImportModal } from '@/components/admin/BulkImportModal'
@@ -257,7 +258,7 @@ function AdminTeamPage() {
             onClick={() => setActiveGroup(g.value)}
           >
             {g.label} ·{' '}
-            {groupCounts[g.value as keyof typeof groupCounts] ?? 0}
+            {groupCounts[g.value as keyof typeof groupCounts]}
           </button>
         ))}
       </div>

@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { api } from '../../../convex/_generated/api'
+import { slugify } from '../../../convex/lib/slug'
 import type { Id } from '../../../convex/_generated/dataModel'
 import { getAdminToken } from '@/lib/adminAuth'
 import {
@@ -17,7 +18,6 @@ import {
   FieldText,
   FormSection,
 } from '@/components/admin/fields'
-import { slugify } from '../../../convex/lib/slug'
 
 export const Route = createFileRoute('/admin/research')({
   component: AdminResearchPage,

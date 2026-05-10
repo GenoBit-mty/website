@@ -2,8 +2,9 @@ import { useMemo, useState } from 'react'
 import { useMutation } from 'convex/react'
 import { toast } from 'sonner'
 import { api } from '../../../convex/_generated/api'
+import type {BulkRow} from '@/lib/bulkImport';
 import { getAdminToken } from '@/lib/adminAuth'
-import { parseBulkRoster, type BulkRow } from '@/lib/bulkImport'
+import {  parseBulkRoster } from '@/lib/bulkImport'
 
 type Phase = 'edit' | 'preview'
 
