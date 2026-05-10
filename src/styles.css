@@ -3321,3 +3321,127 @@ main {
 .admin-drag-handle:hover {
   color: #0e1717;
 }
+
+.admin-wizard {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 28px;
+}
+
+.admin-wizard-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 6px;
+}
+
+.admin-wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #6b665b;
+}
+
+.admin-wizard-step.is-active {
+  background: #0e1717;
+  color: #faf8f5;
+}
+
+.admin-wizard-step.is-done {
+  color: #2a3a3a;
+}
+
+.admin-wizard-step-number {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ece7dc;
+  color: #4d4940;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-wizard-step.is-active .admin-wizard-step-number {
+  background: #faf8f5;
+  color: #0e1717;
+}
+
+.admin-wizard-step-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.admin-wizard-main {
+  min-width: 0;
+}
+
+.admin-wizard-step-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 14px;
+}
+
+.admin-wizard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.admin-wizard-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.admin-card-readonly {
+  pointer-events: none;
+}
+
+.admin-wizard-roster-row {
+  border: 1px solid #e6e1d7;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.admin-wizard-roster-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.admin-wizard-roster-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.admin-wizard-review-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.admin-wizard-warning {
+  background: #fff7e0;
+  border: 1px solid #f0d99c;
+  color: #6b4d00;
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.admin-pending-badge {
+  color: #b07a00;
+  font-weight: 500;
+}
