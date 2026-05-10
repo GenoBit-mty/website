@@ -67,14 +67,14 @@ export function CustomCursor() {
     <>
       <m.div
         aria-hidden="true"
-        className="pointer-events-none fixed -ml-1 -mt-1 z-[1001] hidden h-2 w-2 rounded-full bg-[var(--gb-primary)] will-change-transform md:block motion-reduce:hidden print:hidden"
+        className="pointer-events-none fixed -ml-1 -mt-1 z-[1001] hidden size-2 rounded-full bg-[var(--gb-primary)] will-change-transform md:block motion-reduce:hidden print:hidden"
         style={{ x: ringX, y: ringY }}
         animate={{ scale: hovered ? 0 : 1, opacity: hovered ? 0 : 1 }}
         transition={{ duration: 0.18 }}
       />
       <m.div
         aria-hidden="true"
-        className="pointer-events-none fixed -ml-[21px] -mt-[21px] z-[1000] hidden h-[42px] w-[42px] rounded-full border border-[rgba(48,219,235,0.9)] shadow-[0_0_22px_rgba(48,219,235,0.22)] will-change-transform md:block motion-reduce:hidden print:hidden"
+        className="pointer-events-none fixed -ml-[21px] -mt-[21px] z-[1000] hidden size-[42px] rounded-full border border-[rgba(48,219,235,0.9)] shadow-[0_0_22px_rgba(48,219,235,0.22)] will-change-transform md:block motion-reduce:hidden print:hidden"
         style={{ x: ringX, y: ringY }}
         animate={{ scale: hovered ? 1 : 0.2, opacity: hovered ? 1 : 0.5 }}
         transition={{ duration: 0.2 }}

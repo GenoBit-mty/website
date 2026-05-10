@@ -351,7 +351,7 @@ function SortableGroupSection({
   onOpenBulkImport: (() => void) | null
 }) {
   const setOrder = useMutation(api.team.setOrder)
-  const [localOrder, setLocalOrder] = useState<Array<Id<'teamMembers'>>>(
+  const [localOrder, setLocalOrder] = useState<Array<Id<'teamMembers'>>>(() =>
     members.map((m) => m._id),
   )
 
@@ -385,9 +385,11 @@ function SortableGroupSection({
     }
   }
 
-  const orderedMembers = localOrder
-    .map((id) => members.find((m) => m._id === id))
-    .filter((m): m is TeamMemberDoc => Boolean(m))
+  const orderedMembers = localOrder.reduce<Array<TeamMemberDoc>>((acc, id) => {
+    const m = members.find((mem) => mem._id === id)
+    if (m) acc.push(m)
+    return acc
+  }, [])
 
   return (
     <div className="admin-list-section">

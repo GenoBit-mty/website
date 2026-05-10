@@ -1,7 +1,7 @@
 import {
   createContext,
+  use,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
@@ -67,23 +67,16 @@ function detectInitialLang(): Lang {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>('es')
-  const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
-    const initial = detectInitialLang()
-    setLangState(initial)
-    setHydrated(true)
-    if (typeof document !== 'undefined') {
-      document.documentElement.lang = initial
-    }
+    setLangState(detectInitialLang())
   }, [])
 
   useEffect(() => {
-    if (!hydrated) return
     if (typeof document !== 'undefined') {
       document.documentElement.lang = lang
     }
-  }, [lang, hydrated])
+  }, [lang])
 
   const setLang = useCallback((next: Lang) => {
     setLangState(next)
@@ -108,7 +101,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 }
 
 export function useLang(): LanguageContextValue {
-  const ctx = useContext(LanguageContext)
+  const ctx = use(LanguageContext)
   if (!ctx) throw new Error('useLang must be used within LanguageProvider')
   return ctx
 }

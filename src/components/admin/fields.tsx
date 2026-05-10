@@ -440,22 +440,27 @@ export function FieldGallery<TForm extends FieldValues>(
           setUploading(true)
           setUploadError(null)
           try {
-            const uploaded: Array<string> = []
-            for (const file of Array.from(files)) {
-              const uploadUrl = await generateUploadUrl({ sessionToken: token })
-              const res = await fetch(uploadUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': file.type },
-                body: file,
-              })
-              if (!res.ok) throw new Error('Falló la subida')
-              const { storageId } = (await res.json()) as { storageId: string }
-              const { url } = await resolveUploadedUrl({
-                sessionToken: token,
-                storageId,
-              })
-              uploaded.push(url)
-            }
+            const uploaded = await Promise.all(
+              Array.from(files).map(async (file) => {
+                const uploadUrl = await generateUploadUrl({
+                  sessionToken: token,
+                })
+                const res = await fetch(uploadUrl, {
+                  method: 'POST',
+                  headers: { 'Content-Type': file.type },
+                  body: file,
+                })
+                if (!res.ok) throw new Error('Falló la subida')
+                const { storageId } = (await res.json()) as {
+                  storageId: string
+                }
+                const { url } = await resolveUploadedUrl({
+                  sessionToken: token,
+                  storageId,
+                })
+                return url
+              }),
+            )
             update([...value, ...uploaded])
           } catch (err) {
             setUploadError(

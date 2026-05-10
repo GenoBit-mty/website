@@ -229,7 +229,7 @@ function AdminApplicationsPage() {
               <td>{a.subArea ?? '—'}</td>
               <td>{STATUS_LABEL[a.status]}</td>
               <td>{a.assigneeName ?? '—'}</td>
-              <td>
+              <td suppressHydrationWarning>
                 {new Date(a.submittedAt).toLocaleDateString('es-MX', {
                   year: 'numeric',
                   month: 'short',

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useMutation } from 'convex/react'
 import { toast } from 'sonner'
 import { api } from '../../../convex/_generated/api'
@@ -26,6 +26,14 @@ export function BulkImportModal({
 
   const result = useMemo(() => parseBulkRoster(text), [text])
   const validRows = result.rows.filter((r) => r.valid)
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [onClose])
 
   const onCommit = async () => {
     const token = getAdminToken()
@@ -55,13 +63,17 @@ export function BulkImportModal({
   return (
     <div
       className="admin-modal-backdrop"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`Importar lista — ${groupLabel}`}
+      role="presentation"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose()
       }}
     >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Importar lista, ${groupLabel}`}
+        className="admin-modal-shell"
+      >
       <div className="admin-modal">
         <div className="admin-modal-header">
           <h2 className="admin-modal-title">Importar lista — {groupLabel}</h2>
@@ -162,6 +174,7 @@ export function BulkImportModal({
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   )

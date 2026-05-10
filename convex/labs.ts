@@ -97,9 +97,7 @@ export const seedLabs = mutation({
     await requireAdmin(ctx, args.sessionToken)
 
     const existing = await ctx.db.query('labs').collect()
-    for (const l of existing) {
-      await ctx.db.delete(l._id)
-    }
+    await Promise.all(existing.map((l) => ctx.db.delete(l._id)))
 
     await ctx.db.insert('labs', {
       title: {

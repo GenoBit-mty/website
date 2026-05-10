@@ -596,7 +596,10 @@ function Step4Review({
             Creando · {state.incomingPeriod}
           </h3>
           {state.incomingMembers.map((m, idx) => (
-            <div key={idx} className="admin-card admin-card-readonly">
+            <div
+              key={`${m.name || 'pending'}-${idx}`}
+              className="admin-card admin-card-readonly"
+            >
               {m.imageUrl ? (
                 <img src={m.imageUrl} alt="" className="admin-card-thumb" />
               ) : (

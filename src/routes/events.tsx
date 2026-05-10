@@ -94,8 +94,8 @@ function HeroCard({ event }: { event: EventDoc }) {
           <LocationIcon title={t('events.location.alt')} />
           {event.location}
         </div>
-        {paragraphs.map((para, i) => (
-          <p key={i} className="event-desc">
+        {paragraphs.map((para) => (
+          <p key={para} className="event-desc">
             {para}
           </p>
         ))}
@@ -143,8 +143,8 @@ function UpcomingGridCard({ event }: { event: EventDoc }) {
           <LocationIcon title={t('events.location.alt')} />
           {event.location}
         </div>
-        {paragraphs.map((para, i) => (
-          <p key={i} className="event-desc">
+        {paragraphs.map((para) => (
+          <p key={para} className="event-desc">
             {para}
           </p>
         ))}

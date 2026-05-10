@@ -169,7 +169,9 @@ function AdminApplicationDetailPage() {
             <dt>Motivación</dt>
             <dd className="admin-dl-paragraph">{app.motivation}</dd>
             <dt>Recibida</dt>
-            <dd>{new Date(app.submittedAt).toLocaleString('es-MX')}</dd>
+            <dd suppressHydrationWarning>
+              {new Date(app.submittedAt).toLocaleString('es-MX')}
+            </dd>
           </dl>
         </section>
 
@@ -177,8 +179,11 @@ function AdminApplicationDetailPage() {
           <h2 className="admin-detail-title">Seguimiento</h2>
 
           <div className="admin-field">
-            <label className="admin-field-label">Estado</label>
+            <label htmlFor="app-status" className="admin-field-label">
+              Estado
+            </label>
             <select
+              id="app-status"
               className="admin-input"
               value={app.status}
               onChange={(e) =>
@@ -194,9 +199,12 @@ function AdminApplicationDetailPage() {
           </div>
 
           <div className="admin-field">
-            <label className="admin-field-label">Responsable</label>
+            <label htmlFor="app-assignee" className="admin-field-label">
+              Responsable
+            </label>
             <div className="admin-inline-edit">
               <input
+                id="app-assignee"
                 type="text"
                 className="admin-input"
                 value={assigneeDraft}
@@ -214,8 +222,11 @@ function AdminApplicationDetailPage() {
           </div>
 
           <div className="admin-field">
-            <label className="admin-field-label">Notas</label>
+            <label htmlFor="app-notes" className="admin-field-label">
+              Notas
+            </label>
             <textarea
+              id="app-notes"
               rows={5}
               className="admin-textarea"
               value={notesDraft}
@@ -233,17 +244,20 @@ function AdminApplicationDetailPage() {
           </div>
 
           <div className="admin-field">
-            <label className="admin-field-label">Historial</label>
+            <span className="admin-field-label">Historial</span>
             <ol className="admin-history">
               {app.statusHistory
                 .slice()
                 .reverse()
-                .map((h, i) => (
-                  <li key={i}>
+                .map((h) => (
+                  <li key={`${h.changedAt}-${h.status}`}>
                     <span className="admin-history-status">
                       {STATUS_LABEL[h.status as ApplicationStatus]}
                     </span>
-                    <span className="admin-history-time">
+                    <span
+                      className="admin-history-time"
+                      suppressHydrationWarning
+                    >
                       {new Date(h.changedAt).toLocaleString('es-MX')}
                     </span>
                   </li>

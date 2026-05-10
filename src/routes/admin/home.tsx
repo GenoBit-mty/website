@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 import { toast } from 'sonner'
 import { api } from '../../../convex/_generated/api'
@@ -190,33 +190,25 @@ function BrowseModal({
   onSelect: (url: string) => void
 }) {
   const images = useQuery(api.home.listAvailableImages)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [onClose])
   return (
     <div
-      role="dialog"
-      aria-modal="true"
+      role="presentation"
       onClick={onClose}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(16, 42, 58, 0.55)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 24,
-        zIndex: 1000,
-      }}
+      className="admin-browse-backdrop"
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Elegir imagen, ${slot}`}
         onClick={(e) => e.stopPropagation()}
-        style={{
-          background: '#faf8f5',
-          padding: 24,
-          borderRadius: 4,
-          maxWidth: 960,
-          width: '100%',
-          maxHeight: '85vh',
-          overflowY: 'auto',
-        }}
+        className="admin-browse-dialog"
       >
         <div className="admin-page-header" style={{ marginBottom: 16 }}>
           <div>

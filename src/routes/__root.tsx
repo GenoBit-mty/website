@@ -9,12 +9,27 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { ConvexClientProvider } from '../components/ConvexClientProvider'
 import { CustomCursor } from '../components/CustomCursor'
 import { LanguageProvider, useLang } from '../i18n/LanguageProvider'
 
 import appCss from '../styles.css?url'
+
+const FOOTER_YEAR = new Date().getFullYear()
+
+function subscribeScroll(cb: () => void) {
+  window.addEventListener('scroll', cb, { passive: true })
+  return () => window.removeEventListener('scroll', cb)
+}
+
+function getIsScrolledSnapshot() {
+  return window.scrollY > 40
+}
+
+function getIsScrolledServerSnapshot() {
+  return false
+}
 
 export const Route = createRootRoute({
   head: () => ({
@@ -99,15 +114,12 @@ function SiteNav() {
   const router = useRouter()
   const { t } = useLang()
   const currentPath = router.state.location.pathname
-  const [isScrolled, setIsScrolled] = useState(false)
+  const isScrolled = useSyncExternalStore(
+    subscribeScroll,
+    getIsScrolledSnapshot,
+    getIsScrolledServerSnapshot,
+  )
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 40)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   useEffect(() => {
     const close = () => setIsMenuOpen(false)
@@ -240,7 +252,7 @@ function SiteFooter() {
         </div>
         <div className="divider" />
         <div className="footer-bottom">
-          <div>© {new Date().getFullYear()} GENOBIT</div>
+          <div>© {FOOTER_YEAR} GENOBIT</div>
           <div className="footer-links">
             <a
               href="https://github.com/orgs/GenoBit-mty"

@@ -101,9 +101,7 @@ export const seedResearch = mutation({
     await requireAdmin(ctx, args.sessionToken)
 
     const existing = await ctx.db.query('research').collect()
-    for (const r of existing) {
-      await ctx.db.delete(r._id)
-    }
+    await Promise.all(existing.map((r) => ctx.db.delete(r._id)))
 
     await ctx.db.insert('research', {
       title: {
@@ -141,7 +139,7 @@ export const backfillSlugs = mutation({
     for (const r of all) {
       if (r.slug) used.add(r.slug)
     }
-    let patched = 0
+    const patches: Array<{ id: typeof all[number]['_id']; slug: string }> = []
     for (const r of all) {
       if (r.slug) continue
       const base = slugify(r.title.en) || slugify(r.title.es) || 'paper'
@@ -152,9 +150,9 @@ export const backfillSlugs = mutation({
         n += 1
       }
       used.add(candidate)
-      await ctx.db.patch(r._id, { slug: candidate })
-      patched += 1
+      patches.push({ id: r._id, slug: candidate })
     }
-    return { patched }
+    await Promise.all(patches.map((p) => ctx.db.patch(p.id, { slug: p.slug })))
+    return { patched: patches.length }
   },
 })

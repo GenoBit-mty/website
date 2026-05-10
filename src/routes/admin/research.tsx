@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -233,12 +233,12 @@ function ResearchForm({
       : defaultValues,
   })
 
-  const [slugDirty, setSlugDirty] = useState(Boolean(initial?.slug))
+  const slugDirtyRef = useRef(Boolean(initial?.slug))
   const titleEn = form.watch('title.en')
   const slugValue = form.watch('slug')
 
   useEffect(() => {
-    if (!slugDirty) {
+    if (!slugDirtyRef.current) {
       const generated = slugify(titleEn ?? '')
       if (generated !== slugValue) {
         form.setValue('slug', generated, {
@@ -247,7 +247,7 @@ function ResearchForm({
         })
       }
     }
-  }, [titleEn, slugDirty, slugValue, form])
+  }, [titleEn, slugValue, form])
 
   return (
     <FormProvider {...form}>
@@ -277,7 +277,11 @@ function ResearchForm({
             placeholder="2026"
           />
           <FieldText<ResearchFormValues> name="url" label="URL" />
-          <div onInput={() => setSlugDirty(true)}>
+          <div
+            onInput={() => {
+              slugDirtyRef.current = true
+            }}
+          >
             <FieldText<ResearchFormValues>
               name="slug"
               label="Slug (URL)"

@@ -342,10 +342,12 @@ export const setOrder = mutation({
       .filter((m) => m.group !== args.group)
       .reduce((max, m) => Math.max(max, m.order ?? -1), -1)
 
-    let nextOrder = otherMaxOrder + 1
-    for (const id of args.orderedIds) {
-      await ctx.db.patch(id, { order: nextOrder++ })
-    }
+    const baseOrder = otherMaxOrder + 1
+    await Promise.all(
+      args.orderedIds.map((id, i) =>
+        ctx.db.patch(id, { order: baseOrder + i }),
+      ),
+    )
     return null
   },
 })
@@ -357,49 +359,28 @@ export const seedGenobitTeam = mutation({
     await requireAdmin(ctx, args.sessionToken)
 
     const existing = await ctx.db.query('teamMembers').collect()
-    for (const m of existing) {
-      await ctx.db.delete(m._id)
-    }
+    await Promise.all(existing.map((m) => ctx.db.delete(m._id)))
 
-    let order = 0
-    let inserted = 0
+    const seedRows: Array<Parameters<typeof ctx.db.insert<'teamMembers'>>[1]> =
+      [
+        ...directives.map((m) => ({
+          ...m,
+          group: 'directives',
+          tenure: TENURE,
+          isFirstBoard: true,
+        })),
+        ...ndrg.map((m) => ({ ...m, group: 'ndrg' })),
+        ...proteomics.map((m) => ({ ...m, group: 'proteomics' })),
+        ...studentCommunity.map((m) => ({ ...m, group: 'student-community' })),
+      ]
 
-    for (const m of directives) {
-      await ctx.db.insert('teamMembers', {
-        ...m,
-        group: 'directives',
-        tenure: TENURE,
-        isFirstBoard: true,
-        order: order++,
-      })
-      inserted++
-    }
-    for (const m of ndrg) {
-      await ctx.db.insert('teamMembers', {
-        ...m,
-        group: 'ndrg',
-        order: order++,
-      })
-      inserted++
-    }
-    for (const m of proteomics) {
-      await ctx.db.insert('teamMembers', {
-        ...m,
-        group: 'proteomics',
-        order: order++,
-      })
-      inserted++
-    }
-    for (const m of studentCommunity) {
-      await ctx.db.insert('teamMembers', {
-        ...m,
-        group: 'student-community',
-        order: order++,
-      })
-      inserted++
-    }
+    await Promise.all(
+      seedRows.map((row, i) =>
+        ctx.db.insert('teamMembers', { ...row, order: i }),
+      ),
+    )
 
-    return { inserted, deleted: existing.length }
+    return { inserted: seedRows.length, deleted: existing.length }
   },
 })
 
@@ -421,21 +402,21 @@ export const bulkCreate = mutation({
     await requireAdmin(ctx, args.sessionToken)
 
     const existing = await ctx.db.query('teamMembers').collect()
-    let nextOrder =
+    const baseOrder =
       existing.reduce((max, m) => Math.max(max, m.order ?? -1), -1) + 1
 
-    let inserted = 0
-    for (const row of args.rows) {
-      await ctx.db.insert('teamMembers', {
-        name: row.name,
-        role: { es: row.roleEs, en: row.roleEn },
-        career: row.career,
-        group: args.group,
-        order: nextOrder++,
-      })
-      inserted++
-    }
-    return { inserted }
+    await Promise.all(
+      args.rows.map((row, i) =>
+        ctx.db.insert('teamMembers', {
+          name: row.name,
+          role: { es: row.roleEs, en: row.roleEn },
+          career: row.career,
+          group: args.group,
+          order: baseOrder + i,
+        }),
+      ),
+    )
+    return { inserted: args.rows.length }
   },
 })
 
@@ -491,30 +472,30 @@ export const transitionBoard = mutation({
       members: archivedMembers,
     })
 
-    for (const m of outgoing) {
-      await ctx.db.delete(m._id)
-    }
+    await Promise.all(outgoing.map((m) => ctx.db.delete(m._id)))
 
     const otherMaxOrder = all
       .filter((m) => m.group !== 'directives')
       .reduce((max, m) => Math.max(max, m.order ?? -1), -1)
 
-    let nextOrder = otherMaxOrder + 1
-    for (const incoming of args.incomingMembers) {
-      await ctx.db.insert('teamMembers', {
-        name: incoming.name,
-        role: incoming.role,
-        career: incoming.career,
-        group: 'directives',
-        tenure: args.incomingPeriod,
-        isFirstBoard: false,
-        email: incoming.email,
-        linkedinUrl: incoming.linkedinUrl,
-        githubUrl: incoming.githubUrl,
-        imageUrl: incoming.imageUrl,
-        order: nextOrder++,
-      })
-    }
+    const baseOrder = otherMaxOrder + 1
+    await Promise.all(
+      args.incomingMembers.map((incoming, i) =>
+        ctx.db.insert('teamMembers', {
+          name: incoming.name,
+          role: incoming.role,
+          career: incoming.career,
+          group: 'directives',
+          tenure: args.incomingPeriod,
+          isFirstBoard: false,
+          email: incoming.email,
+          linkedinUrl: incoming.linkedinUrl,
+          githubUrl: incoming.githubUrl,
+          imageUrl: incoming.imageUrl,
+          order: baseOrder + i,
+        }),
+      ),
+    )
 
     return { pastAdminId }
   },

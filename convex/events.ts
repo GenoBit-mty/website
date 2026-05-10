@@ -101,9 +101,7 @@ export const seedEvents = mutation({
     await requireAdmin(ctx, args.sessionToken)
 
     const existing = await ctx.db.query('events').collect()
-    for (const e of existing) {
-      await ctx.db.delete(e._id)
-    }
+    await Promise.all(existing.map((e) => ctx.db.delete(e._id)))
 
     const events: Array<Parameters<typeof ctx.db.insert<'events'>>[1]> = [
       {
@@ -226,9 +224,7 @@ export const seedEvents = mutation({
       },
     ]
 
-    for (const ev of events) {
-      await ctx.db.insert('events', ev)
-    }
+    await Promise.all(events.map((ev) => ctx.db.insert('events', ev)))
 
     return { inserted: events.length, deleted: existing.length }
   },

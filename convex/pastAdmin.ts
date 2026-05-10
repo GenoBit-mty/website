@@ -81,9 +81,7 @@ export const seedPastAdmin = mutation({
     await requireAdmin(ctx, args.sessionToken)
 
     const existing = await ctx.db.query('pastAdministrations').collect()
-    for (const a of existing) {
-      await ctx.db.delete(a._id)
-    }
+    await Promise.all(existing.map((a) => ctx.db.delete(a._id)))
 
     await ctx.db.insert('pastAdministrations', {
       period: '2024-2025',

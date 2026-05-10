@@ -8,7 +8,7 @@ export const APPLICATION_STATUSES = [
 ] as const
 export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number]
 
-export const TERMINAL_STATUSES: ReadonlyArray<ApplicationStatus> = [
+const TERMINAL_STATUSES: ReadonlyArray<ApplicationStatus> = [
   'accepted',
   'rejected',
 ]
