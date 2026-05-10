@@ -10,6 +10,7 @@ export const Route = createFileRoute('/admin')({
 })
 
 const NAV = [
+  { to: '/admin', label: 'Inicio', exact: true },
   { to: '/admin/team', label: 'Equipo' },
   { to: '/admin/events', label: 'Eventos' },
   { to: '/admin/research', label: 'Investigación' },
@@ -49,12 +50,6 @@ function AdminLayout() {
     }
   }, [checked, token, session, isLogin, navigate])
 
-  useEffect(() => {
-    if (!checked) return
-    if (path === '/admin' && token) {
-      navigate({ to: '/admin/team' })
-    }
-  }, [path, token, checked, navigate])
 
   const onLogout = async () => {
     if (token) {
@@ -99,6 +94,7 @@ function AdminLayout() {
               to={item.to}
               className="admin-nav-link"
               activeProps={{ className: 'admin-nav-link is-active' }}
+              activeOptions={item.exact ? { exact: true } : undefined}
             >
               {item.label}
             </Link>
