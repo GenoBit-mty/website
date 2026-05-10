@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,8 +15,13 @@ import {
   FieldText,
 } from '@/components/admin/fields'
 
+const adminsSearchSchema = z.object({
+  editId: z.string().optional(),
+})
+
 export const Route = createFileRoute('/admin/admins')({
   component: AdminAdminsPage,
+  validateSearch: adminsSearchSchema,
 })
 
 const bilingual = z.object({ es: z.string().min(1, 'Requerido'), en: z.string().min(1, 'Requerido') })
@@ -67,6 +72,16 @@ function AdminAdminsPage() {
   const update = useMutation(api.pastAdmin.update)
   const remove = useMutation(api.pastAdmin.remove)
   const [editing, setEditing] = useState<'new' | string | null>(null)
+
+  const search = Route.useSearch()
+  const navigate = Route.useNavigate()
+
+  useEffect(() => {
+    if (search.editId && editing === null) {
+      setEditing(search.editId)
+      navigate({ search: () => ({}), replace: true })
+    }
+  }, [search.editId, editing, navigate])
 
   if (editing !== null) {
     const adm = editing === 'new' ? null : admins?.find((a) => a._id === editing)
