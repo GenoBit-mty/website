@@ -91,4 +91,50 @@ export default defineSchema({
     slot: v.string(),
     imageUrl: v.string(),
   }).index('by_slot', ['slot']),
+
+  applications: defineTable({
+    fullName: v.string(),
+    email: v.string(),
+    phone: v.string(),
+    career: v.string(),
+    careerOther: v.optional(v.string()),
+    semester: v.string(),
+    university: v.string(),
+    group: v.union(
+      v.literal('ndrg'),
+      v.literal('proteomics'),
+      v.literal('student-community'),
+    ),
+    subArea: v.optional(v.string()),
+    motivation: v.string(),
+    linkedinUrl: v.optional(v.string()),
+    githubUrl: v.optional(v.string()),
+    acceptsContact: v.boolean(),
+    locale: v.union(v.literal('es'), v.literal('en')),
+    submittedAt: v.number(),
+    status: v.union(
+      v.literal('new'),
+      v.literal('under_review'),
+      v.literal('contacted'),
+      v.literal('interview_scheduled'),
+      v.literal('accepted'),
+      v.literal('rejected'),
+    ),
+    assigneeName: v.optional(v.string()),
+    adminNotes: v.optional(v.string()),
+    statusHistory: v.array(
+      v.object({
+        status: v.string(),
+        changedAt: v.number(),
+      }),
+    ),
+  })
+    .index('by_email', ['email'])
+    .index('by_status', ['status'])
+    .index('by_submittedAt', ['submittedAt']),
+
+  siteSettings: defineTable({
+    key: v.string(),
+    value: v.string(),
+  }).index('by_key', ['key']),
 })
