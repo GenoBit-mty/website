@@ -124,34 +124,39 @@ export const remove = mutation({
   },
 });
 
-export const reorder = mutation({
+export const setOrder = mutation({
   args: {
     sessionToken: v.string(),
-    id: v.id("teamMembers"),
-    direction: v.union(v.literal("up"), v.literal("down")),
+    group: v.string(),
+    orderedIds: v.array(v.id("teamMembers")),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     await requireAdmin(ctx, args.sessionToken);
-    const member = await ctx.db.get(args.id);
-    if (!member) throw new Error("Member not found");
 
-    const allInGroup = (await ctx.db.query("teamMembers").collect())
-      .filter((m) => m.group === member.group)
-      .sort(
-        (a, b) =>
-          (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER),
+    const all = await ctx.db.query("teamMembers").collect();
+    const groupMembers = all.filter((m) => m.group === args.group);
+    const groupIds = new Set(groupMembers.map((m) => m._id));
+
+    for (const id of args.orderedIds) {
+      if (!groupIds.has(id)) {
+        throw new Error(`Member ${id} is not in group ${args.group}`);
+      }
+    }
+    if (args.orderedIds.length !== groupMembers.length) {
+      throw new Error(
+        `Expected ${groupMembers.length} ids for group ${args.group}, got ${args.orderedIds.length}`,
       );
+    }
 
-    const idx = allInGroup.findIndex((m) => m._id === member._id);
-    const swapIdx = args.direction === "up" ? idx - 1 : idx + 1;
-    if (swapIdx < 0 || swapIdx >= allInGroup.length) return null;
+    const otherMaxOrder = all
+      .filter((m) => m.group !== args.group)
+      .reduce((max, m) => Math.max(max, m.order ?? -1), -1);
 
-    const neighbor = allInGroup[swapIdx];
-    const memberOrder = member.order ?? idx;
-    const neighborOrder = neighbor.order ?? swapIdx;
-
-    await ctx.db.patch(member._id, { order: neighborOrder });
-    await ctx.db.patch(neighbor._id, { order: memberOrder });
+    let nextOrder = otherMaxOrder + 1;
+    for (const id of args.orderedIds) {
+      await ctx.db.patch(id, { order: nextOrder++ });
+    }
     return null;
   },
 });

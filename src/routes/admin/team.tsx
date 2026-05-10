@@ -89,7 +89,7 @@ function AdminTeamPage() {
   const create = useMutation(api.team.create)
   const update = useMutation(api.team.update)
   const remove = useMutation(api.team.remove)
-  const reorder = useMutation(api.team.reorder)
+  // TASK 14: const reorder = useMutation(api.team.reorder)
 
   const [editing, setEditing] = useState<'new' | string | null>(null)
   const [filter, setFilter] = useState('')
@@ -207,26 +207,32 @@ function AdminTeamPage() {
                     <button
                       type="button"
                       className="admin-icon-btn"
+                      onClick={() => {}}
+                      aria-label="Subir"
+                    >
+                      ↑
+                      {/* TASK 14:
                       onClick={async () => {
                         const token = getAdminToken()
                         if (!token) return
                         await reorder({ sessionToken: token, id: m._id, direction: 'up' })
                       }}
-                      aria-label="Subir"
-                    >
-                      ↑
+                      */}
                     </button>
                     <button
                       type="button"
                       className="admin-icon-btn"
+                      onClick={() => {}}
+                      aria-label="Bajar"
+                    >
+                      ↓
+                      {/* TASK 14:
                       onClick={async () => {
                         const token = getAdminToken()
                         if (!token) return
                         await reorder({ sessionToken: token, id: m._id, direction: 'down' })
                       }}
-                      aria-label="Bajar"
-                    >
-                      ↓
+                      */}
                     </button>
                     <button
                       type="button"
