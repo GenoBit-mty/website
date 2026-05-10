@@ -15,6 +15,7 @@ import {
   FieldGallery,
   FieldImageUpload,
   FieldText,
+  FormSection,
 } from '@/components/admin/fields'
 
 export const Route = createFileRoute('/admin/events')({
@@ -214,22 +215,30 @@ function EventForm({
         </div>
       </div>
       <form className="admin-form-shell" onSubmit={form.handleSubmit(onSubmit)}>
-        <FieldBilingualText<EventFormValues> name="title" label="Título" required />
-        <FieldBilingualTextarea<EventFormValues> name="description" label="Descripción" required rows={4} />
-        <FieldText<EventFormValues> name="date" label="Fecha" placeholder="2026-04-12 · 18:00" required />
-        <FieldText<EventFormValues> name="location" label="Lugar" required />
-        <FieldText<EventFormValues> name="category" label="Categoría" />
-        <FieldCheckbox<EventFormValues>
-          name="requiresRegistration"
-          label="Requiere registro"
-          description="Si está activado, se mostrará un botón de Registrarse con el enlace que indiques."
-        />
-        {form.watch('requiresRegistration') && (
-          <FieldText<EventFormValues> name="registrationUrl" label="URL de registro" />
-        )}
-        <FieldCheckbox<EventFormValues> name="isUpcoming" label="Es un evento próximo" />
-        <FieldImageUpload<EventFormValues> name="imageUrl" label="Imagen principal" control={form.control} />
-        <FieldGallery<EventFormValues> name="galleryImageUrls" label="Galería" control={form.control} />
+        <FormSection title="Datos básicos">
+          <FieldText<EventFormValues> name="category" label="Categoría" />
+          <FieldBilingualText<EventFormValues> name="title" label="Título" required />
+          <FieldText<EventFormValues> name="date" label="Fecha" placeholder="2026-04-12 · 18:00" required />
+          <FieldText<EventFormValues> name="location" label="Lugar" required />
+          <FieldCheckbox<EventFormValues> name="isUpcoming" label="Es un evento próximo" />
+        </FormSection>
+        <FormSection title="Contenido">
+          <FieldBilingualTextarea<EventFormValues> name="description" label="Descripción" required rows={4} />
+          <FieldImageUpload<EventFormValues> name="imageUrl" label="Imagen principal" control={form.control} />
+        </FormSection>
+        <FormSection title="Galería">
+          <FieldGallery<EventFormValues> name="galleryImageUrls" label="Galería" control={form.control} />
+        </FormSection>
+        <FormSection title="Inscripción">
+          <FieldCheckbox<EventFormValues>
+            name="requiresRegistration"
+            label="Requiere registro"
+            description="Si está activado, se mostrará un botón de Registrarse con el enlace que indiques."
+          />
+          {form.watch('requiresRegistration') && (
+            <FieldText<EventFormValues> name="registrationUrl" label="URL de registro" />
+          )}
+        </FormSection>
         <div className="admin-form-actions">
           <button type="button" className="admin-btn admin-btn-secondary" onClick={onCancel}>
             Cancelar
