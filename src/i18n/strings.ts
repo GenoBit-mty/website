@@ -234,6 +234,126 @@ const dict = {
 
   // Language toggle
   'lang.label': { es: 'Idioma', en: 'Language' },
+
+  // Join page
+  'join.header.eyebrow': { es: 'Aplica · 2025', en: 'Apply · 2025' },
+  'join.header.title': { es: 'Únete a GenoBit', en: 'Join GenoBit' },
+  'join.header.lead': {
+    es: 'Cuéntanos quién eres y dónde quieres sumarte. Una persona del equipo te contactará después de revisar tu aplicación.',
+    en: 'Tell us who you are and where you want to plug in. A team member will reach out after reviewing your application.',
+  },
+  'join.closed.title': {
+    es: 'Aplicaciones cerradas por ahora',
+    en: 'Applications closed for now',
+  },
+  'join.closed.body': {
+    es: 'No estamos recibiendo nuevas aplicaciones en este momento. Síguenos en Instagram para la próxima convocatoria.',
+    en: 'We are not accepting new applications right now. Follow us on Instagram for the next call.',
+  },
+  'join.closed.cta': { es: 'Instagram', en: 'Instagram' },
+
+  'join.section.about': { es: 'Sobre ti', en: 'About you' },
+  'join.section.interest': { es: 'Tu interés', en: 'Your interest' },
+  'join.section.background': { es: 'Tu trayectoria', en: 'Your background' },
+
+  'join.field.fullName': { es: 'Nombre completo', en: 'Full name' },
+  'join.field.email': { es: 'Correo electrónico', en: 'Email' },
+  'join.field.phone': { es: 'Teléfono', en: 'Phone' },
+  'join.field.career': { es: 'Carrera', en: 'Career' },
+  'join.field.careerOther': {
+    es: 'Carrera (especifica)',
+    en: 'Career (specify)',
+  },
+  'join.field.semester': { es: 'Semestre', en: 'Semester' },
+  'join.field.group': { es: 'Área', en: 'Area' },
+  'join.field.subArea': { es: 'Sub-área', en: 'Sub-area' },
+  'join.field.motivation': {
+    es: '¿Por qué quieres unirte?',
+    en: 'Why do you want to join?',
+  },
+  'join.field.linkedinUrl': { es: 'LinkedIn (opcional)', en: 'LinkedIn (optional)' },
+  'join.field.githubUrl': { es: 'GitHub (opcional)', en: 'GitHub (optional)' },
+  'join.field.consent': {
+    es: 'Acepto ser contactado por GenoBit sobre mi aplicación.',
+    en: 'I agree to be contacted by GenoBit about my application.',
+  },
+  'join.field.privacy': {
+    es: 'Al enviar aceptas nuestro',
+    en: 'By submitting you accept our',
+  },
+  'join.field.privacy.link': { es: 'aviso de privacidad', en: 'privacy notice' },
+
+  'join.placeholder.fullName': { es: 'Tu nombre', en: 'Your name' },
+  'join.placeholder.email': { es: 'tu@correo.com', en: 'you@email.com' },
+  'join.placeholder.phone': { es: '+52 81 0000 0000', en: '+52 81 0000 0000' },
+  'join.placeholder.motivation': {
+    es: 'Comparte qué te interesa de GenoBit y qué te gustaría aportar.',
+    en: 'Share what interests you about GenoBit and what you would bring.',
+  },
+
+  'join.semester.graduate': { es: 'Egresado/a', en: 'Graduate' },
+  'join.career.other': { es: 'Otra', en: 'Other' },
+
+  'join.subArea.research': { es: 'Investigación', en: 'Research' },
+  'join.subArea.finance': { es: 'Finanzas', en: 'Finance' },
+  'join.subArea.logistics': { es: 'Logística', en: 'Logistics' },
+  'join.subArea.marketing': { es: 'Marketing', en: 'Marketing' },
+  'join.subArea.social-responsibility': {
+    es: 'Responsabilidad Social',
+    en: 'Social Responsibility',
+  },
+  'join.subArea.education': { es: 'Educación', en: 'Education' },
+  'join.subArea.it-web': { es: 'TI / Web', en: 'IT / Web' },
+
+  'join.submit': { es: 'Enviar aplicación', en: 'Submit application' },
+  'join.submitting': { es: 'Enviando…', en: 'Submitting…' },
+
+  'join.success.title': { es: 'Aplicación recibida', en: 'Application received' },
+  'join.success.body': {
+    es: 'Gracias por aplicar a GenoBit. Una persona del equipo te contactará al correo que registraste.',
+    en: 'Thanks for applying to GenoBit. A team member will reach out at the email you provided.',
+  },
+  'join.success.again': {
+    es: 'Enviar otra aplicación',
+    en: 'Submit another application',
+  },
+
+  'join.error.duplicate': {
+    es: 'Ya recibimos una aplicación desde este correo recientemente. Si necesitas actualizar tu información, escríbenos a genobit.mty@gmail.com.',
+    en: 'We already received an application from this email recently. If you need to update it, email genobit.mty@gmail.com.',
+  },
+  'join.error.closed': {
+    es: 'Las aplicaciones están cerradas en este momento.',
+    en: 'Applications are closed right now.',
+  },
+  'join.error.generic': {
+    es: 'No se pudo enviar la aplicación. Intenta de nuevo.',
+    en: 'Could not submit the application. Please try again.',
+  },
+
+  'join.validation.required': { es: 'Requerido', en: 'Required' },
+  'join.validation.email': { es: 'Correo inválido', en: 'Invalid email' },
+  'join.validation.motivationMax': {
+    es: 'Máximo 500 caracteres',
+    en: 'Max 500 characters',
+  },
+
+  // Privacy page
+  'privacy.title': { es: 'Aviso de privacidad', en: 'Privacy notice' },
+  'privacy.placeholder': {
+    es: 'El aviso de privacidad completo se publicará pronto. Mientras tanto: los datos que compartas en la aplicación se usan únicamente para evaluar tu solicitud y contactarte sobre la misma. Para dudas, escríbenos a genobit.mty@gmail.com.',
+    en: 'The full privacy notice will be published soon. In the meantime: the data you share in the application is used only to evaluate your request and contact you about it. For questions, email genobit.mty@gmail.com.',
+  },
+  'privacy.back': { es: '← Volver', en: '← Back' },
+
+  // Home / join CTA section
+  'home.join.label': { es: '— 04 / Aplica', en: '— 04 / Apply' },
+  'home.join.title': { es: 'Únete', en: 'Join us' },
+  'home.join.body': {
+    es: 'Estudiantes de cualquier carrera, en cualquier semestre. Si te interesa la bioinformática o la genómica computacional, queremos conocerte.',
+    en: 'Students from any major, any semester. If bioinformatics or computational genomics interests you, we want to meet you.',
+  },
+  'home.join.cta': { es: 'Aplicar ahora', en: 'Apply now' },
 } as const satisfies Record<string, { es: string; en: string }>
 
 export type StringKey = keyof typeof dict
