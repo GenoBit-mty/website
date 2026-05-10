@@ -261,11 +261,7 @@ function HomePage() {
                 </Link>
               </div>
               <div className="content-media">
-                <img
-                  src={heroImages.team}
-                  alt=""
-                  className="content-image"
-                />
+                <img src={heroImages.team} alt="" className="content-image" />
                 <div className="floating-label">únete</div>
               </div>
             </div>

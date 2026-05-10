@@ -6,6 +6,13 @@ import { Link } from '@tanstack/react-router'
 import { ConvexError } from 'convex/values'
 import { useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
+import type {
+  ApplicationGroup,
+  Career,
+  Semester,
+  StudentCommunitySubArea,
+} from '@/lib/applications'
+import type { StringKey } from '@/i18n/strings'
 import { useLang } from '@/i18n/LanguageProvider'
 import {
   CAREERS,
@@ -14,13 +21,6 @@ import {
   STUDENT_COMMUNITY_SUB_AREAS,
   subAreaRequired,
 } from '@/lib/applications'
-import type {
-  ApplicationGroup,
-  Career,
-  Semester,
-  StudentCommunitySubArea,
-} from '@/lib/applications'
-import type { StringKey } from '@/i18n/strings'
 
 const formSchema = z
   .object({
@@ -42,10 +42,10 @@ const formSchema = z
     (data) => (data.career === 'Other' ? !!data.careerOther?.trim() : true),
     { path: ['careerOther'], message: 'required' },
   )
-  .refine(
-    (data) => (subAreaRequired(data.group) ? !!data.subArea : true),
-    { path: ['subArea'], message: 'required' },
-  )
+  .refine((data) => (subAreaRequired(data.group) ? !!data.subArea : true), {
+    path: ['subArea'],
+    message: 'required',
+  })
 
 type FormValues = z.infer<typeof formSchema>
 
@@ -86,7 +86,9 @@ export function JoinForm() {
         phone: values.phone,
         career: values.career,
         careerOther:
-          values.career === 'Other' ? values.careerOther || undefined : undefined,
+          values.career === 'Other'
+            ? values.careerOther || undefined
+            : undefined,
         semester: values.semester,
         university: 'Tec de Monterrey',
         group: values.group,
@@ -320,7 +322,9 @@ export function JoinForm() {
         </fieldset>
 
         <fieldset className="join-fieldset">
-          <legend className="join-legend">{t('join.section.background')}</legend>
+          <legend className="join-legend">
+            {t('join.section.background')}
+          </legend>
 
           <div className="join-field">
             <label className="join-label" htmlFor="linkedinUrl">
@@ -369,7 +373,9 @@ export function JoinForm() {
           className="editorial-btn filled"
           disabled={methods.formState.isSubmitting}
         >
-          {methods.formState.isSubmitting ? t('join.submitting') : t('join.submit')}
+          {methods.formState.isSubmitting
+            ? t('join.submitting')
+            : t('join.submit')}
         </button>
       </form>
     </FormProvider>

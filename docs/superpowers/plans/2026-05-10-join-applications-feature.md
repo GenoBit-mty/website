@@ -5,16 +5,18 @@
 **Goal:** Replace the footer mailto CTA with a real applicant pipeline. Public `/join` form captures name, email, phone, career, semester, area (group + optional sub-area), motivation, and optional links. Admin gets a list + detail view to track each submission through a 6-state status pipeline, with CSV export, traceability via status history, and an org-wide open/closed toggle.
 
 **Architecture:**
+
 - Convex stores submissions in a new `applications` table and a one-row `siteSettings` table for the `applicationsOpen` boolean. Public `submit` mutation enforces a 24h-per-email rate limit and silently drops honeypot-positive submissions; admin mutations require a session token via the existing `requireAdmin` helper. The frontend stays in TanStack Router file routes: a public `/join`, a public `/privacy` stub, and two admin pages (`/admin/applications` list, `/admin/applications/$id` detail) nested under the existing admin layout. Form state uses `react-hook-form` + `zod` (already in the codebase). i18n is bilingual via the existing `src/i18n/strings.ts` dictionary.
 - All non-trivial business rules (which careers/semesters/groups/sub-areas/statuses are valid; which group requires a sub-area; which statuses are terminal vs. active; CSV-row serialization) live in pure helpers under `src/lib/applications.ts` so they can be unit-tested with vitest. Convex code and React components stay untested at the unit level, matching the existing project convention (only `src/lib/*.test.ts` and `convex/lib/*.test.ts` exist).
 
 **Tech Stack:** Convex (DB + mutations), React 19, TanStack Router (file-based routing), react-hook-form, zod, framer-motion, sonner (toasts), vitest, Tailwind v4 + project CSS in `src/styles.css`.
 
 **Spec:** Captured in the conversation that produced this plan (no separate spec file). Key decisions:
+
 - Areas: top-level group (NDRG / Proteomics / Student Community); only Student Community requires a sub-area (Research / Finance / Logistics / Marketing / Social Responsibility / Education / IT-Web).
 - Status pipeline: `new → under_review → contacted → interview_scheduled → accepted | rejected`; terminal states are `accepted` and `rejected`.
 - Anti-spam: invisible honeypot field + 24h rate-limit per email (server-side); duplicates within window show a friendly error, not silent acceptance.
-- Privacy: route `/privacy` is stubbed with bilingual placeholder copy; real *aviso de privacidad* drafted later by board.
+- Privacy: route `/privacy` is stubbed with bilingual placeholder copy; real _aviso de privacidad_ drafted later by board.
 - No email notifications in v1.
 - Admin list defaults to hiding terminal states; toggle reveals them. CSV export of the currently filtered view.
 
@@ -240,14 +242,7 @@ export function subAreaRequired(group: ApplicationGroup): boolean {
   return group === 'student-community'
 }
 
-export const CAREERS = [
-  'IBT',
-  'ITC',
-  'IDM',
-  'MC',
-  'MSc BI',
-  'Other',
-] as const
+export const CAREERS = ['IBT', 'ITC', 'IDM', 'MC', 'MSc BI', 'Other'] as const
 export type Career = (typeof CAREERS)[number]
 
 export const SEMESTERS = [
@@ -930,10 +925,10 @@ const formSchema = z
     (data) => (data.career === 'Other' ? !!data.careerOther?.trim() : true),
     { path: ['careerOther'], message: 'required' },
   )
-  .refine(
-    (data) => (subAreaRequired(data.group) ? !!data.subArea : true),
-    { path: ['subArea'], message: 'required' },
-  )
+  .refine((data) => (subAreaRequired(data.group) ? !!data.subArea : true), {
+    path: ['subArea'],
+    message: 'required',
+  })
 
 type FormValues = z.infer<typeof formSchema>
 
@@ -974,7 +969,9 @@ export function JoinForm() {
         phone: values.phone,
         career: values.career,
         careerOther:
-          values.career === 'Other' ? values.careerOther || undefined : undefined,
+          values.career === 'Other'
+            ? values.careerOther || undefined
+            : undefined,
         semester: values.semester,
         university: 'Tec de Monterrey',
         group: values.group,
@@ -1208,7 +1205,9 @@ export function JoinForm() {
         </fieldset>
 
         <fieldset className="join-fieldset">
-          <legend className="join-legend">{t('join.section.background')}</legend>
+          <legend className="join-legend">
+            {t('join.section.background')}
+          </legend>
 
           <div className="join-field">
             <label className="join-label" htmlFor="linkedinUrl">
@@ -1235,10 +1234,7 @@ export function JoinForm() {
 
         <div className="join-consent">
           <label className="join-checkbox">
-            <input
-              type="checkbox"
-              {...methods.register('acceptsContact')}
-            />
+            <input type="checkbox" {...methods.register('acceptsContact')} />
             <span>{t('join.field.consent')}</span>
           </label>
           {methods.formState.errors.acceptsContact && (
@@ -1260,7 +1256,9 @@ export function JoinForm() {
           className="editorial-btn filled"
           disabled={methods.formState.isSubmitting}
         >
-          {methods.formState.isSubmitting ? t('join.submitting') : t('join.submit')}
+          {methods.formState.isSubmitting
+            ? t('join.submitting')
+            : t('join.submit')}
         </button>
       </form>
     </FormProvider>
@@ -1345,17 +1343,17 @@ function JoinPage() {
 In `src/routes/__root.tsx`, find the `SiteFooter` component (around line 233). Replace these three lines (currently 238-240):
 
 ```tsx
-        <div className="footer-cta">
-          <a href="mailto:genobit.mty@gmail.com">{t('footer.cta')}</a>
-        </div>
+<div className="footer-cta">
+  <a href="mailto:genobit.mty@gmail.com">{t('footer.cta')}</a>
+</div>
 ```
 
 with:
 
 ```tsx
-        <div className="footer-cta">
-          <Link to="/join">{t('footer.cta')}</Link>
-        </div>
+<div className="footer-cta">
+  <Link to="/join">{t('footer.cta')}</Link>
+</div>
 ```
 
 `Link` is already imported at the top of `__root.tsx`.
@@ -1388,7 +1386,7 @@ git commit -m "feat(applications): add /join route and rewire footer CTA"
 
 ## Task 8: `/privacy` route stub
 
-Placeholder bilingual page. Real *aviso de privacidad* gets drafted by the board and pasted in later.
+Placeholder bilingual page. Real _aviso de privacidad_ gets drafted by the board and pasted in later.
 
 **Files:**
 
@@ -1447,27 +1445,23 @@ Adds a fourth content row on the homepage that points to `/join`. Mirrors the vi
 Open `src/routes/index.tsx`. Locate the events row that ends with `<div className="floating-label">dato</div>` followed by `</div>` and `</div>` (around lines 247-249). **After** the closing `</div>` of the events `content-row` (line 249), and **before** the `</div>` that closes `.content-rows` (line 250), insert:
 
 ```tsx
-            <div className="content-row reverse reveal-on-scroll">
-              <div className="content-info">
-                <span className="mono-label">{t('home.join.label')}</span>
-                <h3 className="section-display">
-                  <em>{t('home.join.title')}</em>
-                </h3>
-                <p className="section-copy">{t('home.join.body')}</p>
-                <div className="divider" />
-                <Link to="/join" className="editorial-btn filled">
-                  {t('home.join.cta')}
-                </Link>
-              </div>
-              <div className="content-media">
-                <img
-                  src={heroImages.team}
-                  alt=""
-                  className="content-image"
-                />
-                <div className="floating-label">únete</div>
-              </div>
-            </div>
+<div className="content-row reverse reveal-on-scroll">
+  <div className="content-info">
+    <span className="mono-label">{t('home.join.label')}</span>
+    <h3 className="section-display">
+      <em>{t('home.join.title')}</em>
+    </h3>
+    <p className="section-copy">{t('home.join.body')}</p>
+    <div className="divider" />
+    <Link to="/join" className="editorial-btn filled">
+      {t('home.join.cta')}
+    </Link>
+  </div>
+  <div className="content-media">
+    <img src={heroImages.team} alt="" className="content-image" />
+    <div className="floating-label">únete</div>
+  </div>
+</div>
 ```
 
 (Reuses `heroImages.team` rather than introducing a new image slot — keeps the change scoped. The board can later replace via the existing home-images admin if they want a dedicated image.)
@@ -1629,7 +1623,8 @@ function AdminApplicationsPage() {
         <div>
           <h1 className="admin-page-title">Aplicaciones</h1>
           <p className="admin-page-sub">
-            {filtered.length} {filtered.length === 1 ? 'aplicación' : 'aplicaciones'}
+            {filtered.length}{' '}
+            {filtered.length === 1 ? 'aplicación' : 'aplicaciones'}
             {showArchived ? '' : ' activas'}
           </p>
         </div>
@@ -1780,11 +1775,11 @@ const NAV = [
 In `src/routes/admin/index.tsx`, the dashboard renders a grid of tiles. After the closing `</Link>` of the existing `/admin/team` tile (currently ending around line 51), add a new tile **before** the events tile:
 
 ```tsx
-        <Link to="/admin/applications" className="admin-tile">
-          <h2 className="admin-tile-title">Aplicaciones</h2>
-          <p className="admin-tile-stat">Pipeline de reclutamiento</p>
-          <span className="admin-tile-cta">→ Ver aplicaciones</span>
-        </Link>
+<Link to="/admin/applications" className="admin-tile">
+  <h2 className="admin-tile-title">Aplicaciones</h2>
+  <p className="admin-tile-stat">Pipeline de reclutamiento</p>
+  <span className="admin-tile-cta">→ Ver aplicaciones</span>
+</Link>
 ```
 
 (We don't show a count here to avoid a third query just for the dashboard — the list page is one click away.)
@@ -1866,9 +1861,7 @@ function AdminApplicationDetailPage() {
   }, [app])
 
   if (!app) {
-    return (
-      <div className="admin-loading">Cargando…</div>
-    )
+    return <div className="admin-loading">Cargando…</div>
   }
 
   const onChangeStatus = async (next: ApplicationStatus) => {
@@ -1884,7 +1877,11 @@ function AdminApplicationDetailPage() {
   const onSaveAssignee = async () => {
     if (!token) return
     try {
-      await updateAssignee({ sessionToken: token, id, assigneeName: assigneeDraft })
+      await updateAssignee({
+        sessionToken: token,
+        id,
+        assigneeName: assigneeDraft,
+      })
       toast.success('Responsable actualizado')
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Error')
@@ -1929,7 +1926,11 @@ function AdminApplicationDetailPage() {
             {app.email} · {app.phone} · {app.locale.toUpperCase()}
           </p>
         </div>
-        <button type="button" className="admin-btn admin-btn-danger" onClick={onDelete}>
+        <button
+          type="button"
+          className="admin-btn admin-btn-danger"
+          onClick={onDelete}
+        >
           Eliminar
         </button>
       </div>
@@ -1954,7 +1955,11 @@ function AdminApplicationDetailPage() {
             <dt>LinkedIn</dt>
             <dd>
               {app.linkedinUrl ? (
-                <a href={app.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={app.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {app.linkedinUrl}
                 </a>
               ) : (
@@ -1964,7 +1969,11 @@ function AdminApplicationDetailPage() {
             <dt>GitHub</dt>
             <dd>
               {app.githubUrl ? (
-                <a href={app.githubUrl} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={app.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {app.githubUrl}
                 </a>
               ) : (
@@ -1986,7 +1995,9 @@ function AdminApplicationDetailPage() {
             <select
               className="admin-input"
               value={app.status}
-              onChange={(e) => onChangeStatus(e.target.value as ApplicationStatus)}
+              onChange={(e) =>
+                onChangeStatus(e.target.value as ApplicationStatus)
+              }
             >
               {APPLICATION_STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -2006,7 +2017,11 @@ function AdminApplicationDetailPage() {
                 onChange={(e) => setAssigneeDraft(e.target.value)}
                 placeholder="Nombre del responsable"
               />
-              <button type="button" className="admin-btn" onClick={onSaveAssignee}>
+              <button
+                type="button"
+                className="admin-btn"
+                onClick={onSaveAssignee}
+              >
                 Guardar
               </button>
             </div>
@@ -2489,7 +2504,7 @@ With `bun run dev` and `npx convex dev` running:
 4. Pick career = Other. Verify careerOther input appears and is required.
 5. Submit. See inline success.
 6. Click "Submit another application". Form resets.
-7. Try to submit the *same email* again. See friendly duplicate error.
+7. Try to submit the _same email_ again. See friendly duplicate error.
 
 - [ ] **Step 5: Manual smoke test — admin path**
 
@@ -2539,21 +2554,21 @@ Otherwise nothing to commit.
 
 **Spec coverage check:**
 
-| Spec item | Task |
-|---|---|
-| Entry: `/join` route + footer rewire + homepage CTA | 7, 9 |
-| Form fields & validation | 6 |
-| Bilingual copy | 5 |
-| Honeypot + 24h rate-limit | 3, 6 |
-| Friendly duplicate error | 3, 6 |
-| `applicationsOpen` toggle + closed state | 4, 7, 10 |
-| Privacy stub route | 8 |
-| `applications` schema + indexes | 2 |
-| Admin list with filters, archived-hidden default, CSV | 10 |
-| Admin detail with status/assignee/notes/history/delete | 11 |
-| Pure helpers tested | 1 |
-| Reuse `react-hook-form` + `zod` + `sonner` (no new deps) | 6, 10, 11 |
-| No email notifications | (intentionally absent) |
+| Spec item                                                | Task                   |
+| -------------------------------------------------------- | ---------------------- |
+| Entry: `/join` route + footer rewire + homepage CTA      | 7, 9                   |
+| Form fields & validation                                 | 6                      |
+| Bilingual copy                                           | 5                      |
+| Honeypot + 24h rate-limit                                | 3, 6                   |
+| Friendly duplicate error                                 | 3, 6                   |
+| `applicationsOpen` toggle + closed state                 | 4, 7, 10               |
+| Privacy stub route                                       | 8                      |
+| `applications` schema + indexes                          | 2                      |
+| Admin list with filters, archived-hidden default, CSV    | 10                     |
+| Admin detail with status/assignee/notes/history/delete   | 11                     |
+| Pure helpers tested                                      | 1                      |
+| Reuse `react-hook-form` + `zod` + `sonner` (no new deps) | 6, 10, 11              |
+| No email notifications                                   | (intentionally absent) |
 
 **Type-consistency check:**
 

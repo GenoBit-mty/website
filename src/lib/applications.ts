@@ -36,14 +36,7 @@ export function subAreaRequired(group: ApplicationGroup): boolean {
   return group === 'student-community'
 }
 
-export const CAREERS = [
-  'IBT',
-  'ITC',
-  'IDM',
-  'MC',
-  'MSc BI',
-  'Other',
-] as const
+export const CAREERS = ['IBT', 'ITC', 'IDM', 'MC', 'MSc BI', 'Other'] as const
 export type Career = (typeof CAREERS)[number]
 
 export const SEMESTERS = [

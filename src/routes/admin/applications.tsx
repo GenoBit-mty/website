@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 import { toast } from 'sonner'
 import { api } from '../../../convex/_generated/api'
+import type { Application, ApplicationStatus } from '@/lib/applications'
 import { getAdminToken } from '@/lib/adminAuth'
 import {
   APPLICATION_STATUSES,
@@ -11,7 +12,6 @@ import {
   applicationToCsvRow,
   isTerminalStatus,
 } from '@/lib/applications'
-import type { Application, ApplicationStatus } from '@/lib/applications'
 
 export const Route = createFileRoute('/admin/applications')({
   component: AdminApplicationsPage,
@@ -71,8 +71,7 @@ function AdminApplicationsPage() {
     if (!applications) return []
     const q = search.trim().toLowerCase()
     return applications.filter((a) => {
-      if (!showArchived && isTerminalStatus(a.status as ApplicationStatus))
-        return false
+      if (!showArchived && isTerminalStatus(a.status)) return false
       if (groupFilter && a.group !== groupFilter) return false
       if (statusFilter && a.status !== statusFilter) return false
       if (
@@ -226,7 +225,7 @@ function AdminApplicationsPage() {
               </td>
               <td>{GROUP_LABEL[a.group] ?? a.group}</td>
               <td>{a.subArea ?? '—'}</td>
-              <td>{STATUS_LABEL[a.status as ApplicationStatus]}</td>
+              <td>{STATUS_LABEL[a.status]}</td>
               <td>{a.assigneeName ?? '—'}</td>
               <td>
                 {new Date(a.submittedAt).toLocaleDateString('es-MX', {

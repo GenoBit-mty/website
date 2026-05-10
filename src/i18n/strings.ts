@@ -271,7 +271,10 @@ const dict = {
     es: '¿Por qué quieres unirte?',
     en: 'Why do you want to join?',
   },
-  'join.field.linkedinUrl': { es: 'LinkedIn (opcional)', en: 'LinkedIn (optional)' },
+  'join.field.linkedinUrl': {
+    es: 'LinkedIn (opcional)',
+    en: 'LinkedIn (optional)',
+  },
   'join.field.githubUrl': { es: 'GitHub (opcional)', en: 'GitHub (optional)' },
   'join.field.consent': {
     es: 'Acepto ser contactado por GenoBit sobre mi aplicación.',
@@ -281,7 +284,10 @@ const dict = {
     es: 'Al enviar aceptas nuestro',
     en: 'By submitting you accept our',
   },
-  'join.field.privacy.link': { es: 'aviso de privacidad', en: 'privacy notice' },
+  'join.field.privacy.link': {
+    es: 'aviso de privacidad',
+    en: 'privacy notice',
+  },
 
   'join.placeholder.fullName': { es: 'Tu nombre', en: 'Your name' },
   'join.placeholder.email': { es: 'tu@correo.com', en: 'you@email.com' },
@@ -308,7 +314,10 @@ const dict = {
   'join.submit': { es: 'Enviar aplicación', en: 'Submit application' },
   'join.submitting': { es: 'Enviando…', en: 'Submitting…' },
 
-  'join.success.title': { es: 'Aplicación recibida', en: 'Application received' },
+  'join.success.title': {
+    es: 'Aplicación recibida',
+    en: 'Application received',
+  },
   'join.success.body': {
     es: 'Gracias por aplicar a GenoBit. Una persona del equipo te contactará al correo que registraste.',
     en: 'Thanks for applying to GenoBit. A team member will reach out at the email you provided.',
