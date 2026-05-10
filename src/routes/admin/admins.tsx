@@ -26,11 +26,19 @@ export const Route = createFileRoute('/admin/admins')({
 })
 
 const bilingual = z.object({ es: z.string().min(1, 'Requerido'), en: z.string().min(1, 'Requerido') })
+const optionalBilingual = z.object({ es: z.string(), en: z.string() }).optional()
 
 const memberSchema = z.object({
   name: z.string().min(1, 'Requerido'),
   role: bilingual,
+  career: z.string().optional(),
+  tenure: z.string().optional(),
+  bio: optionalBilingual,
   imageUrl: z.string().optional(),
+  galleryImageUrls: z.array(z.string()).optional(),
+  email: z.string().optional(),
+  linkedinUrl: z.string().optional(),
+  githubUrl: z.string().optional(),
 })
 
 const adminSchema = z.object({
@@ -57,6 +65,19 @@ const cleanOptional = (v: string | undefined) => (v && v.trim() ? v : undefined)
 const cleanBilingual = (b: { es?: string; en?: string } | undefined) =>
   !b || (!b.es && !b.en) ? undefined : { es: b.es ?? '', en: b.en ?? '' }
 
+type AdminMember = {
+  name: string
+  role: { es: string; en: string }
+  career?: string
+  tenure?: string
+  bio?: { es: string; en: string }
+  imageUrl?: string
+  galleryImageUrls?: Array<string>
+  email?: string
+  linkedinUrl?: string
+  githubUrl?: string
+}
+
 type AdminDoc = {
   _id: Id<'pastAdministrations'>
   period: string
@@ -64,7 +85,7 @@ type AdminDoc = {
   description?: { es: string; en: string }
   imageUrl?: string
   galleryImageUrls?: Array<string>
-  members: Array<{ name: string; role: { es: string; en: string }; imageUrl?: string }>
+  members: Array<AdminMember>
 }
 
 function AdminAdminsPage() {
@@ -102,7 +123,14 @@ function AdminAdminsPage() {
             members: values.members.map((m) => ({
               name: m.name,
               role: m.role,
+              career: cleanOptional(m.career),
+              tenure: cleanOptional(m.tenure),
+              bio: cleanBilingual(m.bio),
               imageUrl: cleanOptional(m.imageUrl),
+              galleryImageUrls: m.galleryImageUrls?.length ? m.galleryImageUrls : undefined,
+              email: cleanOptional(m.email),
+              linkedinUrl: cleanOptional(m.linkedinUrl),
+              githubUrl: cleanOptional(m.githubUrl),
             })),
           }
           try {
@@ -208,7 +236,14 @@ function AdminForm({
           members: initial.members.map((m) => ({
             name: m.name,
             role: m.role,
+            career: m.career ?? '',
+            tenure: m.tenure ?? '',
+            bio: m.bio ?? { es: '', en: '' },
             imageUrl: m.imageUrl ?? '',
+            galleryImageUrls: m.galleryImageUrls ?? [],
+            email: m.email ?? '',
+            linkedinUrl: m.linkedinUrl ?? '',
+            githubUrl: m.githubUrl ?? '',
           })),
         }
       : defaultValues,
@@ -245,7 +280,20 @@ function AdminForm({
               <button
                 type="button"
                 className="admin-btn admin-btn-secondary"
-                onClick={() => append({ name: '', role: { es: '', en: '' }, imageUrl: '' })}
+                onClick={() =>
+                  append({
+                    name: '',
+                    role: { es: '', en: '' },
+                    career: '',
+                    tenure: '',
+                    bio: { es: '', en: '' },
+                    imageUrl: '',
+                    galleryImageUrls: [],
+                    email: '',
+                    linkedinUrl: '',
+                    githubUrl: '',
+                  })
+                }
               >
                 + Agregar miembro
               </button>
