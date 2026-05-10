@@ -11,9 +11,8 @@
 **Spec:** `docs/superpowers/specs/2026-05-09-admin-page-improvements-design.md`
 
 **Pre-flight:**
-- Run `npx convex dev` in a side terminal throughout. Schema and mutation changes regenerate `convex/_generated/*` automatically; without it, frontend type imports break.
-- Verify `npm run test` passes against `main` before starting (baseline of 2 test files).
-- Verify `npm run lint` passes against `main`.
+- After any change to `convex/schema.ts` or files in `convex/*.ts`, run `npx convex codegen --typecheck=disable` once to regenerate `convex/_generated/*`. Frontend imports break otherwise. (Alternative: keep `npx convex dev` running in a side terminal for auto-regeneration.)
+- Baseline (already verified before plan execution): `npm run test` passes (12 tests across 2 files).
 
 ---
 
@@ -54,7 +53,8 @@ Replace the `pastAdministrations` table block in `convex/schema.ts` (around line
 
 - [ ] **Step 2: Verify Convex accepts the schema**
 
-Run: `npx convex dev` (already running per pre-flight) — observe in its log that the schema validates and types regenerate. If it fails, fix syntax and retry.
+Run: `npx convex codegen --typecheck=disable`
+Expected: completes without schema-validation errors and rewrites files under `convex/_generated/`. If it fails, fix syntax and retry.
 
 - [ ] **Step 3: Verify build still passes**
 
@@ -98,7 +98,8 @@ const memberValidator = v.object({
 
 - [ ] **Step 2: Verify type regeneration**
 
-Run: `npx convex dev` (the running side terminal) — confirm no errors. Run `npm run build` to confirm TypeScript happy.
+Run: `npx convex codegen --typecheck=disable`, then `npm run build`.
+Expected: both succeed.
 
 - [ ] **Step 3: Commit**
 
@@ -457,7 +458,8 @@ export const bulkCreate = mutation({
 
 - [ ] **Step 2: Verify type regeneration**
 
-Run: `npx convex dev` (in side terminal). Confirm no errors. Run `npm run build` to confirm.
+Run: `npx convex codegen --typecheck=disable`, then `npm run build`.
+Expected: both succeed.
 
 - [ ] **Step 3: Commit**
 
@@ -520,7 +522,7 @@ export const setOrder = mutation({
 
 - [ ] **Step 2: Verify type regeneration**
 
-Run: `npx convex dev` and `npm run build`. The build will fail in `src/routes/admin/team.tsx` because the old `reorder` mutation reference is gone; that is expected and gets fixed in Task 14. For now, fix the build error temporarily by commenting out the two `reorder({...})` calls and the `const reorder = useMutation(api.team.reorder)` line in `team.tsx`. Wrap them in `// TASK 14:` comments.
+Run: `npx convex codegen --typecheck=disable`, then `npm run build`. The build will fail in `src/routes/admin/team.tsx` because the old `reorder` mutation reference is gone; that is expected and gets fixed in Task 14. For now, fix the build error temporarily by commenting out the two `reorder({...})` calls and the `const reorder = useMutation(api.team.reorder)` line in `team.tsx`. Wrap them in `// TASK 14:` comments.
 
 - [ ] **Step 3: Confirm build passes after the temporary stub**
 
@@ -632,8 +634,8 @@ export const transitionBoard = mutation({
 
 - [ ] **Step 2: Verify regeneration and build**
 
-Run: `npx convex dev` (side terminal), then `npm run build`.
-Expected: success.
+Run: `npx convex codegen --typecheck=disable`, then `npm run build`.
+Expected: both succeed.
 
 - [ ] **Step 3: Commit**
 
