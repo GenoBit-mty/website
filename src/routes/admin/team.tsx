@@ -20,8 +20,15 @@ import {
   FieldText,
 } from '@/components/admin/fields'
 
+const teamSearchSchema = z.object({
+  group: z
+    .enum(['directives', 'ndrg', 'proteomics', 'student-community'])
+    .optional(),
+})
+
 export const Route = createFileRoute('/admin/team')({
   component: AdminTeamPage,
+  validateSearch: teamSearchSchema,
 })
 
 const bilingualSchema = z.object({
@@ -92,6 +99,20 @@ function AdminTeamPage() {
   const remove = useMutation(api.team.remove)
   // TASK 14: const reorder = useMutation(api.team.reorder)
 
+  const search = Route.useSearch()
+  const navigate = Route.useNavigate()
+  const activeGroup = search.group ?? null
+
+  const setActiveGroup = (next: string | null) => {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        group: (next as typeof search.group) ?? undefined,
+      }),
+      replace: true,
+    })
+  }
+
   const [editing, setEditing] = useState<'new' | string | null>(null)
   const [filter, setFilter] = useState('')
   const [bulkImportGroup, setBulkImportGroup] = useState<string | null>(null)
@@ -123,6 +144,28 @@ function AdminTeamPage() {
     }
     return result
   }, [filtered])
+
+  const groupCounts = useMemo(() => {
+    if (!members) {
+      return { all: 0, directives: 0, ndrg: 0, proteomics: 0, 'student-community': 0 }
+    }
+    const counts = {
+      all: members.length,
+      directives: 0,
+      ndrg: 0,
+      proteomics: 0,
+      'student-community': 0,
+    }
+    for (const m of members) {
+      const key = m.group ?? 'student-community'
+      if (key in counts) counts[key as keyof typeof counts] += 1
+    }
+    return counts
+  }, [members])
+
+  const visibleGroups = activeGroup
+    ? GROUPS.filter((g) => g.value === activeGroup)
+    : GROUPS
 
   if (editing !== null) {
     const member = editing === 'new' ? null : members?.find((m) => m._id === editing)
@@ -177,6 +220,31 @@ function AdminTeamPage() {
         </button>
       </div>
 
+      <div className="admin-filter-chips" role="tablist" aria-label="Filtrar grupo">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeGroup === null}
+          className={`admin-chip ${activeGroup === null ? 'is-active' : ''}`}
+          onClick={() => setActiveGroup(null)}
+        >
+          Todos · {groupCounts.all}
+        </button>
+        {GROUPS.map((g) => (
+          <button
+            key={g.value}
+            type="button"
+            role="tab"
+            aria-selected={activeGroup === g.value}
+            className={`admin-chip ${activeGroup === g.value ? 'is-active' : ''}`}
+            onClick={() => setActiveGroup(g.value)}
+          >
+            {g.label} ·{' '}
+            {groupCounts[g.value as keyof typeof groupCounts] ?? 0}
+          </button>
+        ))}
+      </div>
+
       <input
         type="text"
         className="admin-filter-input"
@@ -188,7 +256,7 @@ function AdminTeamPage() {
       {members === undefined ? (
         <p className="admin-empty">Cargando…</p>
       ) : (
-        GROUPS.map((g) => (
+        visibleGroups.map((g) => (
           <div key={g.value} className="admin-list-section">
             <div className="admin-list-section-header">
               <h2 className="admin-list-section-title">{g.label}</h2>
