@@ -2691,38 +2691,46 @@ main {
 .admin-card {
     background: white;
     border: 1px solid rgba(14, 23, 23, 0.08);
-    border-radius: 6px;
-    padding: 14px 16px;
+    border-radius: 8px;
+    padding: 12px 14px;
     margin-bottom: 8px;
-    display: grid;
-    grid-template-columns: 56px 1fr auto;
-    gap: 14px;
+    display: flex;
     align-items: center;
+    gap: 14px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-card:hover {
+    border-color: rgba(14, 23, 23, 0.18);
+    box-shadow: 0 1px 0 rgba(14, 23, 23, 0.04);
 }
 
 .admin-card-thumb {
-    width: 56px;
-    height: 56px;
-    border-radius: 4px;
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
     background: rgba(14, 23, 23, 0.05);
     object-fit: cover;
+    flex-shrink: 0;
 }
 
 .admin-card-thumb-fallback {
-    width: 56px;
-    height: 56px;
-    border-radius: 4px;
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
     background: rgba(0, 112, 111, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
     color: rgba(0, 112, 111, 0.6);
+    flex-shrink: 0;
 }
 
 .admin-card-body {
     min-width: 0;
+    flex: 1;
 }
 
 .admin-card-title {
@@ -2739,6 +2747,7 @@ main {
 .admin-card-actions {
     display: flex;
     gap: 6px;
+    flex-shrink: 0;
 }
 
 .admin-icon-btn {
@@ -3306,12 +3315,16 @@ main {
 .admin-drag-handle {
   background: transparent;
   border: none;
-  font-size: 18px;
+  font-size: 16px;
   color: #b0a99a;
-  padding: 0 6px;
+  padding: 0 4px;
   cursor: grab;
   user-select: none;
   line-height: 1;
+  flex-shrink: 0;
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
 }
 
 .admin-drag-handle:active {
