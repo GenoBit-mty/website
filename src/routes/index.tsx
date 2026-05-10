@@ -247,6 +247,28 @@ function HomePage() {
                 <div className="floating-label">dato</div>
               </div>
             </div>
+
+            <div className="content-row reverse reveal-on-scroll">
+              <div className="content-info">
+                <span className="mono-label">{t('home.join.label')}</span>
+                <h3 className="section-display">
+                  <em>{t('home.join.title')}</em>
+                </h3>
+                <p className="section-copy">{t('home.join.body')}</p>
+                <div className="divider" />
+                <Link to="/join" className="editorial-btn filled">
+                  {t('home.join.cta')}
+                </Link>
+              </div>
+              <div className="content-media">
+                <img
+                  src={heroImages.team}
+                  alt=""
+                  className="content-image"
+                />
+                <div className="floating-label">únete</div>
+              </div>
+            </div>
           </div>
         </section>
       </main>
