@@ -9,6 +9,7 @@
  */
 
 import type * as admin from "../admin.js";
+import type * as applications from "../applications.js";
 import type * as content from "../content.js";
 import type * as events from "../events.js";
 import type * as home from "../home.js";
@@ -16,6 +17,7 @@ import type * as labs from "../labs.js";
 import type * as lib_slug from "../lib/slug.js";
 import type * as pastAdmin from "../pastAdmin.js";
 import type * as research from "../research.js";
+import type * as siteSettings from "../siteSettings.js";
 import type * as team from "../team.js";
 
 import type {
@@ -26,6 +28,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
+  applications: typeof applications;
   content: typeof content;
   events: typeof events;
   home: typeof home;
@@ -33,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   "lib/slug": typeof lib_slug;
   pastAdmin: typeof pastAdmin;
   research: typeof research;
+  siteSettings: typeof siteSettings;
   team: typeof team;
 }>;
 

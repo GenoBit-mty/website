@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as ResearchRouteImport } from './routes/research'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as JoinRouteImport } from './routes/join'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as AdministrationsRouteImport } from './routes/administrations'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -25,7 +27,9 @@ import { Route as AdminLabsRouteImport } from './routes/admin/labs'
 import { Route as AdminHomeRouteImport } from './routes/admin/home'
 import { Route as AdminEventsRouteImport } from './routes/admin/events'
 import { Route as AdminBoardTransitionRouteImport } from './routes/admin/board-transition'
+import { Route as AdminApplicationsRouteImport } from './routes/admin/applications'
 import { Route as AdminAdminsRouteImport } from './routes/admin/admins'
+import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications_.$id'
 
 const TeamRoute = TeamRouteImport.update({
   id: '/team',
@@ -35,6 +39,16 @@ const TeamRoute = TeamRouteImport.update({
 const ResearchRoute = ResearchRouteImport.update({
   id: '/research',
   path: '/research',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinRoute = JoinRouteImport.update({
+  id: '/join',
+  path: '/join',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EventsRoute = EventsRouteImport.update({
@@ -107,9 +121,19 @@ const AdminBoardTransitionRoute = AdminBoardTransitionRouteImport.update({
   path: '/board-transition',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAdminsRoute = AdminAdminsRouteImport.update({
   id: '/admins',
   path: '/admins',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
+  id: '/applications_/$id',
+  path: '/applications/$id',
   getParentRoute: () => AdminRoute,
 } as any)
 
@@ -118,9 +142,12 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/administrations': typeof AdministrationsRoute
   '/events': typeof EventsRoute
+  '/join': typeof JoinRoute
+  '/privacy': typeof PrivacyRoute
   '/research': typeof ResearchRoute
   '/team': typeof TeamRoute
   '/admin/admins': typeof AdminAdminsRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/board-transition': typeof AdminBoardTransitionRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/home': typeof AdminHomeRoute
@@ -131,14 +158,18 @@ export interface FileRoutesByFullPath {
   '/events/$eventId': typeof EventsEventIdRoute
   '/research/$slug': typeof ResearchSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/applications/$id': typeof AdminApplicationsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/administrations': typeof AdministrationsRoute
   '/events': typeof EventsRoute
+  '/join': typeof JoinRoute
+  '/privacy': typeof PrivacyRoute
   '/research': typeof ResearchRoute
   '/team': typeof TeamRoute
   '/admin/admins': typeof AdminAdminsRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/board-transition': typeof AdminBoardTransitionRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/home': typeof AdminHomeRoute
@@ -149,6 +180,7 @@ export interface FileRoutesByTo {
   '/events/$eventId': typeof EventsEventIdRoute
   '/research/$slug': typeof ResearchSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/applications/$id': typeof AdminApplicationsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -156,9 +188,12 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/administrations': typeof AdministrationsRoute
   '/events': typeof EventsRoute
+  '/join': typeof JoinRoute
+  '/privacy': typeof PrivacyRoute
   '/research': typeof ResearchRoute
   '/team': typeof TeamRoute
   '/admin/admins': typeof AdminAdminsRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/board-transition': typeof AdminBoardTransitionRoute
   '/admin/events': typeof AdminEventsRoute
   '/admin/home': typeof AdminHomeRoute
@@ -169,6 +204,7 @@ export interface FileRoutesById {
   '/events_/$eventId': typeof EventsEventIdRoute
   '/research_/$slug': typeof ResearchSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/applications_/$id': typeof AdminApplicationsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -177,9 +213,12 @@ export interface FileRouteTypes {
     | '/admin'
     | '/administrations'
     | '/events'
+    | '/join'
+    | '/privacy'
     | '/research'
     | '/team'
     | '/admin/admins'
+    | '/admin/applications'
     | '/admin/board-transition'
     | '/admin/events'
     | '/admin/home'
@@ -190,14 +229,18 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/research/$slug'
     | '/admin/'
+    | '/admin/applications/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/administrations'
     | '/events'
+    | '/join'
+    | '/privacy'
     | '/research'
     | '/team'
     | '/admin/admins'
+    | '/admin/applications'
     | '/admin/board-transition'
     | '/admin/events'
     | '/admin/home'
@@ -208,15 +251,19 @@ export interface FileRouteTypes {
     | '/events/$eventId'
     | '/research/$slug'
     | '/admin'
+    | '/admin/applications/$id'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/administrations'
     | '/events'
+    | '/join'
+    | '/privacy'
     | '/research'
     | '/team'
     | '/admin/admins'
+    | '/admin/applications'
     | '/admin/board-transition'
     | '/admin/events'
     | '/admin/home'
@@ -227,6 +274,7 @@ export interface FileRouteTypes {
     | '/events_/$eventId'
     | '/research_/$slug'
     | '/admin/'
+    | '/admin/applications_/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -234,6 +282,8 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AdministrationsRoute: typeof AdministrationsRoute
   EventsRoute: typeof EventsRoute
+  JoinRoute: typeof JoinRoute
+  PrivacyRoute: typeof PrivacyRoute
   ResearchRoute: typeof ResearchRoute
   TeamRoute: typeof TeamRoute
   EventsEventIdRoute: typeof EventsEventIdRoute
@@ -254,6 +304,20 @@ declare module '@tanstack/react-router' {
       path: '/research'
       fullPath: '/research'
       preLoaderRoute: typeof ResearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join': {
+      id: '/join'
+      path: '/join'
+      fullPath: '/join'
+      preLoaderRoute: typeof JoinRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/events': {
@@ -354,6 +418,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBoardTransitionRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/applications': {
+      id: '/admin/applications'
+      path: '/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AdminApplicationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/admins': {
       id: '/admin/admins'
       path: '/admins'
@@ -361,11 +432,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/applications_/$id': {
+      id: '/admin/applications_/$id'
+      path: '/applications/$id'
+      fullPath: '/admin/applications/$id'
+      preLoaderRoute: typeof AdminApplicationsIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
   AdminAdminsRoute: typeof AdminAdminsRoute
+  AdminApplicationsRoute: typeof AdminApplicationsRoute
   AdminBoardTransitionRoute: typeof AdminBoardTransitionRoute
   AdminEventsRoute: typeof AdminEventsRoute
   AdminHomeRoute: typeof AdminHomeRoute
@@ -374,10 +453,12 @@ interface AdminRouteChildren {
   AdminResearchRoute: typeof AdminResearchRoute
   AdminTeamRoute: typeof AdminTeamRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminApplicationsIdRoute: typeof AdminApplicationsIdRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAdminsRoute: AdminAdminsRoute,
+  AdminApplicationsRoute: AdminApplicationsRoute,
   AdminBoardTransitionRoute: AdminBoardTransitionRoute,
   AdminEventsRoute: AdminEventsRoute,
   AdminHomeRoute: AdminHomeRoute,
@@ -386,6 +467,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminResearchRoute: AdminResearchRoute,
   AdminTeamRoute: AdminTeamRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminApplicationsIdRoute: AdminApplicationsIdRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -395,6 +477,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AdministrationsRoute: AdministrationsRoute,
   EventsRoute: EventsRoute,
+  JoinRoute: JoinRoute,
+  PrivacyRoute: PrivacyRoute,
   ResearchRoute: ResearchRoute,
   TeamRoute: TeamRoute,
   EventsEventIdRoute: EventsEventIdRoute,
