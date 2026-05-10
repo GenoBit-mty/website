@@ -256,6 +256,13 @@ function SiteFooter() {
             >
               Instagram
             </a>
+            <a
+              href="https://linktr.ee/genobit"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Linktree
+            </a>
           </div>
           <div>{t('footer.tagline')}</div>
         </div>

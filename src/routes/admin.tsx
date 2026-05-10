@@ -16,6 +16,7 @@ const NAV = [
   { to: '/admin/research', label: 'Investigación' },
   { to: '/admin/labs', label: 'Labs' },
   { to: '/admin/admins', label: 'Mesas pasadas' },
+  { to: '/admin/home', label: 'Portada' },
 ] as const
 
 function AdminLayout() {

@@ -86,4 +86,9 @@ export default defineSchema({
     token: v.string(),
     expiresAt: v.number(),
   }).index("by_token", ["token"]),
+
+  homeImages: defineTable({
+    slot: v.string(),
+    imageUrl: v.string(),
+  }).index("by_slot", ["slot"]),
 });

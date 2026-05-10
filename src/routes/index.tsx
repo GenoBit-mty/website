@@ -1,14 +1,32 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { AnimatePresence, m, useScroll, useTransform } from 'framer-motion'
+import { useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 import { DnaHelix } from '@/components/DnaHelix'
 import { TechMarquee } from '@/components/TechMarquee'
 import { useT } from '@/i18n/LanguageProvider'
+
+const FALLBACK_IMAGES = {
+  research:
+    'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&q=80&w=1000',
+  team: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1000',
+  events:
+    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1000',
+} as const
 
 export const Route = createFileRoute('/')({ component: HomePage })
 
 function HomePage() {
   const t = useT()
+  const homeImages = useQuery(api.home.getAll)
+  const slotMap = new Map<string, string>()
+  for (const row of homeImages ?? []) slotMap.set(row.slot, row.imageUrl)
+  const heroImages = {
+    research: slotMap.get('research') ?? FALLBACK_IMAGES.research,
+    team: slotMap.get('team') ?? FALLBACK_IMAGES.team,
+    events: slotMap.get('events') ?? FALLBACK_IMAGES.events,
+  }
   const { scrollYProgress } = useScroll()
   const heroOpacity = useTransform(scrollYProgress, [0, 0.35], [1, 0.25])
   const heroScale = useTransform(scrollYProgress, [0, 0.35], [1, 0.9])
@@ -178,7 +196,7 @@ function HomePage() {
               </div>
               <div className="content-media">
                 <img
-                  src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&q=80&w=1000"
+                  src={heroImages.research}
                   alt="Investigación en bioinformática"
                   className="content-image"
                 />
@@ -200,7 +218,7 @@ function HomePage() {
               </div>
               <div className="content-media">
                 <img
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1000"
+                  src={heroImages.team}
                   alt="Equipo colaborativo"
                   className="content-image"
                 />
@@ -222,7 +240,7 @@ function HomePage() {
               </div>
               <div className="content-media">
                 <img
-                  src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1000"
+                  src={heroImages.events}
                   alt="Evento de bioinformática"
                   className="content-image"
                 />

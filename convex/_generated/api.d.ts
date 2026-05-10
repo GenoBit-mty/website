@@ -11,6 +11,7 @@
 import type * as admin from "../admin.js";
 import type * as content from "../content.js";
 import type * as events from "../events.js";
+import type * as home from "../home.js";
 import type * as labs from "../labs.js";
 import type * as lib_slug from "../lib/slug.js";
 import type * as pastAdmin from "../pastAdmin.js";
@@ -27,6 +28,7 @@ declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   content: typeof content;
   events: typeof events;
+  home: typeof home;
   labs: typeof labs;
   "lib/slug": typeof lib_slug;
   pastAdmin: typeof pastAdmin;

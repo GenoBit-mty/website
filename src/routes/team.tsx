@@ -4,6 +4,7 @@ import { api } from '../../convex/_generated/api'
 import type {Bilingual} from '@/i18n/types';
 import { useLang } from '@/i18n/LanguageProvider'
 import {  tField } from '@/i18n/types'
+import { normalizeExternalUrl } from '@/lib/url'
 
 export const Route = createFileRoute('/team')({
   component: TeamPage,
@@ -116,9 +117,14 @@ function TeamPage() {
                       )}
                       <div className="team-links">
                         {member.email && <a href={`mailto:${member.email}`}>{t('team.email')}</a>}
-                        {member.linkedinUrl && (
-                          <a href={member.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                        {normalizeExternalUrl(member.linkedinUrl) && (
+                          <a href={normalizeExternalUrl(member.linkedinUrl)} target="_blank" rel="noopener noreferrer">
                             LinkedIn
+                          </a>
+                        )}
+                        {normalizeExternalUrl(member.githubUrl) && (
+                          <a href={normalizeExternalUrl(member.githubUrl)} target="_blank" rel="noopener noreferrer">
+                            GitHub
                           </a>
                         )}
                       </div>
@@ -158,9 +164,14 @@ function TeamPage() {
                         <div className="team-career">{member.career}</div>
                       )}
                       <div className="team-links">
-                        {member.linkedinUrl && (
-                          <a href={member.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                        {normalizeExternalUrl(member.linkedinUrl) && (
+                          <a href={normalizeExternalUrl(member.linkedinUrl)} target="_blank" rel="noopener noreferrer">
                             LinkedIn
+                          </a>
+                        )}
+                        {normalizeExternalUrl(member.githubUrl) && (
+                          <a href={normalizeExternalUrl(member.githubUrl)} target="_blank" rel="noopener noreferrer">
+                            GitHub
                           </a>
                         )}
                       </div>
@@ -179,27 +190,43 @@ function TeamPage() {
                 <p className="team-section-description">{t('team.group.proteomics.body')}</p>
               </div>
 
-              <ul className="team-list reveal-on-scroll visible">
-                {grouped.proteomics.map((member) => (
-                  <li key={member._id} className="team-list-row stagger-child">
-                    <div className="team-list-name">{member.name}</div>
-                    <div className="team-list-role">{tField(member.role, lang)}</div>
-                    {member.career && (
-                      <div className="team-list-career">{member.career}</div>
+              <div className="team-grid reveal-on-scroll visible">
+                {grouped.proteomics.map((member, idx) => (
+                  <div key={member._id} className="team-card stagger-child">
+                    {member.imageUrl ? (
+                      <img
+                        src={member.imageUrl}
+                        alt={`${member.name} — ${tField(member.role, lang)}`}
+                        className="team-photo"
+                      />
+                    ) : (
+                      <div className="team-photo-fallback" data-idx={idx}>
+                        <span>{member.name.charAt(0)}</span>
+                      </div>
                     )}
-                    {member.linkedinUrl && (
-                      <a
-                        className="team-list-link"
-                        href={member.linkedinUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        LinkedIn
-                      </a>
-                    )}
-                  </li>
+                    <div className="team-info">
+                      <div className="team-name">{member.name}</div>
+                      <div className="team-role">{tField(member.role, lang)}</div>
+                      {member.career && (
+                        <div className="team-career">{member.career}</div>
+                      )}
+                      <div className="team-links">
+                        {member.email && <a href={`mailto:${member.email}`}>{t('team.email')}</a>}
+                        {normalizeExternalUrl(member.linkedinUrl) && (
+                          <a href={normalizeExternalUrl(member.linkedinUrl)} target="_blank" rel="noopener noreferrer">
+                            LinkedIn
+                          </a>
+                        )}
+                        {normalizeExternalUrl(member.githubUrl) && (
+                          <a href={normalizeExternalUrl(member.githubUrl)} target="_blank" rel="noopener noreferrer">
+                            GitHub
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           </section>
 
@@ -218,14 +245,24 @@ function TeamPage() {
                     {member.career && (
                       <div className="team-list-career">{member.career}</div>
                     )}
-                    {member.linkedinUrl && (
+                    {normalizeExternalUrl(member.linkedinUrl) && (
                       <a
                         className="team-list-link"
-                        href={member.linkedinUrl}
+                        href={normalizeExternalUrl(member.linkedinUrl)}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         LinkedIn
+                      </a>
+                    )}
+                    {normalizeExternalUrl(member.githubUrl) && (
+                      <a
+                        className="team-list-link"
+                        href={normalizeExternalUrl(member.githubUrl)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        GitHub
                       </a>
                     )}
                   </li>
