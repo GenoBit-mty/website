@@ -3202,3 +3202,58 @@ main {
   background: #fbe9e7;
 }
 
+
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.admin-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px 20px;
+  border-radius: 14px;
+  border: 1px solid #e6e1d7;
+  background: #fdfcf9;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+
+.admin-tile:hover {
+  border-color: #0e1717;
+  transform: translateY(-1px);
+}
+
+.admin-tile-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b665b;
+  margin: 0;
+}
+
+.admin-tile-stat {
+  font-size: 22px;
+  font-weight: 600;
+  color: #0e1717;
+  margin: 4px 0 0;
+}
+
+.admin-tile-stat-sub {
+  font-size: 13px;
+  color: #6b665b;
+  margin: 0;
+}
+
+.admin-tile-cta {
+  margin-top: auto;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0e1717;
+  padding-top: 8px;
+}
