@@ -240,3 +240,84 @@ export const bulkCreate = mutation({
     return { inserted };
   },
 });
+
+export const transitionBoard = mutation({
+  args: {
+    sessionToken: v.string(),
+    outgoingPeriod: v.string(),
+    incomingPeriod: v.string(),
+    pastAdmin: v.object({
+      presidentName: v.string(),
+      description: v.optional(bilingualValidator),
+      imageUrl: v.optional(v.string()),
+      galleryImageUrls: v.optional(v.array(v.string())),
+    }),
+    incomingMembers: v.array(
+      v.object({
+        name: v.string(),
+        role: bilingualValidator,
+        career: v.optional(v.string()),
+        email: v.optional(v.string()),
+        linkedinUrl: v.optional(v.string()),
+        githubUrl: v.optional(v.string()),
+        imageUrl: v.optional(v.string()),
+      }),
+    ),
+  },
+  returns: v.object({ pastAdminId: v.id("pastAdministrations") }),
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx, args.sessionToken);
+
+    const all = await ctx.db.query("teamMembers").collect();
+    const outgoing = all.filter((m) => m.group === "directives");
+
+    const archivedMembers = outgoing.map((m) => ({
+      name: m.name,
+      role: m.role,
+      career: m.career,
+      tenure: m.tenure,
+      bio: m.bio,
+      imageUrl: m.imageUrl,
+      galleryImageUrls: m.galleryImageUrls,
+      email: m.email,
+      linkedinUrl: m.linkedinUrl,
+      githubUrl: m.githubUrl,
+    }));
+
+    const pastAdminId = await ctx.db.insert("pastAdministrations", {
+      period: args.outgoingPeriod,
+      presidentName: args.pastAdmin.presidentName,
+      description: args.pastAdmin.description,
+      imageUrl: args.pastAdmin.imageUrl,
+      galleryImageUrls: args.pastAdmin.galleryImageUrls,
+      members: archivedMembers,
+    });
+
+    for (const m of outgoing) {
+      await ctx.db.delete(m._id);
+    }
+
+    const otherMaxOrder = all
+      .filter((m) => m.group !== "directives")
+      .reduce((max, m) => Math.max(max, m.order ?? -1), -1);
+
+    let nextOrder = otherMaxOrder + 1;
+    for (const incoming of args.incomingMembers) {
+      await ctx.db.insert("teamMembers", {
+        name: incoming.name,
+        role: incoming.role,
+        career: incoming.career,
+        group: "directives",
+        tenure: args.incomingPeriod,
+        isFirstBoard: false,
+        email: incoming.email,
+        linkedinUrl: incoming.linkedinUrl,
+        githubUrl: incoming.githubUrl,
+        imageUrl: incoming.imageUrl,
+        order: nextOrder++,
+      });
+    }
+
+    return { pastAdminId };
+  },
+});
