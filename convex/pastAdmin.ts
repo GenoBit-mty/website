@@ -7,7 +7,14 @@ const bilingualValidator = v.object({ es: v.string(), en: v.string() });
 const memberValidator = v.object({
   name: v.string(),
   role: bilingualValidator,
+  career: v.optional(v.string()),
+  tenure: v.optional(v.string()),
+  bio: v.optional(bilingualValidator),
   imageUrl: v.optional(v.string()),
+  galleryImageUrls: v.optional(v.array(v.string())),
+  email: v.optional(v.string()),
+  linkedinUrl: v.optional(v.string()),
+  githubUrl: v.optional(v.string()),
 });
 
 export const get = query({
