@@ -49,6 +49,12 @@ function AdminDashboardPage() {
           <span className="admin-tile-cta">→ Gestionar</span>
         </Link>
 
+        <Link to="/admin/applications" className="admin-tile">
+          <h2 className="admin-tile-title">Aplicaciones</h2>
+          <p className="admin-tile-stat">Pipeline de reclutamiento</p>
+          <span className="admin-tile-cta">→ Ver aplicaciones</span>
+        </Link>
+
         <Link to="/admin/events" className="admin-tile">
           <h2 className="admin-tile-title">Eventos</h2>
           <p className="admin-tile-stat">{upcomingEvents} próximos</p>
