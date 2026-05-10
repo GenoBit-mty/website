@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'convex/react'
-import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form'
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
@@ -13,6 +13,7 @@ import {
   FieldGallery,
   FieldImageUpload,
   FieldText,
+  FormSection,
 } from '@/components/admin/fields'
 
 const adminsSearchSchema = z.object({
@@ -226,81 +227,78 @@ function AdminForm({
         </div>
       </div>
       <form className="admin-form-shell" onSubmit={form.handleSubmit(onSubmit)}>
-        <FieldText<AdminFormValues> name="period" label="Periodo" placeholder="2023-2024" required />
-        <FieldText<AdminFormValues> name="presidentName" label="Nombre del presidente" required />
-        <FieldBilingualTextarea<AdminFormValues> name="description" label="Descripción" rows={4} />
-        <FieldImageUpload<AdminFormValues> name="imageUrl" label="Foto principal" control={form.control} />
-        <FieldGallery<AdminFormValues> name="galleryImageUrls" label="Galería" control={form.control} />
+        <FormSection title="Datos básicos">
+          <FieldText<AdminFormValues> name="period" label="Periodo" placeholder="2023-2024" required />
+          <FieldText<AdminFormValues> name="presidentName" label="Nombre del presidente" required />
+          <FieldBilingualTextarea<AdminFormValues> name="description" label="Descripción" rows={4} />
+        </FormSection>
 
-        <div className="admin-members-section">
-          <div className="admin-page-header" style={{ marginBottom: 12, paddingBottom: 8 }}>
-            <h2 style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>Miembros</h2>
-            <button
-              type="button"
-              className="admin-btn admin-btn-secondary"
-              onClick={() => append({ name: '', role: { es: '', en: '' }, imageUrl: '' })}
-            >
-              + Agregar miembro
-            </button>
-          </div>
+        <FormSection title="Foto y galería">
+          <FieldImageUpload<AdminFormValues> name="imageUrl" label="Foto principal" control={form.control} />
+          <FieldGallery<AdminFormValues> name="galleryImageUrls" label="Galería" control={form.control} />
+        </FormSection>
 
-          {fields.length === 0 && (
-            <p className="admin-empty" style={{ padding: '24px 12px' }}>
-              Sin miembros aún.
-            </p>
-          )}
-
-          {fields.map((field, idx) => (
-            <div key={field.id} className="admin-member-row">
-              <label className="admin-field">
-                <span className="admin-field-label">Nombre</span>
-                <input
-                  className="admin-input"
-                  {...form.register(`members.${idx}.name`)}
-                />
-              </label>
-              <label className="admin-field">
-                <span className="admin-field-label">Rol (ES)</span>
-                <input
-                  className="admin-input"
-                  {...form.register(`members.${idx}.role.es`)}
-                />
-              </label>
-              <label className="admin-field">
-                <span className="admin-field-label">Rol (EN)</span>
-                <input
-                  className="admin-input"
-                  {...form.register(`members.${idx}.role.en`)}
-                />
-              </label>
-              <Controller
-                control={form.control}
-                name={`members.${idx}.imageUrl`}
-                render={({ field: imgField }) => (
-                  <label className="admin-field">
-                    <span className="admin-field-label">Imagen URL</span>
-                    <input
-                      className="admin-input"
-                      value={imgField.value ?? ''}
-                      onChange={imgField.onChange}
-                      placeholder="https://…"
-                    />
-                  </label>
-                )}
-              />
-              <div className="admin-member-actions">
-                <button
-                  type="button"
-                  className="admin-icon-btn"
-                  onClick={() => remove(idx)}
-                  aria-label="Quitar"
-                >
-                  Quitar
-                </button>
-              </div>
+        <FormSection title="Miembros">
+          <div className="admin-members-section">
+            <div className="admin-page-header" style={{ marginBottom: 12, paddingBottom: 8 }}>
+              <h2 style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>Miembros</h2>
+              <button
+                type="button"
+                className="admin-btn admin-btn-secondary"
+                onClick={() => append({ name: '', role: { es: '', en: '' }, imageUrl: '' })}
+              >
+                + Agregar miembro
+              </button>
             </div>
-          ))}
-        </div>
+
+            {fields.length === 0 && (
+              <p className="admin-empty" style={{ padding: '24px 12px' }}>
+                Sin miembros aún.
+              </p>
+            )}
+
+            {fields.map((field, idx) => (
+              <div key={field.id} className="admin-member-row">
+                <label className="admin-field">
+                  <span className="admin-field-label">Nombre</span>
+                  <input
+                    className="admin-input"
+                    {...form.register(`members.${idx}.name`)}
+                  />
+                </label>
+                <label className="admin-field">
+                  <span className="admin-field-label">Rol (ES)</span>
+                  <input
+                    className="admin-input"
+                    {...form.register(`members.${idx}.role.es`)}
+                  />
+                </label>
+                <label className="admin-field">
+                  <span className="admin-field-label">Rol (EN)</span>
+                  <input
+                    className="admin-input"
+                    {...form.register(`members.${idx}.role.en`)}
+                  />
+                </label>
+                <FieldImageUpload<AdminFormValues>
+                  name={`members.${idx}.imageUrl` as const as keyof AdminFormValues & string}
+                  label="Foto"
+                  control={form.control}
+                />
+                <div className="admin-member-actions">
+                  <button
+                    type="button"
+                    className="admin-icon-btn"
+                    onClick={() => remove(idx)}
+                    aria-label="Quitar"
+                  >
+                    Quitar
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </FormSection>
 
         <div className="admin-form-actions">
           <button type="button" className="admin-btn admin-btn-secondary" onClick={onCancel}>
