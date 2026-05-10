@@ -74,6 +74,7 @@ export type Application = {
   status: ApplicationStatus
   assigneeName?: string
   adminNotes?: string
+  statusHistory: Array<{ status: string; changedAt: number }>
 }
 
 export const CSV_COLUMNS = [

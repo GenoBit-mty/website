@@ -97,6 +97,7 @@ describe('applicationToCsvRow', () => {
       status: 'new',
       assigneeName: undefined,
       adminNotes: undefined,
+      statusHistory: [],
     })
     expect(row).toEqual([
       'abc',
@@ -142,6 +143,7 @@ describe('applicationToCsvRow', () => {
       status: 'new',
       assigneeName: undefined,
       adminNotes: undefined,
+      statusHistory: [],
     })
     expect(row[5]).toBe('Other')
     expect(row[6]).toBe('Architecture')

@@ -114,6 +114,8 @@ function AdminApplicationsPage() {
 
   const onExport = () => {
     const rows = filtered.map((a) =>
+      // Cast: Convex Doc<'applications'> is structurally compatible with the
+      // pure Application domain type used by applicationToCsvRow.
       applicationToCsvRow(a as unknown as Application),
     )
     const today = new Date().toISOString().slice(0, 10)

@@ -114,6 +114,10 @@ export function JoinForm() {
           setServerError(t('join.error.closed'))
           return
         }
+        if (data?.code === 'SUBAREA_REQUIRED') {
+          setServerError(t('join.error.subAreaRequired'))
+          return
+        }
       }
       setServerError(t('join.error.generic'))
     }

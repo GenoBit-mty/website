@@ -335,6 +335,10 @@ const dict = {
     es: 'Las aplicaciones están cerradas en este momento.',
     en: 'Applications are closed right now.',
   },
+  'join.error.subAreaRequired': {
+    es: 'Selecciona una sub-área para Student Community.',
+    en: 'Pick a sub-area for Student Community.',
+  },
   'join.error.generic': {
     es: 'No se pudo enviar la aplicación. Intenta de nuevo.',
     en: 'Could not submit the application. Please try again.',
